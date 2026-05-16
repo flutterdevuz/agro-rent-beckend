@@ -1,0 +1,131 @@
+{% extends 'public/base.html' %}
+{% load static %}
+
+{% block title %}Command Center | AgroTerra{% endblock %}
+
+{% block content %}
+<section style="padding: 120px 0;">
+    <div class="container">
+        <div style="display: grid; grid-template-columns: 400px 1fr; gap: 64px; align-items: flex-start;">
+            
+            <!-- Identity Module -->
+            <div style="position: sticky; top: 140px;">
+                <div class="at-card" style="text-align: center; padding: 48px;">
+                    <div style="width: 140px; height: 140px; background: var(--at-primary-light); color: var(--at-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 32px; font-size: 56px; font-weight: 800; border: 4px solid #fff; box-shadow: var(--at-shadow-md);">
+                        <span id="user-initials">--</span>
+                    </div>
+                    <h2 id="user-name" style="font-size: 28px; margin-bottom: 8px;">Yuklanmoqda...</h2>
+                    <p id="user-phone" style="color: var(--at-text-secondary); font-weight: 600; margin-bottom: 40px; font-size: 15px;"></p>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <div style="display: flex; justify-content: space-between; padding: 16px 20px; background: var(--at-bg); border-radius: var(--at-radius-sm);">
+                            <span style="font-size: 12px; font-weight: 800; color: var(--at-text-secondary); text-transform: uppercase;">Identity Status</span>
+                            <b id="user-role" style="font-size: 13px; color: var(--at-primary);">---</b>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 16px 20px; background: var(--at-bg); border-radius: var(--at-radius-sm);">
+                            <span style="font-size: 12px; font-weight: 800; color: var(--at-text-secondary); text-transform: uppercase;">Location</span>
+                            <b id="user-location" style="font-size: 13px; color: var(--at-primary);">---</b>
+                        </div>
+                    </div>
+
+                    <button onclick="window.atAuth.logout()" class="at-btn at-btn-outline" style="width: 100%; margin-top: 40px; justify-content: center; border-color: var(--at-danger); color: var(--at-danger);">
+                        <i class="fas fa-power-off"></i> <span data-i18n>Terminate Session</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Operations Module -->
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 48px;">
+                    <h2 class="at-heading-md" data-i18n>Active Operations</h2>
+                    <div style="display: flex; gap: 12px;">
+                        <button class="at-btn at-btn-outline active" style="padding: 10px 20px; font-size: 13px;" data-i18n>Ongoing</button>
+                        <button class="at-btn at-btn-outline" style="padding: 10px 20px; font-size: 13px;" data-i18n>Completed</button>
+                    </div>
+                </div>
+
+                <div id="operations-container" style="display: flex; flex-direction: column; gap: 24px;">
+                    <!-- Skeletons -->
+                    <div class="at-card at-skeleton" style="height: 140px;"></div>
+                    <div class="at-card at-skeleton" style="height: 140px;"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const CommandCenter = {
+        async init() {
+            if (!window.atAuth.isAuthenticated()) {
+                window.location.href = '/login/';
+                return;
+            }
+            await Promise.all([
+                this.loadIdentity(),
+                this.loadOperations()
+            ]);
+        },
+
+        async loadIdentity() {
+            try {
+                const user = await window.atApi.get('/users/profile/');
+                document.getElementById('user-name').innerText = `${user.first_name} ${user.last_name}`;
+                document.getElementById('user-initials').innerText = user.first_name[0] + user.last_name[0];
+                document.getElementById('user-phone').innerText = user.phone_number;
+                document.getElementById('user-role').innerText = user.isRenter ? 'Elite Renter' : 'Standard Partner';
+                document.getElementById('user-location').innerText = `${user.region}, ${user.district}`;
+            } catch (e) {}
+        },
+
+        async loadOperations() {
+            const container = document.getElementById('operations-container');
+            try {
+                const orders = await window.atApi.get('/users/orders/');
+                if (orders && orders.length > 0) {
+                    container.innerHTML = orders.map(order => `
+                        <div class="at-card" style="display: flex; gap: 32px; align-items: center; padding: 24px;">
+                            <div style="width: 80px; height: 80px; background: var(--at-bg); border-radius: var(--at-radius-sm); overflow: hidden;">
+                                <img src="${order.image || 'https://via.placeholder.com/100'}" style="width: 100%; height: 100%; object-fit: cover;">
+                            </div>
+                            <div style="flex: 1;">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                                    <h4 style="font-size: 18px; color: var(--at-primary);">${order.name}</h4>
+                                    <span style="font-size: 11px; font-weight: 800; background: var(--at-primary-light); color: var(--at-primary); padding: 4px 12px; border-radius: var(--at-radius-full); text-transform: uppercase;">
+                                        ${order.type}
+                                    </span>
+                                </div>
+                                <div style="display: flex; gap: 24px; font-size: 13px; color: var(--at-text-secondary); font-weight: 600;">
+                                    <span><i class="fas fa-microchip"></i> ID: #${order.id.toString().slice(-6)}</span>
+                                    <span><i class="fas fa-clock"></i> ${new Date(order.date_time).toLocaleDateString()}</span>
+                                </div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-size: 18px; font-weight: 800; color: var(--at-primary); margin-bottom: 8px;">${parseFloat(order.price).toLocaleString()} UZS</div>
+                                <div style="font-size: 12px; font-weight: 800; color: var(--at-success); text-transform: uppercase; letter-spacing: 0.05em;">
+                                    <i class="fas fa-circle" style="font-size: 8px; vertical-align: middle; margin-right: 6px;"></i>
+                                    ${order.status}
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = `
+                        <div class="at-card" style="text-align: center; padding: 80px; opacity: 0.5;">
+                            <i class="fas fa-box-open" style="font-size: 48px; margin-bottom: 24px;"></i>
+                            <p data-i18n>No active operations detected in your sector.</p>
+                        </div>
+                    `;
+                }
+            } catch (e) {
+                container.innerHTML = '<p data-i18n>Failed to sync with Operation Control.</p>';
+            }
+        }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => CommandCenter.init());
+</script>
+{% endblock %}

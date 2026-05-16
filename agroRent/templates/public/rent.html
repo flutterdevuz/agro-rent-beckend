@@ -1,0 +1,163 @@
+{% extends 'public/base.html' %}
+{% load static %}
+
+{% block title %}AgroTerra | Precision Rentals{% endblock %}
+
+{% block content %}
+<section style="background: var(--at-primary-container); padding: 120px 0; color: #fff;">
+    <div class="container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;">
+        <div>
+            <h1 class="at-heading-lg" style="color: #fff; margin-bottom: 24px;" data-i18n>On-Demand Fleet</h1>
+            <p style="font-size: 20px; opacity: 0.8;" data-i18n>Rent elite high-precision machinery with real-time
+                telemetry and full maintenance coverage.</p>
+        </div>
+        <div class="at-card"
+            style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(12px); color: #fff;">
+            <div style="display: flex; gap: 24px; align-items: center; margin-bottom: 24px;">
+                <i class="fas fa-satellite-dish" style="font-size: 32px; color: var(--at-primary-light);"></i>
+                <div>
+                    <h4 style="color: #fff;" data-i18n>Real-Time Telemetry</h4>
+                    <p style="font-size: 14px; opacity: 0.6;" data-i18n>Every rental unit is equipped with advanced GPS
+                        tracking.</p>
+                </div>
+            </div>
+            <div style="display: flex; gap: 24px; align-items: center;">
+                <i class="fas fa-shield-check" style="font-size: 32px; color: var(--at-primary-light);"></i>
+                <div>
+                    <h4 style="color: #fff;" data-i18n>Full Coverage</h4>
+                    <p style="font-size: 14px; opacity: 0.6;" data-i18n>Insurance and maintenance included in every
+                        rental contract.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section style="padding: 100px 0;">
+    <div class="container">
+        <div class="at-card" style="margin-top: -64px; margin-bottom: 80px; display: flex; gap: 24px;">
+            <div style="flex: 1; position: relative;">
+                <i class="fas fa-search"
+                    style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--at-outline);"></i>
+                <input type="text" id="rental-search" placeholder="Search by brand or specs..."
+                    style="width: 100%; padding: 18px 24px 18px 56px; border: 1px solid var(--at-border); border-radius: var(--at-radius-sm); font-size: 15px;"
+                    oninput="Rentals.debounceSearch()">
+            </div>
+            <button class="at-btn at-btn-primary" onclick="Rentals.loadRentals()" data-i18n>Search Fleet</button>
+        </div>
+
+        <div id="rental-grid"
+            style="display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 40px;">
+            <!-- Skeletons -->
+            <div class="at-card at-skeleton" style="height: 560px;"></div>
+            <div class="at-card at-skeleton" style="height: 560px;"></div>
+        </div>
+
+        <div id="rental-pagination" style="margin-top: 80px; display: flex; justify-content: center; gap: 16px;"></div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const Rentals = {
+        currentPage: 1,
+        searchTimer: null,
+
+        async init() {
+            await this.loadRentals();
+        },
+
+        debounceSearch() {
+            clearTimeout(this.searchTimer);
+            this.searchTimer = setTimeout(() => this.loadRentals(1), 500);
+        },
+
+        async loadRentals(page = 1) {
+            this.currentPage = page;
+            const search = document.getElementById('rental-search').value;
+            const container = document.getElementById('rental-grid');
+
+            container.innerHTML = '<div class="at-card at-skeleton" style="height: 560px;"></div>'.repeat(3);
+
+            try {
+                const data = await window.atApi.get('/rent/items/', { page, search });
+                const items = data.results || [];
+
+                if (items.length > 0) {
+                    container.innerHTML = items.map(item => {
+                        const img = (item.images && item.images[0]) ? item.images[0].image : 'https://via.placeholder.com/800x600';
+                        return `
+                            <div class="at-card" style="padding: 0; overflow: hidden;">
+                                <div style="height: 320px; position: relative;">
+                                    <img src="${img}" style="width: 100%; height: 100%; object-fit: cover;">
+                                    <div style="position: absolute; top: 24px; right: 24px; background: rgba(1, 45, 29, 0.8); backdrop-filter: blur(8px); padding: 8px 16px; border-radius: var(--at-radius-sm); color: #fff; display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700;">
+                                        <i class="fas fa-bolt" style="color: var(--at-warning);"></i>
+                                        <span>${item.hp} HP</span>
+                                    </div>
+                                </div>
+                                <div style="padding: 40px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
+                                        <div>
+                                            <h3 style="font-size: 24px; margin-bottom: 4px;">${item.name}</h3>
+                                            <span style="font-size: 14px; font-weight: 600; color: var(--at-text-secondary);">${item.brand}</span>
+                                        </div>
+                                        <div style="text-align: right;">
+                                            <div style="font-size: 24px; font-weight: 800; color: var(--at-primary);">${parseFloat(item.price).toLocaleString()}</div>
+                                            <span style="font-size: 11px; opacity: 0.5; font-weight: 700; text-transform: uppercase;">UZS / DAY</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 32px;">
+                                        <div style="padding: 16px; border: 1px solid var(--at-surface-variant); border-radius: var(--at-radius-sm);">
+                                            <div style="font-size: 10px; opacity: 0.5; font-weight: 800; margin-bottom: 4px;">LOCATION</div>
+                                            <div style="font-weight: 700; font-size: 13px;">${item.location_name}</div>
+                                        </div>
+                                        <div style="padding: 16px; border: 1px solid var(--at-surface-variant); border-radius: var(--at-radius-sm);">
+                                            <div style="font-size: 10px; opacity: 0.5; font-weight: 800; margin-bottom: 4px;">CONDITION</div>
+                                            <div style="font-weight: 700; font-size: 13px; color: var(--at-success);">${item.condition}</div>
+                                        </div>
+                                    </div>
+
+                                    <div style="display: flex; gap: 16px;">
+                                        <button class="at-btn at-btn-primary" style="flex: 1; justify-content: center;" onclick="window.atUI.toast('Booking request initialized')">Deploy Unit</button>
+                                        <a href="/rent/${item.id}/" class="at-btn at-btn-outline" style="width: 56px; padding: 0; justify-content: center;"><i class="fas fa-info-circle"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                    this.renderPagination(data);
+                } else {
+                    container.innerHTML = '<p style="text-align: center; grid-column: 1/-1;" data-i18n>Fleet currently deployed. Check back soon.</p>';
+                    document.getElementById('rental-pagination').innerHTML = '';
+                }
+            } catch (e) {
+                container.innerHTML = '<p style="text-align: center; grid-column: 1/-1;">Fleet Management System Offline.</p>';
+            }
+        },
+
+        renderPagination(data) {
+            const container = document.getElementById('rental-pagination');
+            if (!data.next && !data.previous) {
+                container.innerHTML = '';
+                return;
+            }
+
+            let html = '';
+            const current = parseInt(this.currentPage);
+
+            if (data.previous) {
+                html += `<button class="at-btn at-btn-outline" onclick="Rentals.loadRentals(${current - 1})"><i class="fas fa-chevron-left"></i></button>`;
+            }
+            html += `<span class="at-btn" style="cursor: default; background: var(--at-primary); color: #fff;">${current}</span>`;
+            if (data.next) {
+                html += `<button class="at-btn at-btn-outline" onclick="Rentals.loadRentals(${current + 1})"><i class="fas fa-chevron-right"></i></button>`;
+            }
+            container.innerHTML = html;
+        }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => Rentals.init());
+</script>
+{% endblock %}

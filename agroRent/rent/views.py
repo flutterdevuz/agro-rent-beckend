@@ -9,7 +9,7 @@ from users.permissions import IsRenter, IsOwnerAndRenterOrReadOnly
 class RentItemListView(generics.ListCreateAPIView):
     queryset = RentItem.objects.all().order_by('-created_at')
     serializer_class = RentItemSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = {
         'equipment_name': ['icontains'],

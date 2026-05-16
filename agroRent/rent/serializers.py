@@ -1,13 +1,14 @@
 from rest_framework import serializers
 from rent.models import RentItem, RentImage, RentOrder
 from users.serializers import UserSerializer
+from agroRent.utils.mixins import TranslatableSerializerMixin
 
 class RentImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = RentImage
         fields = ('id', 'image')
 
-class RentItemSerializer(serializers.ModelSerializer):
+class RentItemSerializer(TranslatableSerializerMixin, serializers.ModelSerializer):
     images = RentImageSerializer(many=True, read_only=True)
     owner_details = UserSerializer(source='owner', read_only=True)
     
@@ -15,6 +16,7 @@ class RentItemSerializer(serializers.ModelSerializer):
         model = RentItem
         fields = '__all__'
         read_only_fields = ('owner', 'rating', 'created_at')
+        translatable_fields = ['name', 'equipment_name', 'brand', 'condition', 'location_name']
 
 class RentItemCreateSerializer(serializers.ModelSerializer):
     uploaded_images = serializers.ListField(

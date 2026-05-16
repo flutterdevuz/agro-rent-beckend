@@ -1,0 +1,197 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join Ecosystem | AgroTerra</title>
+    <link rel="stylesheet" href="{% static 'css/agroterra.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: var(--at-bg);
+            padding: 80px 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 640px;
+            animation: authFadeUp 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        @keyframes authFadeUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 16px 20px;
+            border-radius: var(--at-radius-sm);
+            border: 1px solid var(--at-border);
+            background: #fff;
+            font-family: inherit;
+            font-size: 15px;
+            transition: var(--at-trans);
+            margin-bottom: 24px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--at-primary);
+            box-shadow: 0 0 0 4px rgba(1, 45, 29, 0.05);
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--at-text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .field-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .error-text {
+            color: var(--at-danger);
+            font-size: 12px;
+            margin-top: -18px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div style="text-align: center; margin-bottom: 56px;">
+            <a href="/" style="display: inline-flex; align-items: center; gap: 16px; text-decoration: none; margin-bottom: 32px;">
+                <div style="width: 56px; height: 56px; background: var(--at-primary); border-radius: var(--at-radius-sm); display: flex; align-items: center; justify-content: center; color: #fff;">
+                    <i class="fas fa-leaf" style="font-size: 24px;"></i>
+                </div>
+            </a>
+            <h1 style="font-size: 32px; margin-bottom: 12px;" data-i18n>Join the Ecosystem</h1>
+            <p style="color: var(--at-text-secondary);" data-i18n>Create your professional agricultural identity on AgroTerra.</p>
+        </div>
+
+        <div class="at-card">
+            <form id="at-register-form">
+                <div class="field-grid">
+                    <div>
+                        <label data-i18n>First Name</label>
+                        <input type="text" id="first_name" class="form-control" placeholder="Ali" required>
+                    </div>
+                    <div>
+                        <label data-i18n>Last Name</label>
+                        <input type="text" id="last_name" class="form-control" placeholder="Valiyev" required>
+                    </div>
+                </div>
+
+                <div>
+                    <label data-i18n>Phone Number</label>
+                    <input type="text" id="phone_number" class="form-control" placeholder="+998 (__) ___-__-__" required>
+                </div>
+
+                <div class="field-grid">
+                    <div>
+                        <label data-i18n>Region</label>
+                        <select id="region" class="form-control" required>
+                            <option value="toshkent_sh">Toshkent sh.</option>
+                            <option value="toshkent_v">Toshkent vil.</option>
+                            <option value="samarqand">Samarqand</option>
+                            <option value="fargona">Farg'ona</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label data-i18n>District</label>
+                        <input type="text" id="district" class="form-control" placeholder="Chilonzor" required>
+                    </div>
+                </div>
+
+                <div>
+                    <label data-i18n>MFY (Neighborhood)</label>
+                    <input type="text" id="mfy" class="form-control" placeholder="G'afur G'ulom" required>
+                </div>
+
+                <div class="field-grid">
+                    <div>
+                        <label data-i18n>Password</label>
+                        <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+                    </div>
+                    <div>
+                        <label data-i18n>Confirm Access</label>
+                        <input type="password" id="confirm_password" class="form-control" placeholder="••••••••" required>
+                    </div>
+                </div>
+
+                <div style="background: var(--at-bg); padding: 24px; border-radius: var(--at-radius-sm); margin-bottom: 32px; display: flex; align-items: center; gap: 16px;">
+                    <input type="checkbox" id="isRenter" style="width: 24px; height: 24px; cursor: pointer;">
+                    <label for="isRenter" style="margin: 0; cursor: pointer; text-transform: none; letter-spacing: 0; font-size: 15px; color: var(--at-primary);" data-i18n>I want to provide machinery for rent (Renter Account)</label>
+                </div>
+
+                <button type="submit" class="at-btn at-btn-primary" style="width: 100%; justify-content: center; margin-bottom: 32px;" id="at-register-btn" data-i18n>
+                    Initialize Profile
+                </button>
+
+                <div style="text-align: center; font-size: 14px;">
+                    <span style="color: var(--at-text-secondary);" data-i18n>Already have an identity?</span>
+                    <a href="/login/" style="color: var(--at-primary); font-weight: 700; text-decoration: none;" data-i18n>Sign In</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="{% static 'js/agroterra/core/api.js' %}"></script>
+    <script src="{% static 'js/agroterra/core/auth.js' %}"></script>
+    <script src="https://unpkg.com/imask"></script>
+    <script>
+        const phoneMask = IMask(document.getElementById('phone_number'), {
+            mask: '+{998} (00) 000-00-00'
+        });
+
+        document.getElementById('at-register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const password = document.getElementById('password').value;
+            const confirm = document.getElementById('confirm_password').value;
+            
+            if (password !== confirm) {
+                alert('Passwords do not match');
+                return;
+            }
+
+            const btn = document.getElementById('at-register-btn');
+            btn.disabled = true;
+            btn.innerText = 'Creating Identity...';
+
+            const data = {
+                phone_number: '+' + phoneMask.unmaskedValue,
+                first_name: document.getElementById('first_name').value,
+                last_name: document.getElementById('last_name').value,
+                region: document.getElementById('region').value,
+                district: document.getElementById('district').value,
+                mfy: document.getElementById('mfy').value,
+                password: password,
+                isRenter: document.getElementById('isRenter').checked
+            };
+
+            try {
+                await window.atAuth.register(data);
+                window.location.href = '/profile/';
+            } catch (err) {
+                console.error(err);
+                alert(Object.values(err.error || {}).flat().join(', ') || 'Provisioning failed.');
+                btn.disabled = false;
+                btn.innerText = 'Initialize Profile';
+            }
+        });
+    </script>
+</body>
+</html>

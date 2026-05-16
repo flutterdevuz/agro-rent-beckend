@@ -1,7 +1,7 @@
 from users.views import (
     LoginView, RegisterView, ResetPasswordView,
     ProfileView, UpdateProfileView, UserOrdersView,
-    UserListView, DashboardStatsView
+    UserListView, DashboardStatsView, PublicStatsView
 )
 from django.urls import path
 
@@ -14,4 +14,5 @@ urlpatterns = [
     path('orders/', UserOrdersView.as_view(), name='user-orders'),
     path('list/', UserListView.as_view(), name='user-list'),
     path('stats/', DashboardStatsView.as_view(), name='dashboard-stats'),
+    path('public-stats/', PublicStatsView.as_view(), name='public-stats'),
 ]

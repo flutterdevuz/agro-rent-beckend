@@ -1,0 +1,144 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    /* AgroTerra Primary Palette */
+    --at-primary: #012d1d;
+    --at-primary-container: #1b4332;
+    --at-primary-light: #86af99;
+    
+    /* Accent Palette */
+    --at-secondary: #a0401f;
+    --at-secondary-container: #fe8760;
+    --at-tertiary: #401c10;
+    
+    /* Neutral Palette */
+    --at-bg: #f9f9f8;
+    --at-surface: #ffffff;
+    --at-surface-variant: #e1e3e2;
+    --at-text-primary: #191c1c;
+    --at-text-secondary: #414844;
+    --at-border: #c1c8c2;
+    --at-outline: #717973;
+    
+    /* Semantic Colors */
+    --at-success: #2d6a4f;
+    --at-danger: #bc4749;
+    --at-warning: #f4a261;
+    
+    /* Spacing & Radii */
+    --at-radius-sm: 8px;
+    --at-radius-md: 16px;
+    --at-radius-lg: 24px;
+    --at-radius-full: 9999px;
+    
+    /* Shadows - Green tinted ambient shadows */
+    --at-shadow-sm: 0 4px 12px rgba(1, 45, 29, 0.04);
+    --at-shadow-md: 0 8px 24px rgba(1, 45, 29, 0.08);
+    --at-shadow-lg: 0 16px 48px rgba(1, 45, 29, 0.12);
+    
+    /* Transitions */
+    --at-trans: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--at-bg);
+    color: var(--at-text-primary);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 64px;
+}
+
+/* Typography */
+h1, h2, h3, h4 {
+    color: var(--at-primary);
+    letter-spacing: -0.03em;
+    font-weight: 800;
+}
+
+.at-heading-xl { font-size: 84px; line-height: 1; }
+.at-heading-lg { font-size: 56px; line-height: 1.1; }
+.at-heading-md { font-size: 32px; line-height: 1.2; }
+
+/* Components: Soft-Tech Buttons */
+.at-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 16px 32px;
+    border-radius: var(--at-radius-sm);
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: var(--at-trans);
+    border: none;
+    font-size: 15px;
+    letter-spacing: 0.01em;
+}
+
+.at-btn-primary {
+    background-color: var(--at-primary);
+    color: var(--at-surface);
+}
+
+.at-btn-primary:hover {
+    background-color: var(--at-primary-container);
+    transform: translateY(-2px);
+    box-shadow: var(--at-shadow-md);
+}
+
+.at-btn-secondary {
+    background-color: var(--at-secondary);
+    color: var(--at-surface);
+}
+
+.at-btn-outline {
+    background: transparent;
+    border: 1px solid var(--at-border);
+    color: var(--at-text-primary);
+}
+
+.at-btn-outline:hover {
+    border-color: var(--at-primary);
+    background: rgba(1, 45, 29, 0.02);
+}
+
+/* Components: Floating Cards */
+.at-card {
+    background: var(--at-surface);
+    border-radius: var(--at-radius-md);
+    padding: 32px;
+    border: 1px solid var(--at-surface-variant);
+    box-shadow: var(--at-shadow-sm);
+    transition: var(--at-trans);
+}
+
+.at-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--at-shadow-lg);
+}
+
+/* Skeleton Loaders */
+.at-skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e1e3e2 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-load 1.5s infinite ease-in-out;
+}
+
+@keyframes skeleton-load {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}

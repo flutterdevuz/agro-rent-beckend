@@ -23,30 +23,34 @@
             <nav>
                 <ul>
                     <li class="{% if request.path == '/admin/' %}active{% endif %}">
-                        <a href="/admin/"><i class="fas fa-chart-line"></i> Dashboard</a>
+                        <a href="/admin/"><i class="fas fa-chart-line"></i> <span data-i18n>Dashboard</span></a>
                     </li>
                     <li class="{% if '/api/admin/banners/' in request.path %}active{% endif %}">
-                        <a href="/api/admin/banners/"><i class="fas fa-ad"></i> Bannerlar</a>
+                        <a href="/api/admin/banners/"><i class="fas fa-ad"></i> <span data-i18n>Bannerlar</span></a>
                     </li>
                     <li class="{% if '/api/admin/rent/' in request.path %}active{% endif %}">
-                        <a href="/api/admin/rent/"><i class="fas fa-truck-pickup"></i> Ijara</a>
+                        <a href="/api/admin/rent/"><i class="fas fa-truck-pickup"></i> <span data-i18n>Ijara</span></a>
                     </li>
                     <li class="{% if '/api/admin/market/' in request.path %}active{% endif %}">
-                        <a href="/api/admin/market/"><i class="fas fa-store"></i> Bozor</a>
+                        <a href="/api/admin/market/"><i class="fas fa-store"></i> <span data-i18n>Bozor</span></a>
                     </li>
                     <li class="{% if '/api/admin/categories/' in request.path %}active{% endif %}">
-                        <a href="/api/admin/categories/"><i class="fas fa-tags"></i> Kategoriyalar</a>
+                        <a href="/api/admin/categories/"><i class="fas fa-tags"></i> <span
+                                data-i18n>Kategoriyalar</span></a>
                     </li>
                     <li class="{% if '/api/admin/notifications/' in request.path %}active{% endif %}">
-                        <a href="/api/admin/notifications/"><i class="fas fa-bell"></i> Bildirishnomalar</a>
+                        <a href="/api/admin/notifications/"><i class="fas fa-bell"></i> <span
+                                data-i18n>Bildirishnomalar</span></a>
                     </li>
                     <li class="{% if '/api/admin/users/' in request.path %}active{% endif %}">
-                        <a href="/api/admin/users/"><i class="fas fa-users"></i> Foydalanuvchilar</a>
+                        <a href="/api/admin/users/"><i class="fas fa-users"></i> <span
+                                data-i18n>Foydalanuvchilar</span></a>
                     </li>
                 </ul>
             </nav>
             <div class="sidebar-footer">
-                <a href="javascript:void(0)" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Chiqish</a>
+                <a href="javascript:void(0)" onclick="logout()"><i class="fas fa-sign-out-alt"></i> <span
+                        data-i18n>Chiqish</span></a>
             </div>
         </aside>
 
@@ -55,16 +59,27 @@
             <header>
                 <div class="search-bar">
                     <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Qidiruv...">
+                    <input type="text" placeholder="Qidiruv..." data-i18n-placeholder>
                 </div>
-                <div class="user-info">
-                    <div class="notif">
-                        <i class="fas fa-bell"></i>
-                        <span class="badge" id="unread-count">0</span>
+                <div style="margin-left: auto; display: flex; align-items: center; gap: 20px;">
+                    <div class="lang-selector">
+                        <select id="lang-select" onchange="changeLanguage(this.value)"
+                            style="padding: 5px 10px; border-radius: 8px; border: 1px solid #ddd; background: #fff; cursor: pointer;">
+                            <option value="uz">O'zbek</option>
+                            <option value="ru">Русский</option>
+                            <option value="en">English</option>
+                            <option value="tr">Türkçe</option>
+                        </select>
                     </div>
-                    <img id="admin-avatar" src="https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff" alt="Admin">
-                    <span id="admin-name">Administrator</span>
-                </div>
+                    <div class="user-info">
+                        <div class="notif">
+                            <i class="fas fa-bell"></i>
+                            <span class="badge" id="unread-count">0</span>
+                        </div>
+                        <img id="admin-avatar" src="https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff"
+                            alt="Admin">
+                        <span id="admin-name" data-i18n>Administrator</span>
+                    </div>
             </header>
 
             <script>
@@ -75,6 +90,10 @@
                     document.getElementById('admin-name').innerText = user.first_name + ' ' + user.last_name;
                     document.getElementById('admin-avatar').src = `https://ui-avatars.com/api/?name=${user.first_name}+${user.last_name}&background=0D8ABC&color=fff`;
                 }
+
+                // Set initial language selector value
+                const currentLang = localStorage.getItem('admin_lang') || 'uz';
+                document.getElementById('lang-select').value = currentLang;
             </script>
 
             {% block content %}{% endblock %}

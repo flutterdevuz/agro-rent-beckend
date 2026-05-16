@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Sector Not Found | AgroTerra</title>
+    <link rel="stylesheet" href="{% static 'css/agroterra.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--at-bg);
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .error-container {
+            max-width: 600px;
+            padding: 40px;
+            animation: errorFade 0.8s ease-out;
+        }
+
+        @keyframes errorFade {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .glitch-text {
+            font-size: 120px;
+            font-weight: 900;
+            color: var(--at-primary);
+            line-height: 1;
+            margin-bottom: 24px;
+            letter-spacing: -5px;
+            position: relative;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            background: var(--at-danger);
+            color: #fff;
+            border-radius: var(--at-radius-full);
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 32px;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="status-badge" data-i18n>Access Denied / Not Found</div>
+        <h1 class="glitch-text">404</h1>
+        <h2 style="font-size: 32px; margin-bottom: 16px;" data-i18n>Sector Unavailable</h2>
+        <p style="color: var(--at-text-secondary); margin-bottom: 48px; font-size: 18px;" data-i18n>
+            The coordinates you are trying to access do not exist in the AgroTerra database or your access level is insufficient for this sector.
+        </p>
+        
+        <div style="display: flex; gap: 16px; justify-content: center;">
+            <a href="/" class="at-btn at-btn-primary">
+                <i class="fas fa-home"></i> <span data-i18n>Return to Base</span>
+            </a>
+            <a href="javascript:history.back()" class="at-btn at-btn-outline">
+                <i class="fas fa-arrow-left"></i> <span data-i18n>Previous Sector</span>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

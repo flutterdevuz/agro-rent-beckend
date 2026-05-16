@@ -1,0 +1,33 @@
+{% extends 'public/base.html' %}
+{% load static %}
+
+{% block title %}Agro Rent - Biz haqimizda{% endblock %}
+
+{% block content %}
+<section class="container" style="padding: 60px 20px;">
+    <div class="card" style="padding: 40px; display: flex; gap: 40px; align-items: center; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 300px;">
+            <h2 style="font-size: 36px; margin-bottom: 20px; color: var(--primary);" data-i18n>Biz haqimizda</h2>
+            <p style="font-size: 18px; margin-bottom: 20px;" data-i18n>
+                Agro Rent - bu O'zbekistondagi fermerlar va qishloq xo'jaligi texnikasi egalarini birlashtiruvchi innovatsion platforma.
+            </p>
+            <p style="color: var(--light-text); margin-bottom: 30px;" data-i18n>
+                Bizning maqsadimiz - zamonaviy texnologiyalarni barcha uchun qulay qilish orqali mamlakatimiz qishloq xo'jaligi hosildorligini oshirish. Biz bilan siz kerakli texnikani oson topishingiz, ijaraga olishingiz yoki o'z texnikangizni sotishingiz mumkin.
+            </p>
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div>
+                    <h4 style="color: var(--primary);">1000+</h4>
+                    <p data-i18n>Foydalanuvchilar</p>
+                </div>
+                <div>
+                    <h4 style="color: var(--primary);">500+</h4>
+                    <p data-i18n>Texnikalar</p>
+                </div>
+            </div>
+        </div>
+        <div style="flex: 1; min-width: 300px;">
+            <img src="https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?auto=format&fit=crop&q=80&w=1000" alt="About Us" style="width: 100%; border-radius: 20px; box-shadow: var(--shadow);">
+        </div>
+    </div>
+</section>
+{% endblock %}

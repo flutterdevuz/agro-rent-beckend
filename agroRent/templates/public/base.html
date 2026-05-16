@@ -1,0 +1,242 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AgroTerra - Precision Agri-Tech Ecosystem{% endblock %}</title>
+    
+    <!-- AgroTerra Design System -->
+    <link rel="stylesheet" href="{% static 'css/agroterra.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+    
+    <style>
+        /* Toast Notification Styling */
+        .at-toast-container {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .at-toast {
+            background: var(--at-primary);
+            color: var(--at-surface);
+            padding: 20px 32px;
+            border-radius: var(--at-radius-md);
+            box-shadow: var(--at-shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transform: translateX(120%);
+            transition: var(--at-trans);
+            font-weight: 500;
+        }
+
+        .at-toast.show { transform: translateX(0); }
+        .at-toast-success { border-left: 6px solid var(--at-success); }
+        .at-toast-danger { border-left: 6px solid var(--at-danger); }
+
+        /* Navbar Layout */
+        .at-navbar {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            height: 100px;
+            display: flex;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--at-surface-variant);
+        }
+
+        .at-nav-links {
+            display: flex;
+            gap: 48px;
+            list-style: none;
+        }
+
+        .at-nav-link {
+            text-decoration: none;
+            color: var(--at-text-secondary);
+            font-weight: 600;
+            font-size: 15px;
+            transition: var(--at-trans);
+        }
+
+        .at-nav-link:hover, .at-nav-link.active {
+            color: var(--at-primary);
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="at-toast-container" id="toast-container"></div>
+
+    <nav class="at-navbar">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <a href="/" style="display: flex; align-items: center; gap: 16px; text-decoration: none;">
+                <div style="width: 44px; height: 44px; background: var(--at-primary); border-radius: var(--at-radius-sm); display: flex; align-items: center; justify-content: center; color: #fff;">
+                    <i class="fas fa-leaf" style="font-size: 20px;"></i>
+                </div>
+                <span style="font-size: 24px; font-weight: 800; color: var(--at-primary); letter-spacing: -0.04em;">AgroTerra</span>
+            </a>
+
+            <ul class="at-nav-links">
+                <li><a href="/" class="at-nav-link {% if request.path == '/' %}active{% endif %}" data-i18n>Platform</a></li>
+                <li><a href="/market/" class="at-nav-link {% if request.path == '/market/' %}active{% endif %}" data-i18n>Machinery</a></li>
+                <li><a href="/rent/" class="at-nav-link {% if request.path == '/rent/' %}active{% endif %}" data-i18n>Rentals</a></li>
+            </ul>
+
+            <div id="at-auth-actions" style="display: flex; gap: 24px; align-items: center;">
+                <!-- Language Selector -->
+                <div style="position: relative;" class="at-lang-dropdown">
+                    <button class="at-btn at-btn-outline" style="padding: 8px 16px; font-size: 13px; display: flex; align-items: center; gap: 8px;" onclick="atUI.toggleLang()">
+                        <i class="fas fa-globe"></i> <span id="current-lang-label">UZ</span>
+                    </button>
+                    <div id="lang-menu" style="position: absolute; top: 100%; right: 0; margin-top: 12px; background: #fff; border-radius: var(--at-radius-sm); border: 1px solid var(--at-border); box-shadow: var(--at-shadow-lg); display: none; min-width: 160px; z-index: 1000; overflow: hidden;">
+                        <a href="javascript:void(0)" onclick="atUI.setLanguage('uz')" style="display: block; padding: 12px 20px; text-decoration: none; color: var(--at-primary); font-size: 14px; font-weight: 600;" onmouseover="this.style.background='var(--at-bg)'" onmouseout="this.style.background='none'">O'zbek (Lot)</a>
+                        <a href="javascript:void(0)" onclick="atUI.setLanguage('uz_cyrl')" style="display: block; padding: 12px 20px; text-decoration: none; color: var(--at-primary); font-size: 14px; font-weight: 600;" onmouseover="this.style.background='var(--at-bg)'" onmouseout="this.style.background='none'">Ўзбек (Кир)</a>
+                        <a href="javascript:void(0)" onclick="atUI.setLanguage('ru')" style="display: block; padding: 12px 20px; text-decoration: none; color: var(--at-primary); font-size: 14px; font-weight: 600;" onmouseover="this.style.background='var(--at-bg)'" onmouseout="this.style.background='none'">Русский</a>
+                        <a href="javascript:void(0)" onclick="atUI.setLanguage('en')" style="display: block; padding: 12px 20px; text-decoration: none; color: var(--at-primary); font-size: 14px; font-weight: 600;" onmouseover="this.style.background='var(--at-bg)'" onmouseout="this.style.background='none'">English</a>
+                        <a href="javascript:void(0)" onclick="atUI.setLanguage('tr')" style="display: block; padding: 12px 20px; text-decoration: none; color: var(--at-primary); font-size: 14px; font-weight: 600;" onmouseover="this.style.background='var(--at-bg)'" onmouseout="this.style.background='none'">Türkçe</a>
+                    </div>
+                </div>
+
+                <!-- Dynamic Auth Content -->
+                <div id="at-auth-user" style="display: flex; gap: 16px; align-items: center;">
+                    <a href="/login/" class="at-btn at-btn-outline" style="padding: 12px 24px;" data-i18n>Sign In</a>
+                    <a href="/register/" class="at-btn at-btn-primary" style="padding: 12px 24px;" data-i18n>Start Free</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer style="padding: 120px 0 64px; background: var(--at-surface-variant);">
+        <div class="container">
+            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 80px; margin-bottom: 80px;">
+                <div>
+                    <h2 style="font-size: 28px; margin-bottom: 32px;">AgroTerra</h2>
+                    <p style="color: var(--at-text-secondary); font-size: 16px; max-width: 320px;" data-i18n>Precision agriculture operating system for the next generation of modern farming in Uzbekistan.</p>
+                </div>
+                <!-- Footer Sections -->
+                <div style="display: flex; flex-direction: column; gap: 16px;">
+                    <h4 style="color: var(--at-primary); margin-bottom: 8px;" data-i18n>Product</h4>
+                    <a href="/market/" class="at-nav-link" data-i18n>Machinery</a>
+                    <a href="/rent/" class="at-nav-link" data-i18n>Rentals</a>
+                </div>
+            </div>
+            <div style="padding-top: 48px; border-top: 1px solid var(--at-border); display: flex; justify-content: space-between; align-items: center;">
+                <p style="color: var(--at-text-secondary); font-size: 14px;">&copy; 2026 AgroTerra AI. <span data-i18n>All Rights Reserved.</span></p>
+                <div style="display: flex; gap: 24px;">
+                    <a href="#" style="color: var(--at-primary);"><i class="fab fa-telegram"></i></a>
+                    <a href="#" style="color: var(--at-primary);"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- AgroTerra Modular JS System -->
+    <script src="{% static 'js/agroterra/core/api.js' %}"></script>
+    <script src="{% static 'js/agroterra/core/auth.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+    
+    <script>
+        // Global UI Manager
+        const atUI = {
+            toast(message, type = 'success') {
+                const container = document.getElementById('toast-container');
+                const toast = document.createElement('div');
+                toast.className = `at-toast at-toast-${type}`;
+                toast.innerHTML = `
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+                    <span>${message}</span>
+                `;
+                container.appendChild(toast);
+                setTimeout(() => toast.classList.add('show'), 100);
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 400);
+                }, 4000);
+            },
+
+            toggleLang() {
+                const menu = document.getElementById('lang-menu');
+                menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+            },
+
+            async setLanguage(lang) {
+                localStorage.setItem('at_lang', lang);
+                window.location.reload();
+            },
+
+            async translatePage() {
+                const lang = localStorage.getItem('at_lang') || 'uz';
+                document.getElementById('current-lang-label').innerText = lang.toUpperCase().split('_')[0];
+                
+                if (lang === 'uz') return;
+
+                const elements = document.querySelectorAll('[data-i18n]');
+                const texts = Array.from(elements).map(el => el.innerText.trim()).filter(Boolean);
+                
+                if (texts.length === 0) return;
+
+                try {
+                    const translations = await window.atApi.post('/translate/', { texts });
+                    elements.forEach(el => {
+                        const original = el.innerText.trim();
+                        if (translations[original]) {
+                            el.innerText = translations[original];
+                        }
+                    });
+                } catch (e) { console.error('Translation failed', e); }
+            },
+
+            updateNavbar() {
+                if (window.atAuth.isAuthenticated()) {
+                    const user = window.atAuth.getUser();
+                    const authUser = document.getElementById('at-auth-user');
+                    if (authUser) {
+                        authUser.innerHTML = `
+                            <div style="display: flex; align-items: center; gap: 16px;">
+                                <a href="/profile/" style="text-decoration: none; display: flex; align-items: center; gap: 12px; padding: 8px 16px; background: var(--at-bg); border-radius: var(--at-radius-full);">
+                                    <div style="width: 32px; height: 32px; background: var(--at-primary); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;">
+                                        ${user.first_name[0]}
+                                    </div>
+                                    <span style="font-weight: 600; color: var(--at-primary); font-size: 14px;">${user.first_name}</span>
+                                </a>
+                                <button onclick="window.atAuth.logout()" class="at-btn at-btn-outline" style="padding: 10px 16px;">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                </button>
+                            </div>
+                        `;
+                    }
+                }
+            }
+        };
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.at-lang-dropdown')) {
+                const menu = document.getElementById('lang-menu');
+                if (menu) menu.style.display = 'none';
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            atUI.updateNavbar();
+            atUI.translatePage();
+        });
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

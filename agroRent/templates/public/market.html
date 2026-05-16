@@ -1,0 +1,166 @@
+{% extends 'public/base.html' %}
+{% load static %}
+
+{% block title %}AgroTerra Fleet | High-Precision Machinery{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<section style="background: var(--at-primary); padding: 120px 0 160px; color: #fff; text-align: center;">
+    <div class="container">
+        <h1 class="at-heading-lg" style="color: var(--at-primary-light); margin-bottom: 24px;" data-i18n>Machinery Fleet</h1>
+        <p style="font-size: 20px; opacity: 0.8; max-width: 640px; margin: 0 auto;" data-i18n>Access our global inventory of high-performance agricultural technology.</p>
+    </div>
+</section>
+
+<!-- Filter & Content -->
+<section style="margin-top: -80px; padding-bottom: 120px;">
+    <div class="container">
+        <!-- Floating Filter Bar -->
+        <div class="at-card" style="display: flex; gap: 24px; align-items: center; margin-bottom: 64px; flex-wrap: wrap; background: rgba(255,255,255,0.95); backdrop-filter: blur(16px);">
+            <div style="flex: 1; min-width: 300px; position: relative;">
+                <i class="fas fa-search" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--at-outline);"></i>
+                <input type="text" id="machinery-search" placeholder="Search fleet (e.g. John Deere, Harvester)..." style="width: 100%; padding: 18px 24px 18px 56px; border: 1px solid var(--at-border); border-radius: var(--at-radius-sm); font-family: inherit; font-size: 15px;" oninput="Machinery.debounceSearch()">
+            </div>
+            
+            <select id="machinery-category" style="padding: 18px 24px; border: 1px solid var(--at-border); border-radius: var(--at-radius-sm); background: #fff; font-weight: 600; min-width: 220px;" onchange="Machinery.loadFleet()">
+                <option value="" data-i18n>All Technology</option>
+            </select>
+
+            <button class="at-btn at-btn-primary" onclick="Machinery.loadFleet()" data-i18n>
+                <i class="fas fa-filter"></i> Apply Filters
+            </button>
+        </div>
+
+        <!-- Fleet Grid -->
+        <div id="fleet-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 40px;">
+            <!-- Skeleton items -->
+            <div class="at-card at-skeleton" style="height: 520px;"></div>
+            <div class="at-card at-skeleton" style="height: 520px;"></div>
+            <div class="at-card at-skeleton" style="height: 520px;"></div>
+        </div>
+
+        <!-- Pagination -->
+        <div id="fleet-pagination" style="margin-top: 80px; display: flex; justify-content: center; gap: 16px;"></div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const Machinery = {
+        currentPage: 1,
+        searchTimer: null,
+
+        async init() {
+            await Promise.all([
+                this.loadCategories(),
+                this.loadFleet()
+            ]);
+        },
+
+        async loadCategories() {
+            try {
+                const data = await window.atApi.get('/market/categories/');
+                const items = data.results || data || [];
+                const select = document.getElementById('machinery-category');
+                items.forEach(cat => {
+                    const opt = document.createElement('option');
+                    opt.value = cat.id;
+                    opt.innerText = cat.name;
+                    select.appendChild(opt);
+                });
+            } catch (e) {}
+        },
+
+        debounceSearch() {
+            clearTimeout(this.searchTimer);
+            this.searchTimer = setTimeout(() => this.loadFleet(1), 500);
+        },
+
+        async loadFleet(page = 1) {
+            this.currentPage = page;
+            const search = document.getElementById('machinery-search').value;
+            const category = document.getElementById('machinery-category').value;
+            const container = document.getElementById('fleet-grid');
+
+            // Show Skeletons
+            container.innerHTML = '<div class="at-card at-skeleton" style="height: 520px;"></div>'.repeat(3);
+
+            try {
+                const params = { page, search, category };
+                const data = await window.atApi.get('/market/items/', params);
+                const items = data.results || [];
+
+                if (items.length > 0) {
+                    container.innerHTML = items.map(item => `
+                        <div class="at-card" style="padding: 0; overflow: hidden;">
+                            <div style="height: 300px; position: relative;">
+                                <img src="${item.image || 'https://via.placeholder.com/800x600'}" style="width: 100%; height: 100%; object-fit: cover;">
+                                ${item.has_delivery ? `
+                                    <div style="position: absolute; bottom: 24px; left: 24px; background: var(--at-success); color: #fff; padding: 6px 16px; border-radius: var(--at-radius-full); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;">
+                                        Logistics Available
+                                    </div>
+                                ` : ''}
+                            </div>
+                            <div style="padding: 40px;">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+                                    <div>
+                                        <h3 style="font-size: 24px; margin-bottom: 4px;">${item.name}</h3>
+                                        <span style="font-size: 13px; color: var(--at-text-secondary); font-weight: 600;">
+                                            <i class="fas fa-tag"></i> ${item.category_name || 'Machinery'}
+                                        </span>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <div style="font-size: 24px; font-weight: 800; color: var(--at-primary);">${parseFloat(item.price).toLocaleString()}</div>
+                                        <span style="font-size: 11px; opacity: 0.5; font-weight: 700; text-transform: uppercase;">UZS / UNIT</span>
+                                    </div>
+                                </div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px; background: var(--at-bg); padding: 20px; border-radius: var(--at-radius-sm);">
+                                    <div>
+                                        <div style="font-size: 11px; opacity: 0.5; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">Location</div>
+                                        <div style="font-weight: 700; font-size: 14px;">${item.location}</div>
+                                    </div>
+                                    <div>
+                                        <div style="font-size: 11px; opacity: 0.5; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">Condition</div>
+                                        <div style="font-weight: 700; font-size: 14px; color: var(--at-success);">${item.condition}</div>
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 16px;">
+                                    <button class="at-btn at-btn-primary" style="flex: 1; justify-content: center;" onclick="window.atUI.toast('Order inquiry sent to fleet manager')">Secure Unit</button>
+                                    <button class="at-btn at-btn-outline" style="width: 56px; padding: 0; justify-content: center;"><i class="far fa-heart"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                    this.renderPagination(data);
+                } else {
+                    container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 120px;" data-i18n>Our fleet does not match your search criteria.</div>';
+                    document.getElementById('fleet-pagination').innerHTML = '';
+                }
+            } catch (e) {
+                container.innerHTML = '<p style="text-align: center; grid-column: 1/-1;">Connection to Fleet Engine lost.</p>';
+            }
+        },
+
+        renderPagination(data) {
+            const container = document.getElementById('fleet-pagination');
+            if (!data.next && !data.previous) {
+                container.innerHTML = '';
+                return;
+            }
+            
+            let html = '';
+            if (data.previous) {
+                html += `<button class="at-btn at-btn-outline" onclick="Machinery.loadFleet(${this.currentPage - 1})"><i class="fas fa-chevron-left"></i></button>`;
+            }
+            html += `<span class="at-btn" style="cursor: default; background: var(--at-primary); color: #fff;">${this.currentPage}</span>`;
+            if (data.next) {
+                html += `<button class="at-btn at-btn-outline" onclick="Machinery.loadFleet(${this.currentPage + 1})"><i class="fas fa-chevron-right"></i></button>`;
+            }
+            container.innerHTML = html;
+        }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => Machinery.init());
+</script>
+{% endblock %}

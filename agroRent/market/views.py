@@ -8,7 +8,7 @@ from users.permissions import IsRenter, IsOwnerAndRenterOrReadOnly
 class CategoryListView(generics.ListCreateAPIView):
     queryset = Category.objects.all().order_by('-created_at')
     serializer_class = CategorySerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.all()
@@ -29,7 +29,7 @@ class MarketItemListView(generics.ListCreateAPIView):
     }
     search_fields = ['name', 'brand', 'model', 'description']
     ordering_fields = ['price', 'rating', 'created_at', 'likes_count']
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def perform_create(self, serializer):
         serializer.save(seller=self.request.user)

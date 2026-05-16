@@ -1,0 +1,276 @@
+{% extends 'public/base.html' %}
+{% load static %}
+
+{% block title %}Machinery Detail | AgroTerra{% endblock %}
+
+{% block content %}
+<section style="padding: 80px 0;">
+    <div class="container">
+        <!-- Breadcrumbs -->
+        <div style="display: flex; gap: 12px; font-size: 14px; font-weight: 600; color: var(--at-text-secondary); margin-bottom: 40px;">
+            <a href="/" style="color: inherit; text-decoration: none;">Platform</a>
+            <i class="fas fa-chevron-right" style="font-size: 10px; margin-top: 4px;"></i>
+            <a href="/rent/" style="color: inherit; text-decoration: none;">Fleet</a>
+            <i class="fas fa-chevron-right" style="font-size: 10px; margin-top: 4px;"></i>
+            <span style="color: var(--at-primary);" id="breadcrumb-name">Unit Detail</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 64px;">
+            <!-- Media & Details -->
+            <div>
+                <!-- Swiper Gallery -->
+                <div class="swiper detailSwiper" style="width: 100%; height: 500px; border-radius: var(--at-radius-md); margin-bottom: 40px; background: var(--at-surface-variant);">
+                    <div class="swiper-wrapper" id="gallery-container">
+                        <!-- Skeletons -->
+                    </div>
+                    <div class="swiper-button-next" style="color: var(--at-primary);"></div>
+                    <div class="swiper-button-prev" style="color: var(--at-primary);"></div>
+                    <div class="swiper-pagination"></div>
+                </div>
+
+                <div class="at-card" style="padding: 48px;">
+                    <h1 id="detail-name" class="at-heading-md" style="margin-bottom: 16px;">Yuklanmoqda...</h1>
+                    <div style="display: flex; gap: 24px; margin-bottom: 32px; font-weight: 600; font-size: 14px; color: var(--at-text-secondary);">
+                        <span><i class="fas fa-tractor" style="color: var(--at-primary);"></i> <span id="detail-brand">---</span></span>
+                        <span><i class="fas fa-location-dot" style="color: var(--at-primary);"></i> <span id="detail-location">---</span></span>
+                        <span><i class="fas fa-star" style="color: var(--at-warning);"></i> <span id="detail-rating">---</span></span>
+                    </div>
+
+                    <h3 style="font-size: 18px; margin-bottom: 16px;" data-i18n>Technical Specifications</h3>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 48px;">
+                        <div style="background: var(--at-bg); padding: 20px; border-radius: var(--at-radius-sm);">
+                            <div style="font-size: 11px; font-weight: 800; opacity: 0.5; margin-bottom: 4px;">POWER OUTPUT</div>
+                            <div style="font-size: 18px; font-weight: 800; color: var(--at-primary);" id="detail-hp">---</div>
+                        </div>
+                        <div style="background: var(--at-bg); padding: 20px; border-radius: var(--at-radius-sm);">
+                            <div style="font-size: 11px; font-weight: 800; opacity: 0.5; margin-bottom: 4px;">CONDITION</div>
+                            <div style="font-size: 18px; font-weight: 800; color: var(--at-success);" id="detail-condition">---</div>
+                        </div>
+                        <div style="background: var(--at-bg); padding: 20px; border-radius: var(--at-radius-sm);">
+                            <div style="font-size: 11px; font-weight: 800; opacity: 0.5; margin-bottom: 4px;">FUEL TYPE</div>
+                            <div style="font-size: 18px; font-weight: 800; color: var(--at-primary);">Diesel / Bio</div>
+                        </div>
+                    </div>
+
+                    <h3 style="font-size: 18px; margin-bottom: 16px;" data-i18n>Mission Description</h3>
+                    <p id="detail-description" style="color: var(--at-text-secondary); line-height: 1.8; margin-bottom: 32px;">---</p>
+                </div>
+            </div>
+
+            <!-- Booking Sidebar -->
+            <div style="position: sticky; top: 140px;">
+                <div class="at-card" style="padding: 40px; border: 2px solid var(--at-primary);">
+                    <div style="margin-bottom: 32px;">
+                        <span style="font-size: 14px; font-weight: 700; opacity: 0.5; display: block; margin-bottom: 4px;">RENTAL RATE</span>
+                        <div style="font-size: 36px; font-weight: 800; color: var(--at-primary);">
+                            <span id="detail-price">0</span>
+                            <span style="font-size: 16px; opacity: 0.5;">UZS / DAY</span>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 20px; margin-bottom: 32px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 15px;">
+                            <span data-i18n>Operational Support</span>
+                            <b style="color: var(--at-success);">Included</b>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 15px;">
+                            <span data-i18n>Insurance Protection</span>
+                            <b style="color: var(--at-success);">Included</b>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 15px;">
+                            <span data-i18n>Telemetry Access</span>
+                            <b style="color: var(--at-success);">Standard</b>
+                        </div>
+                    </div>
+
+                    <button class="at-btn at-btn-primary" style="width: 100%; justify-content: center; padding: 20px;" onclick="RentDetail.openBookingModal()">
+                        Deploy Machinery
+                    </button>
+                    
+                    <p style="text-align: center; font-size: 12px; margin-top: 20px; color: var(--at-text-secondary);" data-i18n>
+                        Professional contract will be generated upon deployment request.
+                    </p>
+                </div>
+
+                <!-- Telemetry Card -->
+                <div class="at-card" style="margin-top: 24px; padding: 24px; background: var(--at-primary); color: #fff; border: none;">
+                    <div style="display: flex; gap: 16px; align-items: center;">
+                        <div style="width: 12px; height: 12px; background: #00ff00; border-radius: 50%; box-shadow: 0 0 10px #00ff00; animation: pulse 2s infinite;"></div>
+                        <span style="font-weight: 700; font-size: 13px; letter-spacing: 0.05em;">TELEMETRY ACTIVE</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Booking Modal -->
+<div id="booking-modal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(1, 45, 29, 0.4); backdrop-filter: blur(8px); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px;">
+    <div class="at-card" style="max-width: 540px; width: 100%; position: relative;">
+        <button onclick="RentDetail.closeBookingModal()" style="position: absolute; right: 32px; top: 32px; background: none; border: none; font-size: 20px; cursor: pointer; color: var(--at-outline);">
+            <i class="fas fa-times"></i>
+        </button>
+        
+        <h2 class="at-heading-md" style="margin-bottom: 12px;" data-i18n>Deploy Unit</h2>
+        <p style="color: var(--at-text-secondary); margin-bottom: 40px;" data-i18n>Provide operational details for machinery deployment.</p>
+        
+        <form id="booking-form">
+            <div style="margin-bottom: 24px;">
+                <label data-i18n>Deployment Location</label>
+                <input type="text" id="order-location" class="form-control" style="margin-bottom: 0;" placeholder="Enter delivery address" required>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+                <div>
+                    <label data-i18n>Land Area (Hectares)</label>
+                    <input type="text" id="order-land-area" class="form-control" style="margin-bottom: 0;" placeholder="e.g. 50" required>
+                </div>
+                <div>
+                    <label data-i18n>Operations Date</label>
+                    <input type="datetime-local" id="order-date" class="form-control" style="margin-bottom: 0;" required>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 32px;">
+                <label data-i18n>Operational Comments</label>
+                <textarea id="order-comment" class="form-control" style="margin-bottom: 0; height: 120px; resize: none;" placeholder="Special instructions for the operator..."></textarea>
+            </div>
+
+            <button type="submit" class="at-btn at-btn-primary" style="width: 100%; justify-content: center;" id="confirm-booking-btn" data-i18n>Confirm Deployment</button>
+        </form>
+    </div>
+</div>
+
+<style>
+    @keyframes pulse {
+        0% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.5; transform: scale(1.2); }
+        100% { opacity: 1; transform: scale(1); }
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 16px 20px;
+        border-radius: var(--at-radius-sm);
+        border: 1px solid var(--at-border);
+        background: #fff;
+        font-family: inherit;
+        font-size: 15px;
+        transition: var(--at-trans);
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--at-primary);
+        box-shadow: 0 0 0 4px rgba(1, 45, 29, 0.05);
+    }
+
+    label {
+        display: block;
+        font-size: 11px;
+        font-weight: 800;
+        color: var(--at-text-secondary);
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const RentDetail = {
+        itemId: window.location.pathname.split('/').filter(Boolean).pop(),
+
+        async init() {
+            await this.loadData();
+            this.bindEvents();
+        },
+
+        bindEvents() {
+            document.getElementById('booking-form').addEventListener('submit', (e) => this.handleBooking(e));
+        },
+
+        async loadData() {
+            try {
+                const item = await window.atApi.get(`/rent/items/${this.itemId}/`);
+                
+                // Update UI
+                document.getElementById('breadcrumb-name').innerText = item.name;
+                document.getElementById('detail-name').innerText = item.name;
+                document.getElementById('detail-brand').innerText = item.brand;
+                document.getElementById('detail-location').innerText = item.location_name;
+                document.getElementById('detail-rating').innerText = item.rating || '4.9';
+                document.getElementById('detail-hp').innerText = `${item.hp} HP`;
+                document.getElementById('detail-condition').innerText = item.condition;
+                document.getElementById('detail-description').innerText = item.description || 'Enterprise-grade machinery optimized for precision agricultural operations.';
+                document.getElementById('detail-price').innerText = parseFloat(item.price).toLocaleString();
+
+                // Gallery
+                const gallery = document.getElementById('gallery-container');
+                if (item.images && item.images.length > 0) {
+                    gallery.innerHTML = item.images.map(img => `
+                        <div class="swiper-slide">
+                            <img src="${img.image}" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                    `).join('');
+                } else {
+                    gallery.innerHTML = '<div class="swiper-slide"><img src="https://via.placeholder.com/800x500" style="width: 100%; height: 100%; object-fit: cover;"></div>';
+                }
+
+                new Swiper(".detailSwiper", {
+                    loop: true,
+                    observer: true,
+                    observeParents: true,
+                    pagination: { el: ".swiper-pagination", clickable: true },
+                    navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
+                });
+
+            } catch (e) {
+                window.atUI.toast('Failed to load unit telemetry', 'danger');
+            }
+        },
+
+        openBookingModal() {
+            if (!window.atAuth.isAuthenticated()) {
+                window.atUI.toast('Please sign in to initialize deployment', 'danger');
+                setTimeout(() => window.location.href = '/login/', 1500);
+                return;
+            }
+            document.getElementById('booking-modal').style.display = 'flex';
+        },
+
+        closeBookingModal() {
+            document.getElementById('booking-modal').style.display = 'none';
+        },
+
+        async handleBooking(e) {
+            e.preventDefault();
+            const btn = document.getElementById('confirm-booking-btn');
+            btn.disabled = true;
+            btn.innerText = 'Provisioning...';
+
+            const data = {
+                rent_item: this.itemId,
+                location: document.getElementById('order-location').value,
+                land_area: document.getElementById('order-land-area').value,
+                order_date: document.getElementById('order-date').value,
+                comment: document.getElementById('order-comment').value
+            };
+
+            try {
+                await window.atApi.post('/rent/orders/create/', data);
+                window.atUI.toast('Deployment successful! Unit is being provisioned.');
+                this.closeBookingModal();
+                setTimeout(() => window.location.href = '/profile/', 2000);
+            } catch (err) {
+                window.atUI.toast(Object.values(err.error || {}).flat().join(', ') || 'Provisioning failed.', 'danger');
+                btn.disabled = false;
+                btn.innerText = 'Confirm Deployment';
+            }
+        }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => RentDetail.init());
+</script>
+{% endblock %}

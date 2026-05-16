@@ -2,7 +2,7 @@ from rest_framework import status, generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login
 from rest_framework_simplejwt.tokens import RefreshToken
 from users.serializers import (
     LoginSerializer, RegisterSerializer, ResetPasswordSerializer, 
@@ -47,14 +47,18 @@ class LoginView(APIView):
             password = serializer.validated_data['password']
             user = authenticate(phone_number=phone_number, password=password)
             if user:
+                login(request, user)  # Create Django Session for decorators
                 refresh = RefreshToken.for_user(user)
                 return Response({
                     'refresh': str(refresh),
                     'access': str(refresh.access_token),
                     'user': UserSerializer(user).data
                 })
-            return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Username or password is not correct'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Flatten serializer errors to a single string for simplicity or keep as object
+        error_msg = serializer.errors
+        return Response({'error': error_msg}, status=status.HTTP_400_BAD_REQUEST)
 
 class ResetPasswordView(generics.CreateAPIView):
     serializer_class = ResetPasswordSerializer
@@ -185,3 +189,12 @@ class DashboardStatsView(APIView):
             "total_revenue": float(rent_revenue + market_revenue),
         })
 
+class PublicStatsView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        return Response({
+            "users_count": User.objects.count(),
+            "orders_count": RentOrder.objects.count() + MarketOrder.objects.count(),
+            "equipment_count": RentItem.objects.count() + MarketItem.objects.count(),
+        })

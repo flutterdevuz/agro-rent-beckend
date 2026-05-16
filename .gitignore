@@ -1,18 +1,30 @@
-# Django
-*.pyc
+# Python
 __pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Django
+*.log
+*.pot
+*.pyc
 db.sqlite3
-db.sqlite3-journal
-media/
 staticfiles/
+media/
 
-# Environments
-venv/
+# Environment
 .env
+venv/
+.venv/
+env/
 
-# Project specific
-agroRent/firebase-key.json
-
-# IDEs
+# IDE
 .vscode/
 .idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,13 +1,15 @@
 from rest_framework import serializers
 from market.models import Category, MarketItem, MarketOrder
 from users.serializers import UserSerializer
+from agroRent.utils.mixins import TranslatableSerializerMixin
 
-class CategorySerializer(serializers.ModelSerializer):
+class CategorySerializer(TranslatableSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ('id', 'name', 'created_at')
+        translatable_fields = ['name']
 
-class MarketItemSerializer(serializers.ModelSerializer):
+class MarketItemSerializer(TranslatableSerializerMixin, serializers.ModelSerializer):
     category_name = serializers.CharField(source='category.name', read_only=True)
     seller_details = UserSerializer(source='seller', read_only=True)
 
@@ -15,6 +17,7 @@ class MarketItemSerializer(serializers.ModelSerializer):
         model = MarketItem
         fields = '__all__'
         read_only_fields = ('seller', 'rating', 'likes_count', 'created_at')
+        translatable_fields = ['name', 'location', 'condition', 'brand', 'model', 'warranty', 'description']
 
 class MarketOrderSerializer(serializers.ModelSerializer):
     class Meta:
