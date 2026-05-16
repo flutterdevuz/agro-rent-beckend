@@ -42,17 +42,17 @@ urlpatterns = [
     # Swagger UI:
     path('api/schema/', SpectacularAPIView.as_view(
         permission_classes=[IsAdminUser],
-        authentication_classes=[BasicAuthentication, SessionAuthentication]
+        authentication_classes=[BasicAuthentication]
     ), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(
         url_name='schema',
         permission_classes=[IsAdminUser],
-        authentication_classes=[BasicAuthentication, SessionAuthentication]
+        authentication_classes=[BasicAuthentication]
     ), name='swagger-ui'),
     path('api/redoc/', SpectacularRedocView.as_view(
         url_name='schema',
         permission_classes=[IsAdminUser],
-        authentication_classes=[BasicAuthentication, SessionAuthentication]
+        authentication_classes=[BasicAuthentication]
     ), name='redoc'),
 ]
 
