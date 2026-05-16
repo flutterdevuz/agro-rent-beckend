@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}Foydalanuvchilar - Agro Rent Admin{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="card-header">
+        <h2>Foydalanuvchilar boshqaruvi</h2>
+        <a href="/django-admin/users/user/add/" class="btn-primary"><i class="fas fa-plus"></i> Yangi qo'shish</a>
+    </div>
+    
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Ism</th>
+                    <th>Telefon</th>
+                    <th>Viloyat</th>
+                    <th>Reyting</th>
+                    <th>Amallar</th>
+                </tr>
+            </thead>
+            <tbody id="data-body">
+                <tr><td colspan="5" style="text-align:center">Yuklanmoqda...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+async function loadData() {
+    try {
+        const response = await fetch('/api/users/list/');
+        const data = await response.json();
+        const body = document.getElementById('data-body');
+        body.innerHTML = '';
+        const items = data.results || data;
+        items.forEach(item => {
+            body.innerHTML += `
+                <tr>
+                    <td><strong>${item.first_name} ${item.last_name}</strong></td>
+                    <td>${item.phone_number}</td>
+                    <td>${item.region}</td>
+                    <td><i class="fas fa-star" style="color:#f1c40f"></i> ${item.rating}</td>
+                    <td>
+                        <a href="/django-admin/users/user/${item.id}/change/" class="btn-action btn-edit"><i class="fas fa-edit"></i></a>
+                        <button onclick="deleteUser('${item.id}')" class="btn-action btn-delete" style="color: #ef4444; background: #fee2e2; border: none; cursor: pointer;"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `;
+        });
+    } catch (error) {
+        console.error('Error loading data:', error);
+    }
+}
+
+async function deleteUser(id) {
+    if (!confirm("Haqiqatan ham ushbu foydalanuvchini o'chirmoqchimisiz?")) return;
+    try {
+        const response = await fetch(`/api/users/list/${id}/`, {
+            method: 'DELETE',
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+        });
+        if (response.ok) { loadData(); }
+        else { alert("O'chirishda xatolik yuz berdi!"); }
+    } catch (error) { console.error(error); }
+}
+
+loadData();
+</script>
+{% endblock %}

@@ -1,0 +1,216 @@
+{% extends 'base.html' %}
+
+{% block title %}Bozor - Agro Rent Admin{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="card-header">
+        <h2>Bozor mahsulotlari</h2>
+        <div class="header-actions">
+            <button class="btn-secondary" onclick="openCategoryModal()"><i class="fas fa-tags"></i> Kategoriya qo'shish</button>
+            <button class="btn-primary" onclick="openModal()"><i class="fas fa-plus"></i> Mahsulot qo'shish</button>
+        </div>
+    </div>
+    
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nomi</th>
+                    <th>Kategoriya</th>
+                    <th>Narxi</th>
+                    <th>Sotuvchi</th>
+                    <th>Status</th>
+                    <th>Amallar</th>
+                </tr>
+            </thead>
+            <tbody id="data-body">
+                <tr><td colspan="6" style="text-align:center">Yuklanmoqda...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Category Add Modal -->
+<div id="categoryModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Yangi Kategoriya qo'shish</h3>
+            <span class="close" onclick="closeCategoryModal()">&times;</span>
+        </div>
+        <form id="categoryForm">
+            <div class="form-group">
+                <label>Kategoriya nomi</label>
+                <input type="text" name="name" required>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeCategoryModal()">Bekor qilish</button>
+                <button type="submit" class="btn-primary">Saqlash</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Add Modal -->
+<div id="addModal" class="modal">
+    <div class="modal-content" style="width: 700px;">
+        <div class="modal-header">
+            <h3>Yangi Bozor mahsuloti</h3>
+            <span class="close" onclick="closeModal()">&times;</span>
+        </div>
+        <form id="addForm">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group">
+                    <label>Nomi</label>
+                    <input type="text" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label>Kategoriya</label>
+                    <select name="category" id="category-select" required>
+                        <option value="">Yuklanmoqda...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Narxi</label>
+                    <input type="number" name="price" required>
+                </div>
+                <div class="form-group">
+                    <label>Brend</label>
+                    <input type="text" name="brand" required>
+                </div>
+                <div class="form-group">
+                    <label>Model</label>
+                    <input type="text" name="model" required>
+                </div>
+                <div class="form-group">
+                    <label>Holati</label>
+                    <input type="text" name="condition" required>
+                </div>
+                <div class="form-group">
+                    <label>Joylashuv</label>
+                    <input type="text" name="location" required>
+                </div>
+                <div class="form-group">
+                    <label>Telefon raqam</label>
+                    <input type="text" name="phone_number" required>
+                </div>
+                <div class="form-group">
+                    <label>Yetkazib berish</label>
+                    <select name="has_delivery">
+                        <option value="true">Ha</option>
+                        <option value="false">Yo'q</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Kafolat</label>
+                    <input type="text" name="warranty">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Tavsif</label>
+                <textarea name="description" required style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #ddd;"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeModal()">Bekor qilish</button>
+                <button type="submit" class="btn-primary">Saqlash</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+async function loadData() {
+    try {
+        const response = await fetch('/api/market/items/');
+        const data = await response.json();
+        const body = document.getElementById('data-body');
+        body.innerHTML = '';
+        const items = data.results || data;
+        items.forEach(item => {
+            body.innerHTML += `
+                <tr>
+                    <td><strong>${item.name}</strong><br><small>${item.brand}</small></td>
+                    <td>${item.category_name}</td>
+                    <td>${item.price} so'm</td>
+                    <td>${item.seller_details.first_name} ${item.seller_details.last_name}</td>
+                    <td>${item.condition}</td>
+                    <td>
+                        <a href="/django-admin/market/marketitem/${item.id}/change/" class="btn-action"><i class="fas fa-edit"></i></a>
+                        <button onclick="deleteItem('${item.id}')" class="btn-action btn-delete" style="color: #ef4444; background: #fee2e2; border: none; cursor: pointer;"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `;
+        });
+    } catch (error) { console.error(error); }
+}
+
+async function deleteItem(id) {
+    if (!confirm("Haqiqatan ham ushbu mahsulotni o'chirmoqchimisiz?")) return;
+    try {
+        const response = await fetch(`/api/market/items/${id}/`, {
+            method: 'DELETE',
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+        });
+        if (response.ok) { loadData(); }
+        else { alert("O'chirishda xatolik yuz berdi!"); }
+    } catch (error) { console.error(error); }
+}
+
+async function loadCategories() {
+    try {
+        const response = await fetch('/api/market/categories/');
+        const data = await response.json();
+        const select = document.getElementById('category-select');
+        select.innerHTML = '';
+        data.forEach(cat => {
+            select.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
+        });
+    } catch (error) { console.error(error); }
+}
+
+function openModal() { 
+    document.getElementById('addModal').style.display = 'block'; 
+    loadCategories();
+}
+function closeModal() { document.getElementById('addModal').style.display = 'none'; }
+
+function openCategoryModal() { document.getElementById('categoryModal').style.display = 'block'; }
+function closeCategoryModal() { document.getElementById('categoryModal').style.display = 'none'; }
+
+document.getElementById('categoryForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    try {
+        const response = await fetch('/api/market/categories/', {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+        });
+        if (response.ok) {
+            closeCategoryModal();
+            loadCategories(); // Refresh category list for the product modal
+            e.target.reset();
+        } else { alert('Xatolik!'); }
+    } catch (error) { console.error(error); }
+};
+
+document.getElementById('addForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    try {
+        const response = await fetch('/api/market/items/', {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+        });
+        if (response.ok) { closeModal(); loadData(); e.target.reset(); }
+        else { alert('Xatolik!'); }
+    } catch (error) { console.error(error); }
+};
+
+loadData();
+</script>
+{% endblock %}

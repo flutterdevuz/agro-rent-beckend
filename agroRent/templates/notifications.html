@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+
+{% block title %}Bildirishnomalar - Agro Rent Admin{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="card-header">
+        <h2>Bildirishnomalar</h2>
+        <div class="header-actions">
+            <button class="btn-secondary" onclick="openCategoryModal()"><i class="fas fa-tags"></i> Kategoriya qo'shish</button>
+            <button class="btn-primary" onclick="openModal()"><i class="fas fa-paper-plane"></i> Xabar yuborish</button>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Sarlavha</th>
+                    <th>Foydalanuvchi</th>
+                    <th>Kategoriya</th>
+                    <th>Status</th>
+                    <th>O'qilgan</th>
+                    <th>Vaqti</th>
+                    <th>Amallar</th>
+                </tr>
+            </thead>
+            <tbody id="data-body">
+                <tr>
+                    <td colspan="7" style="text-align:center">Yuklanmoqda...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Category Add Modal -->
+<div id="categoryModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Yangi Kategoriya qo'shish</h3>
+            <span class="close" onclick="closeCategoryModal()">&times;</span>
+        </div>
+        <form id="categoryForm">
+            <div class="form-group">
+                <label>Kategoriya nomi</label>
+                <input type="text" name="name" required>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeCategoryModal()">Bekor qilish</button>
+                <button type="submit" class="btn-primary">Saqlash</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Add Modal -->
+<div id="addModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Xabar yuborish</h3>
+            <span class="close" onclick="closeModal()">&times;</span>
+        </div>
+        <form id="addForm">
+            <div class="form-group">
+                <label>Foydalanuvchi</label>
+                <select name="user" id="userSelect" required>
+                    <option value="">Foydalanuvchini tanlang...</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Kategoriya</label>
+                <select name="category" id="categorySelect" required>
+                    <option value="">Kategoriyani tanlang...</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Sarlavha</label>
+                <input type="text" name="title" required>
+            </div>
+            <div class="form-group">
+                <label>Xabar matni (Izoh)</label>
+                <textarea name="description" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+                <label>Qo'shimcha status (ixtiyoriy)</label>
+                <input type="text" name="status">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeModal()">Bekor qilish</button>
+                <button type="submit" class="btn-primary">Yuborish</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    async function loadData() {
+        try {
+            const response = await fetch('/api/notifications/list/');
+            const data = await response.json();
+            const body = document.getElementById('data-body');
+            body.innerHTML = '';
+            const items = data.results || data;
+            items.forEach(item => {
+                const date = new Date(item.created_at).toLocaleString();
+                body.innerHTML += `
+                <tr>
+                    <td><strong>${item.title}</strong><br><small>${item.description}</small></td>
+                    <td>Foydalanuvchi ID: <small>${item.user.substring(0,8)}...</small></td>
+                    <td>${item.category_name || '-'}</td>
+                    <td>${item.status || '-'}</td>
+                    <td><span class="status-badge ${item.is_read ? 'read' : 'unread'}">${item.is_read ? 'O\'qilgan' : 'O\'qilmagan'}</span></td>
+                    <td>${date}</td>
+                    <td>
+                        <button onclick="deleteNotification('${item.id}')" class="btn-action btn-delete" style="color: #ef4444; background: #fee2e2; border: none; cursor: pointer;"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `;
+            });
+        } catch (error) {
+            console.error('Error loading data:', error);
+        }
+    }
+
+    async function loadUsersAndCategories() {
+        try {
+            const usersRes = await fetch('/api/users/list/');
+            const usersData = await usersRes.json();
+            const users = usersData.results || usersData;
+            const userSelect = document.getElementById('userSelect');
+            userSelect.innerHTML = '<option value="">Foydalanuvchini tanlang...</option>';
+            users.forEach(u => {
+                userSelect.innerHTML += `<option value="${u.id}">${u.first_name} ${u.last_name} (${u.phone_number})</option>`;
+            });
+
+            const catRes = await fetch('/api/notifications/categories/');
+            const catData = await catRes.json();
+            const categories = catData.results || catData;
+            const catSelect = document.getElementById('categorySelect');
+            catSelect.innerHTML = '<option value="">Kategoriyani tanlang...</option>';
+            categories.forEach(c => {
+                catSelect.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+            });
+        } catch (error) { console.error('Error loading selects:', error); }
+    }
+
+    async function deleteNotification(id) {
+        if (!confirm("Haqiqatan ham ushbu bildirishnomani o'chirmoqchimisiz?")) return;
+        try {
+            const response = await fetch(`/notifications/list/${id}/`, {
+                method: 'DELETE',
+                headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+            });
+            if (response.ok) { loadData(); }
+            else { alert("O'chirishda xatolik yuz berdi!"); }
+        } catch (error) { console.error(error); }
+    }
+
+    function openModal() {
+        document.getElementById('addModal').style.display = 'block';
+        loadUsersAndCategories();
+    }
+    
+    function closeModal() {
+        document.getElementById('addModal').style.display = 'none';
+    }
+
+    function openCategoryModal() { document.getElementById('categoryModal').style.display = 'block'; }
+    function closeCategoryModal() { document.getElementById('categoryModal').style.display = 'none'; }
+
+    document.getElementById('categoryForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        try {
+            const response = await fetch('/api/notifications/categories/', {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+            });
+            if (response.ok) {
+                closeCategoryModal();
+                loadUsersAndCategories(); // Refresh selects
+                e.target.reset();
+            } else { alert('Xatolik!'); }
+        } catch (error) { console.error(error); }
+    };
+
+    document.getElementById('addForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        
+        try {
+const response = await fetch('/api/notifications/list/', {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+            });
+            
+            if (response.ok) {
+                closeModal();
+                loadData();
+                e.target.reset();
+            } else {
+                alert('Xatolik! Ma\'lumotlarni tekshiring.');
+            }
+        } catch (error) {
+            console.error('Error adding notification:', error);
+        }
+    };
+
+    loadData();
+</script>
+{% endblock %}

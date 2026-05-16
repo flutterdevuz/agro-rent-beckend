@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Agro Rent Admin{% endblock %}
+
+{% block content %}
+<div class="dashboard-grid">
+    <!-- Stats -->
+    <div class="stat-card">
+        <div class="icon blue"><i class="fas fa-users"></i></div>
+        <div class="details">
+            <h3 id="users-count">0</h3>
+            <p>Foydalanuvchilar</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="icon green"><i class="fas fa-shopping-cart"></i></div>
+        <div class="details">
+            <h3 id="orders-count">0</h3>
+            <p>Buyurtmalar</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="icon orange"><i class="fas fa-tractor"></i></div>
+        <div class="details">
+            <h3 id="equipment-count">0</h3>
+            <p>Texnikalar</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="icon purple"><i class="fas fa-wallet"></i></div>
+        <div class="details">
+            <h3 id="total-revenue">0</h3>
+            <p>Daromad (so'm)</p>
+        </div>
+    </div>
+
+    <!-- Chart Placeholder -->
+    <div class="chart-container large">
+        <div class="chart-header">
+            <h3>Faollik Grafigi</h3>
+            <select>
+                <option>Oxirgi 7 kun</option>
+                <option>Oxirgi 30 kun</option>
+            </select>
+        </div>
+        <div class="chart-placeholder">
+            <img src="https://quickchart.io/chart?c={type:'line',data:{labels:['Du','Se','Ch','Pa','Ju','Sha','Ya'],datasets:[{label:'Buyurtmalar',data:[12,19,3,5,2,3,7],fill:true,borderColor:'rgba(75, 192, 192, 1)',backgroundColor:'rgba(75, 192, 192, 0.2)'}]}}"
+                alt="Chart">
+        </div>
+    </div>
+
+    <!-- Recent Activities -->
+    <div class="activities-container">
+        <h3>Oxirgi buyurtmalar</h3>
+        <ul class="activity-list">
+            <li>
+                <div class="activity-icon"><i class="fas fa-shopping-bag"></i></div>
+                <div class="activity-details">
+                    <strong>Traktor ijarasi</strong>
+                    <p>Ali Valiev tomonidan</p>
+                </div>
+                <span class="time">2 daq avval</span>
+            </li>
+            <li>
+                <div class="activity-icon"><i class="fas fa-user-plus"></i></div>
+                <div class="activity-details">
+                    <strong>Yangi foydalanuvchi</strong>
+                    <p>Toshkent viloyati</p>
+                </div>
+                <span class="time">15 daq avval</span>
+            </li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    async function loadStats() {
+        try {
+            const response = await fetch('/api/users/stats/');
+            const data = await response.json();
+
+            document.getElementById('users-count').innerText = data.users_count.toLocaleString();
+            document.getElementById('orders-count').innerText = data.orders_count.toLocaleString();
+            document.getElementById('equipment-count').innerText = data.equipment_count.toLocaleString();
+            document.getElementById('total-revenue').innerText = data.total_revenue.toLocaleString() + " so'm";
+        } catch (error) {
+            console.error('Error loading stats:', error);
+        }
+    }
+    loadStats();
+</script>
+{% endblock %}

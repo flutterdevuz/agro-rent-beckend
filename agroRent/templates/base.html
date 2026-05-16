@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Agro Rent Admin{% endblock %}</title>
+    <link rel="stylesheet" href="/api/static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-tractor"></i>
+                <span>Agro Rent</span>
+            </div>
+            <nav>
+                <ul>
+                    <li class="{% if request.path == '' %}active{% endif %}">
+                        <a href=""><i class="fas fa-chart-line"></i> Dashboard</a>
+                    </li>
+                    <li class="{% if '/api/admin/banners/' in request.path %}active{% endif %}">
+                        <a href="/api/admin/banners/"><i class="fas fa-ad"></i> Bannerlar</a>
+                    </li>
+                    <li class="{% if '/api/admin/rent/' in request.path %}active{% endif %}">
+                        <a href="/api/admin/rent/"><i class="fas fa-truck-pickup"></i> Ijara</a>
+                    </li>
+                    <li class="{% if '/api/admin/market/' in request.path %}active{% endif %}">
+                        <a href="/api/admin/market/"><i class="fas fa-store"></i> Bozor</a>
+                    </li>
+                    <li class="{% if '/api/admin/categories/' in request.path %}active{% endif %}">
+                        <a href="/api/admin/categories/"><i class="fas fa-tags"></i> Kategoriyalar</a>
+                    </li>
+                    <li class="{% if '/api/admin/notifications/' in request.path %}active{% endif %}">
+                        <a href="/api/admin/notifications/"><i class="fas fa-bell"></i> Bildirishnomalar</a>
+                    </li>
+                    <li class="{% if '/api/admin/users/' in request.path %}active{% endif %}">
+                        <a href="/api/admin/users/"><i class="fas fa-users"></i> Foydalanuvchilar</a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="/django-admin/logout/"><i class="fas fa-sign-out-alt"></i> Chiqish</a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header>
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Qidiruv...">
+                </div>
+                <div class="user-info">
+                    <div class="notif">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge" id="unread-count">0</span>
+                    </div>
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff" alt="Admin">
+                    <span>Administrator</span>
+                </div>
+            </header>
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+    <script src="/api/static/js/main.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

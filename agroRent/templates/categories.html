@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}Kategoriyalar - Agro Rent Admin{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="card-header">
+        <h2>Kategoriyalar boshqaruvi</h2>
+        <button class="btn-primary" onclick="openModal()"><i class="fas fa-plus"></i> Yangi qo'shish</button>
+    </div>
+    
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nomi</th>
+                    <th>Yaratilgan vaqti</th>
+                    <th>Amallar</th>
+                </tr>
+            </thead>
+            <tbody id="data-body">
+                <tr><td colspan="4" style="text-align:center">Yuklanmoqda...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Add Modal -->
+<div id="addModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Yangi Kategoriya qo'shish</h3>
+            <span class="close" onclick="closeModal()">&times;</span>
+        </div>
+        <form id="addForm">
+            <div class="form-group">
+                <label>Kategoriya nomi</label>
+                <input type="text" name="name" required>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeModal()">Bekor qilish</button>
+                <button type="submit" class="btn-primary">Saqlash</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+async function loadData() {
+    try {
+        const response = await fetch('/api/market/categories/');
+        const data = await response.json();
+        const body = document.getElementById('data-body');
+        body.innerHTML = '';
+        const items = data.results || data;
+        items.forEach(item => {
+            const date = item.created_at ? new Date(item.created_at).toLocaleString() : '-';
+            body.innerHTML += `
+                <tr>
+                    <td><small>${item.id}</small></td>
+                    <td><strong>${item.name}</strong></td>
+                    <td>${date}</td>
+                    <td>
+                        <a href="/django-admin/market/category/${item.id}/change/" class="btn-action"><i class="fas fa-edit"></i></a>
+                        <button onclick="deleteCategory('${item.id}')" class="btn-action btn-delete" style="color: #ef4444; background: #fee2e2; border: none; cursor: pointer;"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `;
+        });
+    } catch (error) { console.error(error); }
+}
+
+async function deleteCategory(id) {
+    if (!confirm("Haqiqatan ham ushbu kategoriyani o'chirmoqchimisiz?")) return;
+    try {
+        const response = await fetch(`/api/market/categories/${id}/`, {
+            method: 'DELETE',
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+        });
+        if (response.ok) { loadData(); }
+        else { alert("O'chirishda xatolik yuz berdi!"); }
+    } catch (error) { console.error(error); }
+}
+
+function openModal() { document.getElementById('addModal').style.display = 'block'; }
+function closeModal() { document.getElementById('addModal').style.display = 'none'; }
+
+document.getElementById('addForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    try {
+        const response = await fetch('/api/market/categories/', {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+        });
+        if (response.ok) { closeModal(); loadData(); e.target.reset(); }
+        else { alert('Xatolik!'); }
+    } catch (error) { console.error(error); }
+};
+
+loadData();
+</script>
+{% endblock %}

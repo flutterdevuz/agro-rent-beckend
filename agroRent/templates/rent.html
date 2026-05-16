@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+
+{% block title %}Ijara - Agro Rent Admin{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="card-header">
+        <h2>Ijara e'lonlari</h2>
+        <button class="btn-primary" onclick="openModal()"><i class="fas fa-plus"></i> Yangi qo'shish</button>
+    </div>
+    
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Texnika</th>
+                    <th>Eshasi</th>
+                    <th>Narxi</th>
+                    <th>Hudud</th>
+                    <th>Reyting</th>
+                    <th>Amallar</th>
+                </tr>
+            </thead>
+            <tbody id="data-body">
+                <tr><td colspan="6" style="text-align:center">Yuklanmoqda...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Add Modal -->
+<div id="addModal" class="modal">
+    <div class="modal-content" style="width: 700px;">
+        <div class="modal-header">
+            <h3>Yangi Ijara e'loni</h3>
+            <span class="close" onclick="closeModal()">&times;</span>
+        </div>
+        <form id="addForm">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group">
+                    <label>Nomi</label>
+                    <input type="text" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label>Texnika nomi</label>
+                    <input type="text" name="equipment_name" required>
+                </div>
+                <div class="form-group">
+                    <label>Marka</label>
+                    <input type="text" name="brand" required>
+                </div>
+                <div class="form-group">
+                    <label>Ot kuchi</label>
+                    <input type="number" name="hp" required>
+                </div>
+                <div class="form-group">
+                    <label>Holati</label>
+                    <input type="text" name="condition" required>
+                </div>
+                <div class="form-group">
+                    <label>Narxi</label>
+                    <input type="number" name="price" required>
+                </div>
+                <div class="form-group">
+                    <label>Hudud (Viloyat)</label>
+                    <input type="text" name="region" required>
+                </div>
+                <div class="form-group">
+                    <label>Joylashuv nomi</label>
+                    <input type="text" name="location_name" required>
+                </div>
+                <div class="form-group">
+                    <label>Kelishuv (Ha/Yo'q)</label>
+                    <select name="is_agreement">
+                        <option value="true">Ha</option>
+                        <option value="false">Yo'q</option>
+                    </select>
+                <div class="form-group">
+                    <label>Rasmlar</label>
+                    <input type="file" name="uploaded_images" multiple accept="image/*">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeModal()">Bekor qilish</button>
+                <button type="submit" class="btn-primary">Saqlash</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+async function loadData() {
+    try {
+        const response = await fetch('/api/rent/items/');
+        const data = await response.json();
+        const body = document.getElementById('data-body');
+        body.innerHTML = '';
+        const items = data.results || data;
+        items.forEach(item => {
+            body.innerHTML += `
+                <tr>
+                    <td><strong>${item.equipment_name}</strong><br><small>${item.brand}</small></td>
+                    <td>${item.owner_details.first_name} ${item.owner_details.last_name}</td>
+                    <td>${item.price} so'm</td>
+                    <td>${item.region}</td>
+                    <td><i class="fas fa-star" style="color:#f1c40f"></i> ${item.rating}</td>
+                    <td>
+                        <a href="/django-admin/rent/rentitem/${item.id}/change/" class="btn-action"><i class="fas fa-edit"></i></a>
+                        <button onclick="deleteItem('${item.id}')" class="btn-action btn-delete" style="color: #ef4444; background: #fee2e2; border: none; cursor: pointer;"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `;
+        });
+    } catch (error) { console.error(error); }
+}
+
+async function deleteItem(id) {
+    if (!confirm("Haqiqatan ham ushbu e'lonni o'chirmoqchimisiz?")) return;
+    try {
+        const response = await fetch(`/api/rent/items/${id}/`, {
+            method: 'DELETE',
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+        });
+        if (response.ok) { loadData(); }
+        else { alert("O'chirishda xatolik yuz berdi!"); }
+    } catch (error) { console.error(error); }
+}
+
+function openModal() { document.getElementById('addModal').style.display = 'block'; }
+function closeModal() { document.getElementById('addModal').style.display = 'none'; }
+
+document.getElementById('addForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    try {
+        const response = await fetch('/api/rent/items/', {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+        });
+        if (response.ok) { closeModal(); loadData(); e.target.reset(); }
+        else { alert('Xatolik! Barcha maydonlarni to\'ldiring.'); }
+    } catch (error) { console.error(error); }
+};
+
+loadData();
+</script>
+{% endblock %}
