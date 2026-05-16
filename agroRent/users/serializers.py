@@ -50,13 +50,13 @@ class ProfileSerializer(serializers.ModelSerializer):
         model = User
         fields = ('first_name', 'last_name', 'order_count', 'rating', 'equipment_count', 'location')
 
-    def get_order_count(self, obj):
+    def get_order_count(self, obj) -> int:
         return RentOrder.objects.filter(user=obj).count() + MarketOrder.objects.filter(user=obj).count()
 
-    def get_equipment_count(self, obj):
+    def get_equipment_count(self, obj) -> int:
         return RentItem.objects.filter(owner=obj).count() + MarketItem.objects.filter(seller=obj).count()
 
-    def get_location(self, obj):
+    def get_location(self, obj) -> str:
         return f"{obj.region}, {obj.district}, {obj.mfy}"
 
 class UpdateProfileSerializer(serializers.ModelSerializer):
