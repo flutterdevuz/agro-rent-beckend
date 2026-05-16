@@ -88,13 +88,75 @@
     </div>
 </div>
 
+<!-- Edit Modal -->
+<div id="editModal" class="modal">
+    <div class="modal-content" style="width: 700px;">
+        <div class="modal-header">
+            <h3>Ijara e'lonini tahrirlash</h3>
+            <span class="close" onclick="closeEditModal()">&times;</span>
+        </div>
+        <form id="editForm">
+            <input type="hidden" id="edit_id" name="id">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group">
+                    <label>Nomi</label>
+                    <input type="text" id="edit_name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label>Texnika nomi</label>
+                    <input type="text" id="edit_equipment_name" name="equipment_name" required>
+                </div>
+                <div class="form-group">
+                    <label>Marka</label>
+                    <input type="text" id="edit_brand" name="brand" required>
+                </div>
+                <div class="form-group">
+                    <label>Ot kuchi</label>
+                    <input type="number" id="edit_hp" name="hp" required>
+                </div>
+                <div class="form-group">
+                    <label>Holati</label>
+                    <input type="text" id="edit_condition" name="condition" required>
+                </div>
+                <div class="form-group">
+                    <label>Narxi</label>
+                    <input type="number" id="edit_price" name="price" required>
+                </div>
+                <div class="form-group">
+                    <label>Hudud (Viloyat)</label>
+                    <input type="text" id="edit_region" name="region" required>
+                </div>
+                <div class="form-group">
+                    <label>Joylashuv nomi</label>
+                    <input type="text" id="edit_location_name" name="location_name" required>
+                </div>
+                <div class="form-group">
+                    <label>Kelishuv (Ha/Yo'q)</label>
+                    <select id="edit_is_agreement" name="is_agreement">
+                        <option value="true">Ha</option>
+                        <option value="false">Yo'q</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Yangi Rasmlar (ixtiyoriy)</label>
+                    <input type="file" name="uploaded_images" multiple accept="image/*">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeEditModal()">Bekor qilish</button>
+                <button type="submit" class="btn-primary">Saqlash</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block scripts %}
 <script>
 async function loadData() {
     try {
-        const response = await fetch('/api/rent/items/');
+        const response = await apiFetch('/api/rent/items/');
         const data = await response.json();
         const body = document.getElementById('data-body');
         body.innerHTML = '';
@@ -108,7 +170,7 @@ async function loadData() {
                     <td>${item.region}</td>
                     <td><i class="fas fa-star" style="color:#f1c40f"></i> ${item.rating}</td>
                     <td>
-                        <a href="/django-admin/rent/rentitem/${item.id}/change/" class="btn-action"><i class="fas fa-edit"></i></a>
+                        <button onclick='openEditModal(${JSON.stringify(item).replace(/'/g, "&#39;")})' class="btn-action btn-edit"><i class="fas fa-edit"></i></button>
                         <button onclick="deleteItem('${item.id}')" class="btn-action btn-delete" style="color: #ef4444; background: #fee2e2; border: none; cursor: pointer;"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>
@@ -120,7 +182,7 @@ async function loadData() {
 async function deleteItem(id) {
     if (!confirm("Haqiqatan ham ushbu e'lonni o'chirmoqchimisiz?")) return;
     try {
-        const response = await fetch(`/api/rent/items/${id}/`, {
+        const response = await apiFetch(`/api/rent/items/${id}/`, {
             method: 'DELETE',
             headers: { 'X-CSRFToken': '{{ csrf_token }}' }
         });
@@ -136,13 +198,47 @@ document.getElementById('addForm').onsubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     try {
-        const response = await fetch('/api/rent/items/', {
+        const response = await apiFetch('/api/rent/items/', {
             method: 'POST',
             body: formData,
             headers: { 'X-CSRFToken': '{{ csrf_token }}' }
         });
         if (response.ok) { closeModal(); loadData(); e.target.reset(); }
         else { alert('Xatolik! Barcha maydonlarni to\'ldiring.'); }
+    } catch (error) { console.error(error); }
+};
+
+function openEditModal(item) {
+    document.getElementById('edit_id').value = item.id;
+    document.getElementById('edit_name').value = item.name;
+    document.getElementById('edit_equipment_name').value = item.equipment_name;
+    document.getElementById('edit_brand').value = item.brand;
+    document.getElementById('edit_hp').value = item.hp;
+    document.getElementById('edit_condition').value = item.condition;
+    document.getElementById('edit_price').value = item.price;
+    document.getElementById('edit_region').value = item.region;
+    document.getElementById('edit_location_name').value = item.location_name;
+    document.getElementById('edit_is_agreement').value = item.is_agreement ? "true" : "false";
+    document.getElementById('editModal').style.display = 'block';
+}
+function closeEditModal() { document.getElementById('editModal').style.display = 'none'; }
+
+document.getElementById('editForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('edit_id').value;
+    const formData = new FormData(e.target);
+    const files = formData.getAll("uploaded_images");
+    if (files.length === 1 && !files[0].name) {
+        formData.delete("uploaded_images");
+    }
+    try {
+        const response = await apiFetch(`/api/rent/items/${id}/`, {
+            method: 'PATCH',
+            body: formData,
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+        });
+        if (response.ok) { closeEditModal(); loadData(); e.target.reset(); }
+        else { alert('Xatolik! Ma\'lumotlarni tekshiring.'); }
     } catch (error) { console.error(error); }
 };
 

@@ -46,13 +46,34 @@
     </div>
 </div>
 
+<!-- Edit Modal -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Kategoriyani tahrirlash</h3>
+            <span class="close" onclick="closeEditModal()">&times;</span>
+        </div>
+        <form id="editForm">
+            <input type="hidden" id="edit_id" name="id">
+            <div class="form-group">
+                <label>Kategoriya nomi</label>
+                <input type="text" id="edit_name" name="name" required>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeEditModal()">Bekor qilish</button>
+                <button type="submit" class="btn-primary">Saqlash</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block scripts %}
 <script>
 async function loadData() {
     try {
-        const response = await fetch('/api/market/categories/');
+        const response = await apiFetch('/api/market/categories/');
         const data = await response.json();
         const body = document.getElementById('data-body');
         body.innerHTML = '';
@@ -65,7 +86,7 @@ async function loadData() {
                     <td><strong>${item.name}</strong></td>
                     <td>${date}</td>
                     <td>
-                        <a href="/django-admin/market/category/${item.id}/change/" class="btn-action"><i class="fas fa-edit"></i></a>
+                        <button onclick='openEditModal(${JSON.stringify(item).replace(/'/g, "&#39;")})' class="btn-action btn-edit"><i class="fas fa-edit"></i></button>
                         <button onclick="deleteCategory('${item.id}')" class="btn-action btn-delete" style="color: #ef4444; background: #fee2e2; border: none; cursor: pointer;"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>
@@ -77,7 +98,7 @@ async function loadData() {
 async function deleteCategory(id) {
     if (!confirm("Haqiqatan ham ushbu kategoriyani o'chirmoqchimisiz?")) return;
     try {
-        const response = await fetch(`/api/market/categories/${id}/`, {
+        const response = await apiFetch(`/api/market/categories/${id}/`, {
             method: 'DELETE',
             headers: { 'X-CSRFToken': '{{ csrf_token }}' }
         });
@@ -93,12 +114,34 @@ document.getElementById('addForm').onsubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     try {
-        const response = await fetch('/api/market/categories/', {
+        const response = await apiFetch('/api/market/categories/', {
             method: 'POST',
             body: formData,
             headers: { 'X-CSRFToken': '{{ csrf_token }}' }
         });
         if (response.ok) { closeModal(); loadData(); e.target.reset(); }
+        else { alert('Xatolik!'); }
+    } catch (error) { console.error(error); }
+};
+
+function openEditModal(item) {
+    document.getElementById('edit_id').value = item.id;
+    document.getElementById('edit_name').value = item.name;
+    document.getElementById('editModal').style.display = 'block';
+}
+function closeEditModal() { document.getElementById('editModal').style.display = 'none'; }
+
+document.getElementById('editForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('edit_id').value;
+    const formData = new FormData(e.target);
+    try {
+        const response = await apiFetch(`/api/market/categories/${id}/`, {
+            method: 'PATCH',
+            body: formData,
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+        });
+        if (response.ok) { closeEditModal(); loadData(); e.target.reset(); }
         else { alert('Xatolik!'); }
     } catch (error) { console.error(error); }
 };

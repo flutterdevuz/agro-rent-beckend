@@ -133,7 +133,7 @@ class UserOrdersView(APIView):
         serializer = UnifiedOrderSerializer(combined, many=True, context={'request': request})
         return Response(serializer.data)
 
-class UserListView(generics.ListAPIView):
+class UserListView(generics.ListCreateAPIView):
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
@@ -143,7 +143,14 @@ class UserListView(generics.ListAPIView):
             return User.objects.none()
         return super().get_queryset()
 
-class UserDetailView(generics.RetrieveDestroyAPIView):
+    def perform_create(self, serializer):
+        user = serializer.save()
+        password = self.request.data.get('password')
+        if password:
+            user.set_password(password)
+            user.save()
+
+class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]

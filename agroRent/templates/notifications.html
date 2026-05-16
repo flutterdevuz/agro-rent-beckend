@@ -94,33 +94,80 @@
     </div>
 </div>
 
+<!-- Edit Modal -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Xabarni tahrirlash</h3>
+            <span class="close" onclick="closeEditModal()">&times;</span>
+        </div>
+        <form id="editForm">
+            <input type="hidden" id="edit_id" name="id">
+            <div class="form-group">
+                <label>Foydalanuvchi</label>
+                <select name="user" id="edit_userSelect" required>
+                    <option value="">Foydalanuvchini tanlang...</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Kategoriya</label>
+                <select name="category" id="edit_categorySelect" required>
+                    <option value="">Kategoriyani tanlang...</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Sarlavha</label>
+                <input type="text" id="edit_title" name="title" required>
+            </div>
+            <div class="form-group">
+                <label>Xabar matni (Izoh)</label>
+                <textarea id="edit_description" name="description" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+                <label>Qo'shimcha status (ixtiyoriy)</label>
+                <input type="text" id="edit_status" name="status">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeEditModal()">Bekor qilish</button>
+                <button type="submit" class="btn-primary">Saqlash</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block scripts %}
 <script>
     async function loadData() {
         try {
-            const response = await fetch('/api/notifications/list/');
+            const response = await apiFetch('/api/notifications/list/');
             const data = await response.json();
             const body = document.getElementById('data-body');
             body.innerHTML = '';
             const items = data.results || data;
-            items.forEach(item => {
-                const date = new Date(item.created_at).toLocaleString();
-                body.innerHTML += `
-                <tr>
-                    <td><strong>${item.title}</strong><br><small>${item.description}</small></td>
-                    <td>Foydalanuvchi ID: <small>${item.user.substring(0,8)}...</small></td>
-                    <td>${item.category_name || '-'}</td>
-                    <td>${item.status || '-'}</td>
-                    <td><span class="status-badge ${item.is_read ? 'read' : 'unread'}">${item.is_read ? 'O\'qilgan' : 'O\'qilmagan'}</span></td>
-                    <td>${date}</td>
-                    <td>
-                        <button onclick="deleteNotification('${item.id}')" class="btn-action btn-delete" style="color: #ef4444; background: #fee2e2; border: none; cursor: pointer;"><i class="fas fa-trash"></i></button>
-                    </td>
-                </tr>
-            `;
-            });
+            if (Array.isArray(items)) {
+                items.forEach(item => {
+                    const date = item.created_at ? new Date(item.created_at).toLocaleString() : '-';
+                    const userId = typeof item.user === 'string' ? item.user : (item.user && item.user.id ? item.user.id : 'Noma\'lum');
+                    body.innerHTML += `
+                    <tr>
+                        <td><strong>${item.title || '-'}</strong><br><small>${item.description || '-'}</small></td>
+                        <td>Foydalanuvchi ID: <small>${userId.substring(0, 8)}...</small></td>
+                        <td>${item.category_name || '-'}</td>
+                        <td>${item.status || '-'}</td>
+                        <td><span class="status-badge ${item.is_read ? 'read' : 'unread'}">${item.is_read ? 'O\'qilgan' : 'O\'qilmagan'}</span></td>
+                        <td>${date}</td>
+                        <td>
+                            <button onclick='openEditModal(${JSON.stringify(item).replace(/'/g, "&#39;")})' class="btn-action btn-edit"><i class="fas fa-edit"></i></button>
+                            <button onclick="deleteNotification('${item.id}')" class="btn-action btn-delete" style="color: #ef4444; background: #fee2e2; border: none; cursor: pointer;"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+                });
+            } else {
+                body.innerHTML = '<tr><td colspan="7" style="text-align:center">Ma\'lumot topilmadi</td></tr>';
+            }
         } catch (error) {
             console.error('Error loading data:', error);
         }
@@ -128,7 +175,7 @@
 
     async function loadUsersAndCategories() {
         try {
-            const usersRes = await fetch('/api/users/list/');
+            const usersRes = await apiFetch('/api/users/list/');
             const usersData = await usersRes.json();
             const users = usersData.results || usersData;
             const userSelect = document.getElementById('userSelect');
@@ -137,7 +184,7 @@
                 userSelect.innerHTML += `<option value="${u.id}">${u.first_name} ${u.last_name} (${u.phone_number})</option>`;
             });
 
-            const catRes = await fetch('/api/notifications/categories/');
+            const catRes = await apiFetch('/api/notifications/categories/');
             const catData = await catRes.json();
             const categories = catData.results || catData;
             const catSelect = document.getElementById('categorySelect');
@@ -151,7 +198,7 @@
     async function deleteNotification(id) {
         if (!confirm("Haqiqatan ham ushbu bildirishnomani o'chirmoqchimisiz?")) return;
         try {
-            const response = await fetch(`/notifications/list/${id}/`, {
+            const response = await apiFetch(`/api/notifications/list/${id}/`, {
                 method: 'DELETE',
                 headers: { 'X-CSRFToken': '{{ csrf_token }}' }
             });
@@ -176,7 +223,7 @@
         e.preventDefault();
         const formData = new FormData(e.target);
         try {
-            const response = await fetch('/api/notifications/categories/', {
+            const response = await apiFetch('/api/notifications/categories/', {
                 method: 'POST',
                 body: formData,
                 headers: { 'X-CSRFToken': '{{ csrf_token }}' }
@@ -194,7 +241,7 @@
         const formData = new FormData(e.target);
         
         try {
-const response = await fetch('/api/notifications/list/', {
+            const response = await apiFetch('/api/notifications/list/', {
                 method: 'POST',
                 body: formData,
                 headers: { 'X-CSRFToken': '{{ csrf_token }}' }
@@ -209,6 +256,60 @@ const response = await fetch('/api/notifications/list/', {
             }
         } catch (error) {
             console.error('Error adding notification:', error);
+        }
+    };
+
+    async function openEditModal(item) {
+        document.getElementById('edit_id').value = item.id;
+        document.getElementById('edit_title').value = item.title;
+        document.getElementById('edit_description').value = item.description;
+        document.getElementById('edit_status').value = item.status || "";
+
+        try {
+            const usersRes = await apiFetch('/api/users/list/');
+            const usersData = await usersRes.json();
+            const users = usersData.results || usersData;
+            const userSelect = document.getElementById('edit_userSelect');
+            userSelect.innerHTML = '<option value="">Foydalanuvchini tanlang...</option>';
+            users.forEach(u => {
+                userSelect.innerHTML += `<option value="${u.id}" ${u.id === item.user ? 'selected' : ''}>${u.first_name} ${u.last_name} (${u.phone_number})</option>`;
+            });
+
+            const catRes = await apiFetch('/api/notifications/categories/');
+            const catData = await catRes.json();
+            const categories = catData.results || catData;
+            const catSelect = document.getElementById('edit_categorySelect');
+            catSelect.innerHTML = '<option value="">Kategoriyani tanlang...</option>';
+            categories.forEach(c => {
+                catSelect.innerHTML += `<option value="${c.id}" ${c.id === item.category ? 'selected' : ''}>${c.name}</option>`;
+            });
+        } catch (error) { console.error('Error loading selects:', error); }
+
+        document.getElementById('editModal').style.display = 'block';
+    }
+
+    function closeEditModal() { document.getElementById('editModal').style.display = 'none'; }
+
+    document.getElementById('editForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('edit_id').value;
+        const formData = new FormData(e.target);
+        
+        try {
+            const response = await apiFetch(`/api/notifications/list/${id}/`, {
+                method: 'PATCH',
+                body: formData,
+                headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+            });
+            if (response.ok) {
+                closeEditModal();
+                loadData();
+                e.target.reset();
+            } else {
+                alert('Xatolik! Ma\'lumotlarni tekshiring.');
+            }
+        } catch (error) {
+            console.error('Error editing notification:', error);
         }
     };
 

@@ -24,6 +24,7 @@ from django.views.generic import TemplateView
 urlpatterns = [
     path('django-admin/', admin.site.urls),
     path('admin/', TemplateView.as_view(template_name='index.html'), name='custom-admin'),
+    path('api/admin/login/', TemplateView.as_view(template_name='login.html'), name='admin-login'),
     path('api/admin/banners/', TemplateView.as_view(template_name='banners.html'), name='admin-banners'),
     path('api/admin/rent/', TemplateView.as_view(template_name='rent.html'), name='admin-rent'),
     path('api/admin/market/', TemplateView.as_view(template_name='market.html'), name='admin-market'),

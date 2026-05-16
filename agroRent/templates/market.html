@@ -7,11 +7,12 @@
     <div class="card-header">
         <h2>Bozor mahsulotlari</h2>
         <div class="header-actions">
-            <button class="btn-secondary" onclick="openCategoryModal()"><i class="fas fa-tags"></i> Kategoriya qo'shish</button>
+            <button class="btn-secondary" onclick="openCategoryModal()"><i class="fas fa-tags"></i> Kategoriya
+                qo'shish</button>
             <button class="btn-primary" onclick="openModal()"><i class="fas fa-plus"></i> Mahsulot qo'shish</button>
         </div>
     </div>
-    
+
     <div class="table-container">
         <table>
             <thead>
@@ -25,7 +26,9 @@
                 </tr>
             </thead>
             <tbody id="data-body">
-                <tr><td colspan="6" style="text-align:center">Yuklanmoqda...</td></tr>
+                <tr>
+                    <td colspan="6" style="text-align:center">Yuklanmoqda...</td>
+                </tr>
             </tbody>
         </table>
     </div>
@@ -67,7 +70,7 @@
                 <div class="form-group">
                     <label>Kategoriya</label>
                     <select name="category" id="category-select" required>
-                        <option value="">Yuklanmoqda...</option>
+                        <option value="">Kategoriyani tanlang</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -105,13 +108,91 @@
                     <label>Kafolat</label>
                     <input type="text" name="warranty">
                 </div>
+                <div class="form-group">
+                    <label>Rasm</label>
+                    <input type="file" name="image" accept="image/*">
+                </div>
             </div>
             <div class="form-group">
                 <label>Tavsif</label>
-                <textarea name="description" required style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #ddd;"></textarea>
+                <textarea name="description" required
+                    style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #ddd;"></textarea>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn-secondary" onclick="closeModal()">Bekor qilish</button>
+                <button type="submit" class="btn-primary">Saqlash</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div id="editModal" class="modal">
+    <div class="modal-content" style="width: 700px;">
+        <div class="modal-header">
+            <h3>Bozor mahsulotini tahrirlash</h3>
+            <span class="close" onclick="closeEditModal()">&times;</span>
+        </div>
+        <form id="editForm">
+            <input type="hidden" id="edit_id" name="id">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group">
+                    <label>Nomi</label>
+                    <input type="text" id="edit_name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label>Kategoriya</label>
+                    <select name="category" id="edit_category_select" required>
+                        <option value="">Kategoriyani tanlang</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Narxi</label>
+                    <input type="number" id="edit_price" name="price" required>
+                </div>
+                <div class="form-group">
+                    <label>Brend</label>
+                    <input type="text" id="edit_brand" name="brand" required>
+                </div>
+                <div class="form-group">
+                    <label>Model</label>
+                    <input type="text" id="edit_model" name="model" required>
+                </div>
+                <div class="form-group">
+                    <label>Holati</label>
+                    <input type="text" id="edit_condition" name="condition" required>
+                </div>
+                <div class="form-group">
+                    <label>Joylashuv</label>
+                    <input type="text" id="edit_location" name="location" required>
+                </div>
+                <div class="form-group">
+                    <label>Telefon raqam</label>
+                    <input type="text" id="edit_phone_number" name="phone_number" required>
+                </div>
+                <div class="form-group">
+                    <label>Yetkazib berish</label>
+                    <select id="edit_has_delivery" name="has_delivery">
+                        <option value="true">Ha</option>
+                        <option value="false">Yo'q</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Kafolat</label>
+                    <input type="text" id="edit_warranty" name="warranty">
+                </div>
+                <div class="form-group">
+                    <label>Yangi rasm (ixtiyoriy)</label>
+                    <input type="file" name="image" accept="image/*">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Tavsif</label>
+                <textarea id="edit_description" name="description" required
+                    style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #ddd;"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeEditModal()">Bekor qilish</button>
                 <button type="submit" class="btn-primary">Saqlash</button>
             </div>
         </form>
@@ -122,95 +203,154 @@
 
 {% block scripts %}
 <script>
-async function loadData() {
-    try {
-        const response = await fetch('/api/market/items/');
-        const data = await response.json();
-        const body = document.getElementById('data-body');
-        body.innerHTML = '';
-        const items = data.results || data;
-        items.forEach(item => {
-            body.innerHTML += `
+    async function loadData() {
+        try {
+            const response = await apiFetch('/api/market/items/');
+            const data = await response.json();
+            const body = document.getElementById('data-body');
+            body.innerHTML = '';
+            const items = data.results || data;
+            items.forEach(item => {
+                body.innerHTML += `
                 <tr>
-                    <td><strong>${item.name}</strong><br><small>${item.brand}</small></td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            ${item.image ? `<img src="${item.image}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">` : `<div style="width: 40px; height: 40px; background: #eee; display: flex; align-items: center; justify-content: center; border-radius: 4px;"><i class="fas fa-image" style="color: #ccc;"></i></div>`}
+                            <div>
+                                <strong>${item.name}</strong><br>
+                                <small>${item.brand}</small>
+                            </div>
+                        </div>
+                    </td>
                     <td>${item.category_name}</td>
                     <td>${item.price} so'm</td>
                     <td>${item.seller_details.first_name} ${item.seller_details.last_name}</td>
                     <td>${item.condition}</td>
                     <td>
-                        <a href="/django-admin/market/marketitem/${item.id}/change/" class="btn-action"><i class="fas fa-edit"></i></a>
+                        <button onclick='openEditModal(${JSON.stringify(item).replace(/'/g, "&#39;")})' class="btn-action btn-edit"><i class="fas fa-edit"></i></button>
                         <button onclick="deleteItem('${item.id}')" class="btn-action btn-delete" style="color: #ef4444; background: #fee2e2; border: none; cursor: pointer;"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>
             `;
-        });
-    } catch (error) { console.error(error); }
-}
+            });
+        } catch (error) { console.error(error); }
+    }
 
-async function deleteItem(id) {
-    if (!confirm("Haqiqatan ham ushbu mahsulotni o'chirmoqchimisiz?")) return;
-    try {
-        const response = await fetch(`/api/market/items/${id}/`, {
-            method: 'DELETE',
-            headers: { 'X-CSRFToken': '{{ csrf_token }}' }
-        });
-        if (response.ok) { loadData(); }
-        else { alert("O'chirishda xatolik yuz berdi!"); }
-    } catch (error) { console.error(error); }
-}
+    async function deleteItem(id) {
+        if (!confirm("Haqiqatan ham ushbu mahsulotni o'chirmoqchimisiz?")) return;
+        try {
+            const response = await apiFetch(`/api/market/items/${id}/`, {
+                method: 'DELETE',
+                headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+            });
+            if (response.ok) { loadData(); }
+            else { alert("O'chirishda xatolik yuz berdi!"); }
+        } catch (error) { console.error(error); }
+    }
 
-async function loadCategories() {
-    try {
-        const response = await fetch('/api/market/categories/');
-        const data = await response.json();
-        const select = document.getElementById('category-select');
-        select.innerHTML = '';
-        data.forEach(cat => {
-            select.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
-        });
-    } catch (error) { console.error(error); }
-}
+    async function loadCategories() {
+        try {
+            const response = await apiFetch('/api/market/categories/');
+            const data = await response.json();
+            const select = document.getElementById('category-select');
+            select.innerHTML = '<option value="">Kategoriyani tanlang</option>';
+            const items = data.results || data;
+            items.forEach(cat => {
+                select.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
+            });
+        } catch (error) { console.error(error); }
+    }
 
-function openModal() { 
-    document.getElementById('addModal').style.display = 'block'; 
-    loadCategories();
-}
-function closeModal() { document.getElementById('addModal').style.display = 'none'; }
+    function openModal() {
+        document.getElementById('addModal').style.display = 'block';
+        loadCategories();
+    }
+    function closeModal() { document.getElementById('addModal').style.display = 'none'; }
 
-function openCategoryModal() { document.getElementById('categoryModal').style.display = 'block'; }
-function closeCategoryModal() { document.getElementById('categoryModal').style.display = 'none'; }
+    function openCategoryModal() { document.getElementById('categoryModal').style.display = 'block'; }
+    function closeCategoryModal() { document.getElementById('categoryModal').style.display = 'none'; }
 
-document.getElementById('categoryForm').onsubmit = async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    try {
-        const response = await fetch('/api/market/categories/', {
-            method: 'POST',
-            body: formData,
-            headers: { 'X-CSRFToken': '{{ csrf_token }}' }
-        });
-        if (response.ok) {
-            closeCategoryModal();
-            loadCategories(); // Refresh category list for the product modal
-            e.target.reset();
-        } else { alert('Xatolik!'); }
-    } catch (error) { console.error(error); }
-};
+    document.getElementById('categoryForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        try {
+            const response = await apiFetch('/api/market/categories/', {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+            });
+            if (response.ok) {
+                closeCategoryModal();
+                loadCategories(); // Refresh category list for the product modal
+                e.target.reset();
+            } else { alert('Xatolik!'); }
+        } catch (error) { console.error(error); }
+    };
 
-document.getElementById('addForm').onsubmit = async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    try {
-        const response = await fetch('/api/market/items/', {
-            method: 'POST',
-            body: formData,
-            headers: { 'X-CSRFToken': '{{ csrf_token }}' }
-        });
-        if (response.ok) { closeModal(); loadData(); e.target.reset(); }
-        else { alert('Xatolik!'); }
-    } catch (error) { console.error(error); }
-};
+    document.getElementById('addForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        try {
+            const response = await apiFetch('/api/market/items/', {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+            });
+            if (response.ok) { closeModal(); loadData(); e.target.reset(); }
+            else { alert('Xatolik!'); }
+        } catch (error) { console.error(error); }
+    };
 
-loadData();
+    async function openEditModal(item) {
+        document.getElementById('edit_id').value = item.id;
+        document.getElementById('edit_name').value = item.name;
+        document.getElementById('edit_price').value = item.price;
+        document.getElementById('edit_brand').value = item.brand;
+        document.getElementById('edit_model').value = item.model;
+        document.getElementById('edit_condition').value = item.condition;
+        document.getElementById('edit_location').value = item.location;
+        document.getElementById('edit_phone_number').value = item.phone_number;
+        document.getElementById('edit_has_delivery').value = item.has_delivery ? "true" : "false";
+        document.getElementById('edit_warranty').value = item.warranty || "";
+        document.getElementById('edit_description').value = item.description;
+
+        try {
+            const response = await apiFetch('/api/market/categories/');
+            const data = await response.json();
+            const select = document.getElementById('edit_category_select');
+            select.innerHTML = '<option value="">Kategoriyani tanlang</option>';
+            const items = data.results || data;
+            items.forEach(cat => {
+                select.innerHTML += `<option value="${cat.id}" ${cat.id === item.category ? 'selected' : ''}>${cat.name}</option>`;
+            });
+        } catch (error) { console.error(error); }
+
+        document.getElementById('editModal').style.display = 'block';
+    }
+    function closeEditModal() { document.getElementById('editModal').style.display = 'none'; }
+
+    document.getElementById('editForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('edit_id').value;
+        const formData = new FormData(e.target);
+
+        // Don't send image if it's empty
+        const imageFile = formData.get('image');
+        if (imageFile && !imageFile.name) {
+            formData.delete('image');
+        }
+
+        try {
+            const response = await apiFetch(`/api/market/items/${id}/`, {
+                method: 'PATCH',
+                body: formData,
+                headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+            });
+            if (response.ok) { closeEditModal(); loadData(); e.target.reset(); }
+            else { alert('Xatolik!'); }
+        } catch (error) { console.error(error); }
+    };
+
+    loadData();
 </script>
 {% endblock %}

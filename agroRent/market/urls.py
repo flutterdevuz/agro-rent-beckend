@@ -1,10 +1,11 @@
 from django.urls import path
 from market.views import (
     CategoryListView, CategoryDetailView, MarketItemListView, MarketItemCreateView,
-    MarketItemDetailView, MarketOrderCreateView
+    MarketItemDetailView, MarketOrderCreateView, MarketItemMeView
 )
 
 urlpatterns = [
+    path('me/', MarketItemMeView.as_view(), name='market-item-me'),
     path('categories/', CategoryListView.as_view(), name='category-list'),
     path('categories/<uuid:pk>/', CategoryDetailView.as_view(), name='category-detail'),
     path('items/', MarketItemListView.as_view(), name='market-item-list'),

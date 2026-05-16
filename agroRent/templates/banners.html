@@ -54,13 +54,42 @@
     </div>
 </div>
 
+<!-- Edit Modal -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Bannerni tahrirlash</h3>
+            <span class="close" onclick="closeEditModal()">&times;</span>
+        </div>
+        <form id="editForm">
+            <input type="hidden" id="edit_id" name="id">
+            <div class="form-group">
+                <label>Nomi</label>
+                <input type="text" id="edit_name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label>Tavsif</label>
+                <textarea id="edit_description" name="description" required></textarea>
+            </div>
+            <div class="form-group">
+                <label>Yangi Rasm (ixtiyoriy)</label>
+                <input type="file" name="image" accept="image/*">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeEditModal()">Bekor qilish</button>
+                <button type="submit" class="btn-primary">Saqlash</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block scripts %}
 <script>
 async function loadBanners() {
     try {
-        const response = await fetch('/api/banners/');
+        const response = await apiFetch('/api/banners/');
         const data = await response.json();
         const body = document.getElementById('banners-body');
         body.innerHTML = '';
@@ -72,7 +101,7 @@ async function loadBanners() {
                     <td>${item.name}</td>
                     <td>${item.description.substring(0, 50)}...</td>
                     <td>
-                        <a href="/django-admin/home/homecontent/${item.id}/change/" class="btn-action btn-edit"><i class="fas fa-edit"></i></a>
+                        <button onclick='openEditModal(${JSON.stringify(item).replace(/'/g, "&#39;")})' class="btn-action btn-edit"><i class="fas fa-edit"></i></button>
                         <button onclick="deleteBanner('${item.id}')" class="btn-action btn-delete" style="color: #ef4444; background: #fee2e2; border: none; cursor: pointer;"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>
@@ -84,7 +113,7 @@ async function loadBanners() {
 async function deleteBanner(id) {
     if (!confirm("Haqiqatan ham ushbu bannerni o'chirmoqchimisiz?")) return;
     try {
-        const response = await fetch(`/api/banners/${id}/`, {
+        const response = await apiFetch(`/api/banners/${id}/`, {
             method: 'DELETE',
             headers: { 'X-CSRFToken': '{{ csrf_token }}' }
         });
@@ -100,7 +129,7 @@ document.getElementById('addForm').onsubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     try {
-        const response = await fetch('/api/banners/', {
+        const response = await apiFetch('/api/banners/', {
             method: 'POST',
             body: formData,
             headers: {
@@ -109,6 +138,38 @@ document.getElementById('addForm').onsubmit = async (e) => {
         });
         if (response.ok) {
             closeModal();
+            loadBanners();
+            e.target.reset();
+        } else {
+            alert('Xatolik yuz berdi!');
+        }
+    } catch (error) { console.error(error); }
+};
+
+function openEditModal(item) {
+    document.getElementById('edit_id').value = item.id;
+    document.getElementById('edit_name').value = item.name;
+    document.getElementById('edit_description').value = item.description;
+    document.getElementById('editModal').style.display = 'block';
+}
+function closeEditModal() { document.getElementById('editModal').style.display = 'none'; }
+
+document.getElementById('editForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('edit_id').value;
+    const formData = new FormData(e.target);
+    // remove empty image
+    if (!formData.get('image').name) formData.delete('image');
+    try {
+        const response = await apiFetch(`/api/banners/${id}/`, {
+            method: 'PATCH',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        });
+        if (response.ok) {
+            closeEditModal();
             loadBanners();
             e.target.reset();
         } else {

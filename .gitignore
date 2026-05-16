@@ -1,1 +1,18 @@
+# Django
+*.pyc
+__pycache__/
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# Environments
+venv/
+.env
+
+# Project specific
 agroRent/firebase-key.json
+
+# IDEs
+.vscode/
+.idea/

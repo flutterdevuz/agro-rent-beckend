@@ -6,7 +6,7 @@
 <div class="content-card">
     <div class="card-header">
         <h2>Foydalanuvchilar boshqaruvi</h2>
-        <a href="/django-admin/users/user/add/" class="btn-primary"><i class="fas fa-plus"></i> Yangi qo'shish</a>
+        <button class="btn-primary" onclick="openAddModal()"><i class="fas fa-plus"></i> Yangi qo'shish</button>
     </div>
     
     <div class="table-container">
@@ -27,6 +27,55 @@
     </div>
 </div>
 
+<!-- Add Modal -->
+<div id="addModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Yangi Foydalanuvchi qo'shish</h3>
+            <span class="close" onclick="closeAddModal()">&times;</span>
+        </div>
+        <form id="addForm">
+            <div class="form-group"><label>Ism</label><input type="text" name="first_name" required></div>
+            <div class="form-group"><label>Familiya</label><input type="text" name="last_name" required></div>
+            <div class="form-group"><label>Telefon</label><input type="text" name="phone_number" required></div>
+            <div class="form-group"><label>Parol</label><input type="password" name="password" required></div>
+            <div class="form-group"><label>Viloyat</label><input type="text" name="region" required></div>
+            <div class="form-group"><label>Tuman</label><input type="text" name="district" required></div>
+            <div class="form-group"><label>MFY</label><input type="text" name="mfy" required></div>
+            <div class="form-group"><label>Renter</label><select name="is_renter"><option value="true">Ha</option><option value="false">Yo'q</option></select></div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeAddModal()">Bekor qilish</button>
+                <button type="submit" class="btn-primary">Saqlash</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Foydalanuvchini tahrirlash</h3>
+            <span class="close" onclick="closeEditModal()">&times;</span>
+        </div>
+        <form id="editForm">
+            <input type="hidden" id="edit_id" name="id">
+            <div class="form-group"><label>Ism</label><input type="text" id="edit_first_name" name="first_name" required></div>
+            <div class="form-group"><label>Familiya</label><input type="text" id="edit_last_name" name="last_name" required></div>
+            <div class="form-group"><label>Telefon</label><input type="text" id="edit_phone_number" name="phone_number" required></div>
+            <div class="form-group"><label>Parol (ixtiyoriy)</label><input type="password" name="password"></div>
+            <div class="form-group"><label>Viloyat</label><input type="text" id="edit_region" name="region" required></div>
+            <div class="form-group"><label>Tuman</label><input type="text" id="edit_district" name="district" required></div>
+            <div class="form-group"><label>MFY</label><input type="text" id="edit_mfy" name="mfy" required></div>
+            <div class="form-group"><label>Renter</label><select id="edit_is_renter" name="is_renter"><option value="true">Ha</option><option value="false">Yo'q</option></select></div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeEditModal()">Bekor qilish</button>
+                <button type="submit" class="btn-primary">Saqlash</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 
 {% endblock %}
 
@@ -34,7 +83,7 @@
 <script>
 async function loadData() {
     try {
-        const response = await fetch('/api/users/list/');
+        const response = await apiFetch('/api/users/list/');
         const data = await response.json();
         const body = document.getElementById('data-body');
         body.innerHTML = '';
@@ -47,7 +96,7 @@ async function loadData() {
                     <td>${item.region}</td>
                     <td><i class="fas fa-star" style="color:#f1c40f"></i> ${item.rating}</td>
                     <td>
-                        <a href="/django-admin/users/user/${item.id}/change/" class="btn-action btn-edit"><i class="fas fa-edit"></i></a>
+                        <button onclick='openEditModal(${JSON.stringify(item).replace(/'/g, "&#39;")})' class="btn-action btn-edit"><i class="fas fa-edit"></i></button>
                         <button onclick="deleteUser('${item.id}')" class="btn-action btn-delete" style="color: #ef4444; background: #fee2e2; border: none; cursor: pointer;"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>
@@ -61,7 +110,7 @@ async function loadData() {
 async function deleteUser(id) {
     if (!confirm("Haqiqatan ham ushbu foydalanuvchini o'chirmoqchimisiz?")) return;
     try {
-        const response = await fetch(`/api/users/list/${id}/`, {
+        const response = await apiFetch(`/api/users/list/${id}/`, {
             method: 'DELETE',
             headers: { 'X-CSRFToken': '{{ csrf_token }}' }
         });
@@ -69,6 +118,53 @@ async function deleteUser(id) {
         else { alert("O'chirishda xatolik yuz berdi!"); }
     } catch (error) { console.error(error); }
 }
+
+function openAddModal() { document.getElementById('addModal').style.display = 'block'; }
+function closeAddModal() { document.getElementById('addModal').style.display = 'none'; }
+
+function openEditModal(item) {
+    document.getElementById('edit_id').value = item.id;
+    document.getElementById('edit_first_name').value = item.first_name;
+    document.getElementById('edit_last_name').value = item.last_name;
+    document.getElementById('edit_phone_number').value = item.phone_number;
+    document.getElementById('edit_region').value = item.region;
+    document.getElementById('edit_district').value = item.district;
+    document.getElementById('edit_mfy').value = item.mfy;
+    document.getElementById('edit_is_renter').value = item.isRenter ? "true" : "false";
+    document.getElementById('editModal').style.display = 'block';
+}
+function closeEditModal() { document.getElementById('editModal').style.display = 'none'; }
+
+document.getElementById('addForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    try {
+        const response = await apiFetch('/api/users/list/', {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+        });
+        if (response.ok) { closeAddModal(); loadData(); e.target.reset(); }
+        else { alert('Xatolik yuz berdi!'); }
+    } catch (error) { console.error(error); }
+};
+
+document.getElementById('editForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('edit_id').value;
+    const formData = new FormData(e.target);
+    // remove empty password
+    if (!formData.get('password')) formData.delete('password');
+    try {
+        const response = await apiFetch(`/api/users/list/${id}/`, {
+            method: 'PATCH',
+            body: formData,
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+        });
+        if (response.ok) { closeEditModal(); loadData(); e.target.reset(); }
+        else { alert('Xatolik yuz berdi!'); }
+    } catch (error) { console.error(error); }
+};
 
 loadData();
 </script>

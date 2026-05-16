@@ -50,6 +50,7 @@ class User(AbstractUser):
     district = models.CharField(_('district'), max_length=100)
     mfy = models.CharField(_('mfy'), max_length=100)
     rating = models.DecimalField(_('rating'), max_digits=3, decimal_places=2, default=0.0)
+    is_renter = models.BooleanField(_('is renter'), default=False)
 
     objects = UserManager()
 

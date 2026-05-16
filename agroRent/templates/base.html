@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="uz">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,9 @@
     <link rel="stylesheet" href="/api/static/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="/api/static/js/main.js"></script>
 </head>
+
 <body>
     <div class="container">
         <!-- Sidebar -->
@@ -18,8 +21,8 @@
             </div>
             <nav>
                 <ul>
-                    <li class="{% if request.path == '' %}active{% endif %}">
-                        <a href=""><i class="fas fa-chart-line"></i> Dashboard</a>
+                    <li class="{% if request.path == '/admin/' %}active{% endif %}">
+                        <a href="/admin/"><i class="fas fa-chart-line"></i> Dashboard</a>
                     </li>
                     <li class="{% if '/api/admin/banners/' in request.path %}active{% endif %}">
                         <a href="/api/admin/banners/"><i class="fas fa-ad"></i> Bannerlar</a>
@@ -42,7 +45,7 @@
                 </ul>
             </nav>
             <div class="sidebar-footer">
-                <a href="/django-admin/logout/"><i class="fas fa-sign-out-alt"></i> Chiqish</a>
+                <a href="javascript:void(0)" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Chiqish</a>
             </div>
         </aside>
 
@@ -58,15 +61,25 @@
                         <i class="fas fa-bell"></i>
                         <span class="badge" id="unread-count">0</span>
                     </div>
-                    <img src="https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff" alt="Admin">
-                    <span>Administrator</span>
+                    <img id="admin-avatar" src="https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff" alt="Admin">
+                    <span id="admin-name">Administrator</span>
                 </div>
             </header>
+
+            <script>
+                // Load user info from localStorage
+                const userJson = localStorage.getItem('admin_user');
+                if (userJson) {
+                    const user = JSON.parse(userJson);
+                    document.getElementById('admin-name').innerText = user.first_name + ' ' + user.last_name;
+                    document.getElementById('admin-avatar').src = `https://ui-avatars.com/api/?name=${user.first_name}+${user.last_name}&background=0D8ABC&color=fff`;
+                }
+            </script>
 
             {% block content %}{% endblock %}
         </main>
     </div>
-    <script src="/api/static/js/main.js"></script>
     {% block scripts %}{% endblock %}
 </body>
+
 </html>

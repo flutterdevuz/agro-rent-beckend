@@ -5,12 +5,14 @@ from market.models import MarketItem, MarketOrder
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
+    isRenter = serializers.BooleanField(source='is_renter', default=False)
 
     class Meta:
         model = User
-        fields = ('phone_number', 'first_name', 'last_name', 'region', 'district', 'mfy', 'password')
+        fields = ('phone_number', 'first_name', 'last_name', 'region', 'district', 'mfy', 'password', 'isRenter')
 
     def create(self, validated_data):
+        is_renter = validated_data.pop('is_renter', False)
         user = User.objects.create_user(
             phone_number=validated_data['phone_number'],
             password=validated_data['password'],
@@ -18,7 +20,8 @@ class RegisterSerializer(serializers.ModelSerializer):
             last_name=validated_data['last_name'],
             region=validated_data['region'],
             district=validated_data['district'],
-            mfy=validated_data['mfy']
+            mfy=validated_data['mfy'],
+            is_renter=is_renter
         )
         return user
 
@@ -32,9 +35,11 @@ class ResetPasswordSerializer(serializers.ModelSerializer):
         fields = ('phone_number', 'description')
 
 class UserSerializer(serializers.ModelSerializer):
+    isRenter = serializers.BooleanField(source='is_renter', read_only=True)
+
     class Meta:
         model = User
-        fields = ('id', 'phone_number', 'first_name', 'last_name', 'region', 'district', 'mfy', 'rating')
+        fields = ('id', 'phone_number', 'first_name', 'last_name', 'region', 'district', 'mfy', 'rating', 'isRenter', 'is_staff', 'is_superuser')
 
 class ProfileSerializer(serializers.ModelSerializer):
     order_count = serializers.SerializerMethodField()

@@ -78,7 +78,7 @@
 <script>
     async function loadStats() {
         try {
-            const response = await fetch('/api/users/stats/');
+            const response = await apiFetch('/api/users/stats/');
             const data = await response.json();
 
             document.getElementById('users-count').innerText = data.users_count.toLocaleString();
