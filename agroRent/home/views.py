@@ -1,11 +1,11 @@
 from django.db.models import Count, Q
 from django.views.generic import TemplateView
 from rest_framework import generics
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from home.models import HomeContent
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from agroRent.utils.translator import translate_text
+from agroRent.utils.translator import translate_text, translate_texts_batch
 from home.serializers import HomeContentSerializer
 
 class BannerListView(generics.ListCreateAPIView):
@@ -59,14 +59,24 @@ def handle_404(request, exception):
     return render(request, '404.html', status=404)
 
 class TranslateView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def post(self, request):
         texts = request.data.get('texts', [])
-        target_lang = request.LANGUAGE_CODE or 'uz'
-        
-        translations = {}
-        for text in texts:
-            translations[text] = translate_text(text, target_lang)
-            
+        # Tilni request body'dan ol, keyin header'dan, default uz
+        target_lang = request.data.get('lang') or request.headers.get('Accept-Language', 'uz').split(',')[0].strip().split('-')[0]
+
+        # uz_cyrl uchun maxsus handling
+        lang_map = {
+            'uz_cyrl': 'uz',  # Google Translate uz ni ishlatadi
+            'uz-cyrl': 'uz',
+        }
+        target_lang = lang_map.get(target_lang, target_lang)
+
+        # Agar texts bo'sh bo'lsa
+        if not texts:
+            return Response({})
+
+        translations = translate_texts_batch(texts, target_lang)
+
         return Response(translations)

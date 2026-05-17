@@ -181,9 +181,11 @@
 
             async translatePage() {
                 const lang = localStorage.getItem('at_lang') || 'uz';
-                document.getElementById('current-lang-label').innerText = lang.toUpperCase().split('_')[0];
+                // Label uchun: uz_cyrl → UZ ko'rsatiladi
+                const labelMap = { 'uz': 'UZ', 'uz_cyrl': 'UZ', 'ru': 'RU', 'en': 'EN', 'tr': 'TR' };
+                document.getElementById('current-lang-label').innerText = labelMap[lang] || lang.toUpperCase().split('_')[0];
                 
-                if (lang === 'uz') return;
+                if (lang === 'en') return;
 
                 const elements = document.querySelectorAll('[data-i18n]');
                 const texts = Array.from(elements).map(el => el.innerText.trim()).filter(Boolean);
@@ -191,7 +193,12 @@
                 if (texts.length === 0) return;
 
                 try {
-                    const translations = await window.atApi.post('/translate/', { texts });
+                    const response = await fetch('/api/translate/', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ texts, lang })
+                    });
+                    const translations = await response.json();
                     elements.forEach(el => {
                         const original = el.innerText.trim();
                         if (translations[original]) {

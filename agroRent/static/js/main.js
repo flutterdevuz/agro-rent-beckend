@@ -32,12 +32,12 @@ async function apiFetch(url, options = {}) {
 }
 
 function changeLanguage(lang) {
-    localStorage.setItem('admin_lang', lang);
+    localStorage.setItem('at_lang', lang);
     window.location.reload();
 }
 
 async function translateUI() {
-    const lang = localStorage.getItem('admin_lang') || 'uz';
+    const lang = localStorage.getItem('at_lang') || 'uz';
     if (lang === 'uz') return; // Default is Uzbek, no need to translate
 
     const elements = document.querySelectorAll('[data-i18n]');
@@ -60,7 +60,16 @@ async function translateUI() {
     if (textsToTranslate.length === 0) return;
 
     try {
-        const translations = await window.apiService.translate([...new Set(textsToTranslate)]);
+        const token = localStorage.getItem('at_token');
+        const response = await fetch('/api/translate/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+            },
+            body: JSON.stringify({ texts: [...new Set(textsToTranslate)], lang })
+        });
+        const translations = await response.json();
         if (translations) {
             elements.forEach(el => {
                 const text = el.innerText.trim();

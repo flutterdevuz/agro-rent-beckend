@@ -65,7 +65,8 @@
                     <div class="lang-selector">
                         <select id="lang-select" onchange="changeLanguage(this.value)"
                             style="padding: 5px 10px; border-radius: 8px; border: 1px solid #ddd; background: #fff; cursor: pointer;">
-                            <option value="uz">O'zbek</option>
+                            <option value="uz">O'zbek (Lot)</option>
+                            <option value="uz_cyrl">Ўзбек (Кир)</option>
                             <option value="ru">Русский</option>
                             <option value="en">English</option>
                             <option value="tr">Türkçe</option>
@@ -84,7 +85,7 @@
 
             <script>
                 // Load user info from localStorage
-                const userJson = localStorage.getItem('admin_user');
+                const userJson = localStorage.getItem('at_user');
                 if (userJson) {
                     const user = JSON.parse(userJson);
                     document.getElementById('admin-name').innerText = user.first_name + ' ' + user.last_name;
@@ -92,7 +93,7 @@
                 }
 
                 // Set initial language selector value
-                const currentLang = localStorage.getItem('admin_lang') || 'uz';
+                const currentLang = localStorage.getItem('at_lang') || 'uz';
                 document.getElementById('lang-select').value = currentLang;
             </script>
 
