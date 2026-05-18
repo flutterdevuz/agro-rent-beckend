@@ -1,12 +1,13 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
 from notifications.models import NotificationCategory, Notification, FCMToken
 from notifications.serializers import (
     NotificationCategorySerializer, NotificationSerializer, FCMTokenSerializer
 )
-from drf_spectacular.utils import extend_schema, OpenApiResponse
+from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiParameter
 
 class NotificationCategoryListView(generics.ListCreateAPIView):
     queryset = NotificationCategory.objects.all()
@@ -29,7 +30,13 @@ class NotificationDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = NotificationSerializer
 
 class MarkNotificationReadView(APIView):
+    permission_classes = [IsAuthenticated]
+
     @extend_schema(
+        parameters=[
+            OpenApiParameter(name='pk', type=int, location=OpenApiParameter.PATH, description="Notification ID")
+        ],
+        request=None,  # Swagger-ga so'rov tanasi (body) shart emasligini bildiramiz
         responses={200: OpenApiResponse(description="Notification marked as read")},
         description="Mark a specific notification as read"
     )
@@ -47,7 +54,6 @@ class FCMTokenUpdateView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         token = serializer.validated_data['token']
-        # Update if exists or create new
         FCMToken.objects.update_or_create(
             user=self.request.user,
             token=token,
@@ -55,6 +61,8 @@ class FCMTokenUpdateView(generics.CreateAPIView):
         )
 
 class UnreadNotificationCountView(APIView):
+    permission_classes = [IsAuthenticated]
+
     @extend_schema(
         responses={200: OpenApiResponse(description="Count of unread notifications")},
         description="Get the total count of unread notifications for the current user"

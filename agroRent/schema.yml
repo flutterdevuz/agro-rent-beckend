@@ -1,0 +1,2506 @@
+openapi: 3.0.3
+info:
+  title: Agro Rent API
+  version: 1.0.0
+  description: Agro Rent project API documentation
+paths:
+  /api/banners/:
+    get:
+      operationId: banners_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - banners
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedHomeContentList'
+          description: ''
+    post:
+      operationId: banners_create
+      tags:
+      - banners
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HomeContent'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/HomeContent'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/HomeContent'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HomeContent'
+          description: ''
+  /api/banners/{id}/:
+    get:
+      operationId: banners_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - banners
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HomeContent'
+          description: ''
+    put:
+      operationId: banners_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - banners
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HomeContent'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/HomeContent'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/HomeContent'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HomeContent'
+          description: ''
+    patch:
+      operationId: banners_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - banners
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedHomeContent'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedHomeContent'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedHomeContent'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HomeContent'
+          description: ''
+    delete:
+      operationId: banners_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - banners
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/market/categories/:
+    get:
+      operationId: market_categories_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - market
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCategoryList'
+          description: ''
+    post:
+      operationId: market_categories_create
+      tags:
+      - market
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Category'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Category'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Category'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+          description: ''
+  /api/market/categories/{id}/:
+    get:
+      operationId: market_categories_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - market
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+          description: ''
+    put:
+      operationId: market_categories_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - market
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Category'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Category'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Category'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+          description: ''
+    patch:
+      operationId: market_categories_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - market
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCategory'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCategory'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCategory'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+          description: ''
+    delete:
+      operationId: market_categories_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - market
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/market/items/:
+    get:
+      operationId: market_items_list
+      parameters:
+      - in: query
+        name: category
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: condition
+        schema:
+          type: string
+      - in: query
+        name: has_delivery
+        schema:
+          type: boolean
+      - in: query
+        name: location__icontains
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: price__gte
+        schema:
+          type: number
+      - in: query
+        name: price__lte
+        schema:
+          type: number
+      - in: query
+        name: rating__gte
+        schema:
+          type: number
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - market
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMarketItemList'
+          description: ''
+    post:
+      operationId: market_items_create
+      tags:
+      - market
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MarketItem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MarketItem'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MarketItem'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MarketItem'
+          description: ''
+  /api/market/items/{id}/:
+    get:
+      operationId: market_items_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - market
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MarketItem'
+          description: ''
+    put:
+      operationId: market_items_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - market
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MarketItem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MarketItem'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MarketItem'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MarketItem'
+          description: ''
+    patch:
+      operationId: market_items_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - market
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedMarketItem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedMarketItem'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedMarketItem'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MarketItem'
+          description: ''
+    delete:
+      operationId: market_items_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - market
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/market/items/create/:
+    post:
+      operationId: market_items_create_create
+      tags:
+      - market
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MarketItem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MarketItem'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MarketItem'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MarketItem'
+          description: ''
+  /api/market/me/:
+    get:
+      operationId: market_me_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - market
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMarketItemList'
+          description: ''
+  /api/market/orders/create/:
+    post:
+      operationId: market_orders_create_create
+      tags:
+      - market
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MarketOrder'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MarketOrder'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MarketOrder'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MarketOrder'
+          description: ''
+  /api/notifications/{id}/read/:
+    post:
+      operationId: notifications_read_create
+      description: Mark a specific notification as read
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: pk
+        schema:
+          type: integer
+        description: Notification ID
+        required: true
+      tags:
+      - notifications
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: Notification marked as read
+  /api/notifications/categories/:
+    get:
+      operationId: notifications_categories_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - notifications
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedNotificationCategoryList'
+          description: ''
+    post:
+      operationId: notifications_categories_create
+      tags:
+      - notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationCategory'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NotificationCategory'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NotificationCategory'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationCategory'
+          description: ''
+  /api/notifications/fcm-token/:
+    post:
+      operationId: notifications_fcm_token_create
+      tags:
+      - notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FCMToken'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FCMToken'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FCMToken'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FCMToken'
+          description: ''
+  /api/notifications/list/:
+    get:
+      operationId: notifications_list_list
+      parameters:
+      - in: query
+        name: category
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: is_read
+        schema:
+          type: boolean
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - notifications
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedNotificationList'
+          description: ''
+    post:
+      operationId: notifications_list_create
+      tags:
+      - notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Notification'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Notification'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Notification'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+          description: ''
+  /api/notifications/list/{id}/:
+    get:
+      operationId: notifications_list_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - notifications
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+          description: ''
+    put:
+      operationId: notifications_list_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Notification'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Notification'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Notification'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+          description: ''
+    patch:
+      operationId: notifications_list_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedNotification'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedNotification'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedNotification'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+          description: ''
+    delete:
+      operationId: notifications_list_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - notifications
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/notifications/unread-count/:
+    get:
+      operationId: notifications_unread_count_retrieve
+      description: Get the total count of unread notifications for the current user
+      tags:
+      - notifications
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: Count of unread notifications
+  /api/popular-equipment/:
+    get:
+      operationId: popular_equipment_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - popular-equipment
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMarketItemList'
+          description: ''
+  /api/rent/items/:
+    get:
+      operationId: rent_items_list
+      parameters:
+      - in: query
+        name: condition
+        schema:
+          type: string
+      - in: query
+        name: equipment_name__icontains
+        schema:
+          type: string
+      - in: query
+        name: hp__gte
+        schema:
+          type: integer
+      - in: query
+        name: hp__lte
+        schema:
+          type: integer
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: price__gte
+        schema:
+          type: number
+      - in: query
+        name: price__lte
+        schema:
+          type: number
+      - in: query
+        name: rating__gte
+        schema:
+          type: number
+      - in: query
+        name: region__icontains
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - rent
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedRentItemList'
+          description: ''
+    post:
+      operationId: rent_items_create
+      tags:
+      - rent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RentItemCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RentItemCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RentItemCreate'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RentItemCreate'
+          description: ''
+  /api/rent/items/{id}/:
+    get:
+      operationId: rent_items_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - rent
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RentItem'
+          description: ''
+    put:
+      operationId: rent_items_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - rent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RentItem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RentItem'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RentItem'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RentItem'
+          description: ''
+    patch:
+      operationId: rent_items_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - rent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedRentItem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedRentItem'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedRentItem'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RentItem'
+          description: ''
+    delete:
+      operationId: rent_items_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - rent
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/rent/items/create/:
+    post:
+      operationId: rent_items_create_create
+      tags:
+      - rent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RentItemCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RentItemCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RentItemCreate'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RentItemCreate'
+          description: ''
+  /api/rent/me/:
+    get:
+      operationId: rent_me_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - rent
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedRentItemList'
+          description: ''
+  /api/rent/orders/create/:
+    post:
+      operationId: rent_orders_create_create
+      tags:
+      - rent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RentOrder'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RentOrder'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RentOrder'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RentOrder'
+          description: ''
+  /api/translate/:
+    post:
+      operationId: translate_create
+      description: Matnlarni yuborilgan tilga guruh shaklida (batch) tarjima qilib
+        beruvchi API
+      tags:
+      - translate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TranslateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TranslateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TranslateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TranslateResponse'
+          description: ''
+  /api/users/list/:
+    get:
+      operationId: users_list_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - users
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserList'
+          description: ''
+    post:
+      operationId: users_list_create
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/users/login/:
+    post:
+      operationId: users_login_create
+      description: Login with phone number and password
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Login'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Login'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                type: string
+          description: ''
+  /api/users/orders/:
+    get:
+      operationId: users_orders_list
+      description: Get all orders (Rent and Market) for the current user
+      tags:
+      - users
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UnifiedOrder'
+          description: ''
+  /api/users/profile/:
+    get:
+      operationId: users_profile_retrieve
+      tags:
+      - users
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+          description: ''
+  /api/users/profile/update/:
+    put:
+      operationId: users_profile_update_update
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfile'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UpdateProfile'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UpdateProfile'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateProfile'
+          description: ''
+    patch:
+      operationId: users_profile_update_partial_update
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUpdateProfile'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUpdateProfile'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUpdateProfile'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateProfile'
+          description: ''
+  /api/users/public-stats/:
+    get:
+      operationId: users_public_stats_retrieve
+      description: Publicly available general statistics
+      tags:
+      - users
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/users/register/:
+    post:
+      operationId: users_register_create
+      description: Register a new user
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Register'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Register'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Register'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Register'
+          description: ''
+  /api/users/reset-password/:
+    post:
+      operationId: users_reset_password_create
+      description: Request a password reset (sent to admin)
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPassword'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ResetPassword'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ResetPassword'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResetPassword'
+          description: ''
+  /api/users/stats/:
+    get:
+      operationId: users_stats_retrieve
+      description: Dashboard statistics for staff users
+      tags:
+      - users
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+components:
+  schemas:
+    Category:
+      type: object
+      description: |-
+        Mixin to automatically translate specified fields in a serializer.
+        The serializer should define 'translatable_fields' in its Meta class.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - name
+    ContentTypeEnum:
+      enum:
+      - banner
+      - popular_equipment
+      type: string
+      description: |-
+        * `banner` - Banner
+        * `popular_equipment` - Ommabop texnika
+    FCMToken:
+      type: object
+      properties:
+        token:
+          type: string
+          title: FCM Token
+      required:
+      - token
+    HomeContent:
+      type: object
+      description: |-
+        Mixin to automatically translate specified fields in a serializer.
+        The serializer should define 'translatable_fields' in its Meta class.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        content_type:
+          allOf:
+          - $ref: '#/components/schemas/ContentTypeEnum'
+          readOnly: true
+          title: Type
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        image:
+          type: string
+          format: uri
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,18}(?:\.\d{0,2})?$
+          nullable: true
+        market_item:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - content_type
+      - description
+      - id
+      - image
+      - name
+    Login:
+      type: object
+      properties:
+        phone_number:
+          type: string
+        password:
+          type: string
+          writeOnly: true
+      required:
+      - password
+      - phone_number
+    MarketItem:
+      type: object
+      description: |-
+        Mixin to automatically translate specified fields in a serializer.
+        The serializer should define 'translatable_fields' in its Meta class.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        category_name:
+          type: string
+          readOnly: true
+        seller_details:
+          allOf:
+          - $ref: '#/components/schemas/User'
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        image:
+          type: string
+          format: uri
+          nullable: true
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,18}(?:\.\d{0,2})?$
+        rating:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,1}(?:\.\d{0,2})?$
+          readOnly: true
+        likes_count:
+          type: integer
+          readOnly: true
+          title: Likes
+        location:
+          type: string
+          maxLength: 255
+        condition:
+          type: string
+          maxLength: 100
+        brand:
+          type: string
+          maxLength: 100
+        model:
+          type: string
+          maxLength: 100
+        has_delivery:
+          type: boolean
+        warranty:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+        phone_number:
+          type: string
+          title: Contact phone
+          maxLength: 15
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        seller:
+          type: integer
+          readOnly: true
+        category:
+          type: string
+          format: uuid
+      required:
+      - brand
+      - category
+      - category_name
+      - condition
+      - created_at
+      - description
+      - id
+      - likes_count
+      - location
+      - model
+      - name
+      - phone_number
+      - price
+      - rating
+      - seller
+      - seller_details
+    MarketOrder:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        delivery_location:
+          type: string
+          maxLength: 255
+        quantity:
+          type: integer
+        delivery_date:
+          type: string
+          format: date
+        comment:
+          type: string
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        item:
+          type: string
+          format: uuid
+        user:
+          type: integer
+          readOnly: true
+      required:
+      - created_at
+      - delivery_date
+      - delivery_location
+      - id
+      - item
+      - user
+    Notification:
+      type: object
+      description: |-
+        Mixin to automatically translate specified fields in a serializer.
+        The serializer should define 'translatable_fields' in its Meta class.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        category_name:
+          type: string
+          readOnly: true
+        title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        is_read:
+          type: boolean
+        status:
+          type: string
+          maxLength: 100
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        user:
+          type: integer
+        category:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - category_name
+      - created_at
+      - description
+      - id
+      - title
+      - user
+    NotificationCategory:
+      type: object
+      description: |-
+        Mixin to automatically translate specified fields in a serializer.
+        The serializer should define 'translatable_fields' in its Meta class.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+      required:
+      - id
+      - name
+    PaginatedCategoryList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+    PaginatedHomeContentList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/HomeContent'
+    PaginatedMarketItemList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/MarketItem'
+    PaginatedNotificationCategoryList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/NotificationCategory'
+    PaginatedNotificationList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Notification'
+    PaginatedRentItemList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/RentItem'
+    PaginatedUserList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+    PatchedCategory:
+      type: object
+      description: |-
+        Mixin to automatically translate specified fields in a serializer.
+        The serializer should define 'translatable_fields' in its Meta class.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        created_at:
+          type: string
+          format: date-time
+    PatchedHomeContent:
+      type: object
+      description: |-
+        Mixin to automatically translate specified fields in a serializer.
+        The serializer should define 'translatable_fields' in its Meta class.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        content_type:
+          allOf:
+          - $ref: '#/components/schemas/ContentTypeEnum'
+          readOnly: true
+          title: Type
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        image:
+          type: string
+          format: uri
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,18}(?:\.\d{0,2})?$
+          nullable: true
+        market_item:
+          type: string
+          format: uuid
+          nullable: true
+    PatchedMarketItem:
+      type: object
+      description: |-
+        Mixin to automatically translate specified fields in a serializer.
+        The serializer should define 'translatable_fields' in its Meta class.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        category_name:
+          type: string
+          readOnly: true
+        seller_details:
+          allOf:
+          - $ref: '#/components/schemas/User'
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        image:
+          type: string
+          format: uri
+          nullable: true
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,18}(?:\.\d{0,2})?$
+        rating:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,1}(?:\.\d{0,2})?$
+          readOnly: true
+        likes_count:
+          type: integer
+          readOnly: true
+          title: Likes
+        location:
+          type: string
+          maxLength: 255
+        condition:
+          type: string
+          maxLength: 100
+        brand:
+          type: string
+          maxLength: 100
+        model:
+          type: string
+          maxLength: 100
+        has_delivery:
+          type: boolean
+        warranty:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+        phone_number:
+          type: string
+          title: Contact phone
+          maxLength: 15
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        seller:
+          type: integer
+          readOnly: true
+        category:
+          type: string
+          format: uuid
+    PatchedNotification:
+      type: object
+      description: |-
+        Mixin to automatically translate specified fields in a serializer.
+        The serializer should define 'translatable_fields' in its Meta class.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        category_name:
+          type: string
+          readOnly: true
+        title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        is_read:
+          type: boolean
+        status:
+          type: string
+          maxLength: 100
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        user:
+          type: integer
+        category:
+          type: string
+          format: uuid
+          nullable: true
+    PatchedRentItem:
+      type: object
+      description: |-
+        Mixin to automatically translate specified fields in a serializer.
+        The serializer should define 'translatable_fields' in its Meta class.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/RentImage'
+          readOnly: true
+        owner_details:
+          allOf:
+          - $ref: '#/components/schemas/User'
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        equipment_name:
+          type: string
+          maxLength: 255
+        brand:
+          type: string
+          maxLength: 255
+        hp:
+          type: integer
+          title: Horse power
+        condition:
+          type: string
+          maxLength: 100
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,18}(?:\.\d{0,2})?$
+        is_agreement:
+          type: boolean
+          title: Agreement
+        region:
+          type: string
+          maxLength: 100
+        location_name:
+          type: string
+          maxLength: 255
+        latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          nullable: true
+        longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          nullable: true
+        rating:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,1}(?:\.\d{0,2})?$
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        owner:
+          type: integer
+          readOnly: true
+    PatchedUpdateProfile:
+      type: object
+      properties:
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        country:
+          type: string
+          maxLength: 100
+        region:
+          type: string
+          maxLength: 50
+        district:
+          type: string
+          maxLength: 100
+        street:
+          type: string
+          maxLength: 150
+        house_number:
+          type: string
+          maxLength: 50
+        password:
+          type: string
+          writeOnly: true
+          title: Parol
+          maxLength: 128
+    Profile:
+      type: object
+      description: |-
+        Mixin to automatically translate specified fields in a serializer.
+        The serializer should define 'translatable_fields' in its Meta class.
+      properties:
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        order_count:
+          type: integer
+          readOnly: true
+        rating:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,1}(?:\.\d{0,2})?$
+        equipment_count:
+          type: integer
+          readOnly: true
+        location:
+          type: string
+          readOnly: true
+      required:
+      - equipment_count
+      - first_name
+      - last_name
+      - location
+      - order_count
+    Register:
+      type: object
+      properties:
+        phone_number:
+          type: string
+          maxLength: 15
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        country:
+          type: string
+          maxLength: 100
+        region:
+          type: string
+          maxLength: 50
+        district:
+          type: string
+          maxLength: 100
+        street:
+          type: string
+          maxLength: 150
+        house_number:
+          type: string
+          maxLength: 50
+        password:
+          type: string
+          writeOnly: true
+        isRenter:
+          type: boolean
+          default: false
+      required:
+      - district
+      - first_name
+      - house_number
+      - last_name
+      - password
+      - phone_number
+      - region
+      - street
+    RentImage:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        image:
+          type: string
+          format: uri
+      required:
+      - id
+      - image
+    RentItem:
+      type: object
+      description: |-
+        Mixin to automatically translate specified fields in a serializer.
+        The serializer should define 'translatable_fields' in its Meta class.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/RentImage'
+          readOnly: true
+        owner_details:
+          allOf:
+          - $ref: '#/components/schemas/User'
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        equipment_name:
+          type: string
+          maxLength: 255
+        brand:
+          type: string
+          maxLength: 255
+        hp:
+          type: integer
+          title: Horse power
+        condition:
+          type: string
+          maxLength: 100
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,18}(?:\.\d{0,2})?$
+        is_agreement:
+          type: boolean
+          title: Agreement
+        region:
+          type: string
+          maxLength: 100
+        location_name:
+          type: string
+          maxLength: 255
+        latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          nullable: true
+        longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          nullable: true
+        rating:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,1}(?:\.\d{0,2})?$
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        owner:
+          type: integer
+          readOnly: true
+      required:
+      - brand
+      - condition
+      - created_at
+      - equipment_name
+      - hp
+      - id
+      - images
+      - location_name
+      - name
+      - owner
+      - owner_details
+      - price
+      - rating
+      - region
+    RentItemCreate:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        equipment_name:
+          type: string
+          maxLength: 255
+        brand:
+          type: string
+          maxLength: 255
+        hp:
+          type: integer
+          title: Horse power
+        condition:
+          type: string
+          maxLength: 100
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,18}(?:\.\d{0,2})?$
+        is_agreement:
+          type: boolean
+          title: Agreement
+        region:
+          type: string
+          maxLength: 100
+        location_name:
+          type: string
+          maxLength: 255
+        latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          nullable: true
+        longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          nullable: true
+        uploaded_images:
+          type: array
+          items:
+            type: string
+          writeOnly: true
+      required:
+      - brand
+      - condition
+      - equipment_name
+      - hp
+      - id
+      - location_name
+      - name
+      - price
+      - region
+    RentOrder:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        location:
+          type: string
+          maxLength: 255
+        land_area:
+          type: string
+          maxLength: 100
+        order_date:
+          type: string
+          format: date-time
+        comment:
+          type: string
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        rent_item:
+          type: string
+          format: uuid
+        user:
+          type: integer
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - land_area
+      - location
+      - order_date
+      - rent_item
+      - user
+    ResetPassword:
+      type: object
+      properties:
+        phone_number:
+          type: string
+          maxLength: 15
+        description:
+          type: string
+          nullable: true
+      required:
+      - phone_number
+    StatusEnum:
+      enum:
+      - active
+      - delivered
+      - canceled
+      type: string
+      description: |-
+        * `active` - Active
+        * `delivered` - Delivered
+        * `canceled` - Canceled
+    TranslateRequest:
+      type: object
+      properties:
+        texts:
+          type: array
+          items:
+            type: string
+          description: Tarjima qilinishi kerak bo'lgan matnlar ro'yxati
+        lang:
+          type: string
+          description: 'Maqsadli til kodi, masalan: ''ru'', ''en'''
+      required:
+      - texts
+    TranslateResponse:
+      type: object
+      properties:
+        original_text:
+          type: string
+          description: Tarjima qilingan matn natijalari
+      required:
+      - original_text
+    UnifiedOrder:
+      type: object
+      description: |-
+        Mixin to automatically translate specified fields in a serializer.
+        The serializer should define 'translatable_fields' in its Meta class.
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          type: string
+        name:
+          type: string
+        image:
+          type: string
+          format: uri
+          nullable: true
+        size:
+          type: string
+          nullable: true
+        date_time:
+          type: string
+          format: date-time
+        status:
+          type: string
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,18}(?:\.\d{0,2})?$
+      required:
+      - date_time
+      - id
+      - name
+      - price
+      - status
+      - type
+    UpdateProfile:
+      type: object
+      properties:
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        country:
+          type: string
+          maxLength: 100
+        region:
+          type: string
+          maxLength: 50
+        district:
+          type: string
+          maxLength: 100
+        street:
+          type: string
+          maxLength: 150
+        house_number:
+          type: string
+          maxLength: 50
+        password:
+          type: string
+          writeOnly: true
+          title: Parol
+          maxLength: 128
+      required:
+      - district
+      - first_name
+      - house_number
+      - last_name
+      - region
+      - street
+    User:
+      type: object
+      description: |-
+        Mixin to automatically translate specified fields in a serializer.
+        The serializer should define 'translatable_fields' in its Meta class.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        phone_number:
+          type: string
+          maxLength: 15
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        country:
+          type: string
+          maxLength: 100
+        region:
+          type: string
+          maxLength: 50
+        district:
+          type: string
+          maxLength: 100
+        street:
+          type: string
+          maxLength: 150
+        house_number:
+          type: string
+          maxLength: 50
+        rating:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,1}(?:\.\d{0,2})?$
+        isRenter:
+          type: boolean
+          readOnly: true
+        is_staff:
+          type: boolean
+          title: Staff status
+          description: Designates whether the user can log into this admin site.
+        is_superuser:
+          type: boolean
+          title: Superuser status
+          description: Designates that this user has all permissions without explicitly
+            assigning them.
+      required:
+      - district
+      - first_name
+      - house_number
+      - id
+      - isRenter
+      - last_name
+      - phone_number
+      - region
+      - street
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

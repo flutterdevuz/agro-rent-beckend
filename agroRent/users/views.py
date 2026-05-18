@@ -37,17 +37,16 @@ class LoginView(APIView):
 
     @extend_schema(
         request=LoginSerializer,
-        responses={200: dict, 401: str},
+        responses={200: dict, 400: str},
         description="Login with phone number and password"
     )
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
-            phone_number = serializer.validated_data['phone_number']
-            password = serializer.validated_data['password']
+            phone_number = serializer.validated_data.get('phone_number')
+            password = serializer.validated_data.get('password')
             
-            # Universal authenticate: ham username, ham phone_number sifatida tekshirib ko'radi
-            user = authenticate(username=phone_number, password=password) or authenticate(phone_number=phone_number, password=password)
+            user = authenticate(username=phone_number, password=password)
             
             if user:
                 login(request, user)
@@ -164,6 +163,10 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
 class DashboardStatsView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        responses={200: dict},
+        description="Dashboard statistics for staff users"
+    )
     def get(self, request):
         if not request.user.is_staff:
             return Response({"error": "Forbidden"}, status=403)
@@ -188,6 +191,10 @@ class DashboardStatsView(APIView):
 class PublicStatsView(APIView):
     permission_classes = [AllowAny]
 
+    @extend_schema(
+        responses={200: dict},
+        description="Publicly available general statistics"
+    )
     def get(self, request):
         return Response({
             "users_count": User.objects.count(),
