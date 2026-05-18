@@ -10,10 +10,12 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('phone_number', 'first_name', 'last_name', 'region', 'district', 'mfy', 'password', 'isRenter')
+        fields = (
+            'phone_number', 'first_name', 'last_name', 'country', 
+            'region', 'district', 'street', 'house_number', 'password', 'isRenter'
+        )
 
     def validate_phone_number(self, value):
-        # Remove spaces and common separators
         return value.replace(' ', '').replace('-', '').replace('(', '').replace(')', '')
 
     def create(self, validated_data):
@@ -23,9 +25,11 @@ class RegisterSerializer(serializers.ModelSerializer):
             password=validated_data['password'],
             first_name=validated_data['first_name'],
             last_name=validated_data['last_name'],
+            country=validated_data['country'],
             region=validated_data['region'],
             district=validated_data['district'],
-            mfy=validated_data['mfy'],
+            street=validated_data['street'],
+            house_number=validated_data['house_number'],
             is_renter=is_renter
         )
         return user
@@ -35,7 +39,6 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True)
 
     def validate_phone_number(self, value):
-        # Remove spaces and common separators
         return value.replace(' ', '').replace('-', '').replace('(', '').replace(')', '')
 
 class ResetPasswordSerializer(serializers.ModelSerializer):
@@ -48,8 +51,11 @@ class UserSerializer(TranslatableSerializerMixin, serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'phone_number', 'first_name', 'last_name', 'region', 'district', 'mfy', 'rating', 'isRenter', 'is_staff', 'is_superuser')
-        translatable_fields = ['district', 'mfy']
+        fields = (
+            'id', 'phone_number', 'first_name', 'last_name', 'country', 
+            'region', 'district', 'street', 'house_number', 'rating', 'isRenter', 'is_staff', 'is_superuser'
+        )
+        translatable_fields = ['country', 'district', 'street']
 
 class ProfileSerializer(TranslatableSerializerMixin, serializers.ModelSerializer):
     order_count = serializers.SerializerMethodField()
@@ -59,7 +65,9 @@ class ProfileSerializer(TranslatableSerializerMixin, serializers.ModelSerializer
     class Meta:
         model = User
         fields = ('first_name', 'last_name', 'order_count', 'rating', 'equipment_count', 'location')
-        translatable_fields = ['location']
+        # TUZATILDI: translatable_fields ichidan 'location' olib tashlandi,
+        # chunki u SerializerMethodField hisoblanadi. Tarjima mantiqi pastda bajariladi.
+        translatable_fields = [] 
 
     def get_order_count(self, obj) -> int:
         return RentOrder.objects.filter(user=obj).count() + MarketOrder.objects.filter(user=obj).count()
@@ -68,13 +76,16 @@ class ProfileSerializer(TranslatableSerializerMixin, serializers.ModelSerializer
         return RentItem.objects.filter(owner=obj).count() + MarketItem.objects.filter(seller=obj).count()
 
     def get_location(self, obj) -> str:
-        # Note: translate_text will be called on the final string by the mixin
-        return f"{obj.get_region_display()}, {obj.district}, {obj.mfy}"
+        # get_region_display() o'rniga tarjima miksini ishlay olishi uchun model maydonlarining o'zi uzatiladi
+        country = getattr(obj, 'country_uz', obj.country)
+        district = getattr(obj, 'district_uz', obj.district)
+        street = getattr(obj, 'street_uz', obj.street)
+        return f"{country}, {obj.get_region_display()}, {district}, {street}, {obj.house_number}-uy"
 
 class UpdateProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'region', 'district', 'mfy', 'password')
+        fields = ('first_name', 'last_name', 'country', 'region', 'district', 'street', 'house_number', 'password')
         extra_kwargs = {'password': {'write_only': True, 'required': False}}
 
     def update(self, instance, validated_data):
@@ -85,10 +96,10 @@ class UpdateProfileSerializer(serializers.ModelSerializer):
 
 class UnifiedOrderSerializer(TranslatableSerializerMixin, serializers.Serializer):
     id = serializers.UUIDField()
-    type = serializers.CharField() # 'rent' or 'market'
+    type = serializers.CharField() 
     name = serializers.CharField()
-    image = serializers.ImageField()
-    size = serializers.CharField(required=False)
+    image = serializers.ImageField(required=False, allow_null=True) # Swagger xato bermasligi uchun null bo'lishi belgilandi
+    size = serializers.CharField(required=False, allow_null=True)
     date_time = serializers.DateTimeField()
     status = serializers.CharField()
     price = serializers.DecimalField(max_digits=20, decimal_places=2)

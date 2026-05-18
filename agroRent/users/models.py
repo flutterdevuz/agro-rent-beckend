@@ -28,27 +28,13 @@ class User(AbstractUser):
     phone_number = models.CharField(_('phone number'), max_length=15, unique=True)
     first_name = models.CharField(_('first name'), max_length=150)
     last_name = models.CharField(_('last name'), max_length=150)
+   
+    country = models.CharField(_('country'), max_length=100, default="O'zbekiston")
+    region = models.CharField(_('region'), max_length=50) 
+    district = models.CharField(_('district'), max_length=100) # Tuman
+    street = models.CharField(_('street'), max_length=150)       # Ko'cha
+    house_number = models.CharField(_('house number'), max_length=50) # Uy raqami
     
-    REGION_CHOICES = [
-        ('toshkent_sh', 'Toshkent shahri'),
-        ('toshkent_v', 'Toshkent viloyati'),
-        ('andijon', 'Andijon viloyati'),
-        ('buxoro', 'Buxoro viloyati'),
-        ('fargona', 'Farg\'ona viloyati'),
-        ('jizzax', 'Jizzax viloyati'),
-        ('xorazm', 'Xorazm viloyati'),
-        ('namangan', 'Namangan viloyati'),
-        ('navoiy', 'Navoiy viloyati'),
-        ('qashqadaryo', 'Qashqadaryo viloyati'),
-        ('samarqand', 'Samarqand viloyati'),
-        ('sirdaryo', 'Sirdaryo viloyati'),
-        ('surxondaryo', 'Surxondaryo viloyati'),
-        ('qoraqalpogiston', 'Qoraqalpog\'iston Respublikasi'),
-    ]
-    
-    region = models.CharField(_('region'), max_length=50, choices=REGION_CHOICES)
-    district = models.CharField(_('district'), max_length=100)
-    mfy = models.CharField(_('mfy'), max_length=100)
     rating = models.DecimalField(_('rating'), max_digits=3, decimal_places=2, default=0.0)
     is_renter = models.BooleanField(_('is renter'), default=False)
 

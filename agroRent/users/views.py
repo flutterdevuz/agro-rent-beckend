@@ -45,9 +45,12 @@ class LoginView(APIView):
         if serializer.is_valid():
             phone_number = serializer.validated_data['phone_number']
             password = serializer.validated_data['password']
-            user = authenticate(phone_number=phone_number, password=password)
+            
+            # Universal authenticate: ham username, ham phone_number sifatida tekshirib ko'radi
+            user = authenticate(username=phone_number, password=password) or authenticate(phone_number=phone_number, password=password)
+            
             if user:
-                login(request, user)  # Create Django Session for decorators
+                login(request, user)
                 refresh = RefreshToken.for_user(user)
                 return Response({
                     'refresh': str(refresh),
@@ -56,9 +59,7 @@ class LoginView(APIView):
                 })
             return Response({'error': 'Username or password is not correct'}, status=status.HTTP_400_BAD_REQUEST)
         
-        # Flatten serializer errors to a single string for simplicity or keep as object
-        error_msg = serializer.errors
-        return Response({'error': error_msg}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 class ResetPasswordView(generics.CreateAPIView):
     serializer_class = ResetPasswordSerializer
@@ -97,15 +98,12 @@ class UserOrdersView(APIView):
     def get(self, request):
         status_filter = request.query_params.get('status', 'all')
         
-        # Fetch Rent Orders
         rent_orders = RentOrder.objects.filter(user=request.user)
-        # Fetch Market Orders
         market_orders = MarketOrder.objects.filter(user=request.user)
         
         combined = []
         
         for ro in rent_orders:
-            # Assuming first image for rent item
             image = ro.rent_item.images.first().image if ro.rent_item.images.exists() else None
             combined.append({
                 'id': ro.id,
@@ -114,7 +112,7 @@ class UserOrdersView(APIView):
                 'image': image,
                 'size': ro.land_area,
                 'date_time': ro.order_date,
-                'status': 'active', # Placeholder status logic
+                'status': 'active',
                 'price': ro.rent_item.price
             })
             
@@ -123,14 +121,13 @@ class UserOrdersView(APIView):
                 'id': mo.id,
                 'type': 'market',
                 'name': mo.item.name,
-                'image': None, # MarketItem doesn't have image in requirements yet, but usually it does. 
+                'image': None, 
                 'size': str(mo.quantity),
                 'date_time': mo.delivery_date,
-                'status': 'delivered', # Placeholder status logic
+                'status': 'delivered', 
                 'price': mo.item.price * mo.quantity
             })
             
-        # Filter by status if not 'all'
         if status_filter != 'all':
             combined = [o for o in combined if o['status'] == status_filter]
             
@@ -178,7 +175,6 @@ class DashboardStatsView(APIView):
         rent_items_count = RentItem.objects.count()
         market_items_count = MarketItem.objects.count()
 
-        # Revenue calculation
         rent_revenue = RentOrder.objects.aggregate(total=Sum('rent_item__price'))['total'] or 0
         market_revenue = MarketOrder.objects.aggregate(total=Sum('item__price'))['total'] or 0
         
