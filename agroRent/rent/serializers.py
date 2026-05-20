@@ -16,7 +16,7 @@ class RentItemSerializer(TranslatableSerializerMixin, serializers.ModelSerialize
         model = RentItem
         fields = '__all__'
         read_only_fields = ('owner', 'rating', 'created_at')
-        translatable_fields = ['name', 'equipment_name', 'brand', 'condition', 'location_name']
+        translatable_fields = ['name', 'equipment_name', 'brand', 'condition', 'location_name','description']
 
 class RentItemCreateSerializer(serializers.ModelSerializer):
     uploaded_images = serializers.ListField(
@@ -28,8 +28,8 @@ class RentItemCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = RentItem
         fields = (
-            'id', 'name', 'equipment_name', 'brand', 'hp', 'condition', 
-            'price', 'is_agreement', 'region', 'location_name', 
+            'id', 'name', 'equipment_name', 'brand', 'hp', 'condition',
+            'description','price', 'is_agreement', 'region', 'location_name',
             'latitude', 'longitude', 'uploaded_images'
         )
 

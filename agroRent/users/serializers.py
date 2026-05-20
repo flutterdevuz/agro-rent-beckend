@@ -65,8 +65,6 @@ class ProfileSerializer(TranslatableSerializerMixin, serializers.ModelSerializer
     class Meta:
         model = User
         fields = ('first_name', 'last_name', 'order_count', 'rating', 'equipment_count', 'location')
-        # TUZATILDI: translatable_fields ichidan 'location' olib tashlandi,
-        # chunki u SerializerMethodField hisoblanadi. Tarjima mantiqi pastda bajariladi.
         translatable_fields = [] 
 
     def get_order_count(self, obj) -> int:
@@ -76,11 +74,15 @@ class ProfileSerializer(TranslatableSerializerMixin, serializers.ModelSerializer
         return RentItem.objects.filter(owner=obj).count() + MarketItem.objects.filter(seller=obj).count()
 
     def get_location(self, obj) -> str:
-        # get_region_display() o'rniga tarjima miksini ishlay olishi uchun model maydonlarining o'zi uzatiladi
         country = getattr(obj, 'country_uz', obj.country)
         district = getattr(obj, 'district_uz', obj.district)
         street = getattr(obj, 'street_uz', obj.street)
-        return f"{country}, {obj.get_region_display()}, {district}, {street}, {obj.house_number}-uy"
+        
+        # Xavfsiz get_region_display() chaqiruvi (agar modelda bo'lsa ishlaydi, bo'lmasa xato bermaydi)
+        region = obj.get_region_display() if hasattr(obj, 'get_region_display') else getattr(obj, 'region', '')
+        house = obj.house_number if obj.house_number else ""
+        
+        return f"{country}, {region}, {district}, {street}, {house}-uy"
 
 class UpdateProfileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -98,11 +100,28 @@ class UnifiedOrderSerializer(TranslatableSerializerMixin, serializers.Serializer
     id = serializers.UUIDField()
     type = serializers.CharField() 
     name = serializers.CharField()
-    image = serializers.ImageField(required=False, allow_null=True) # Swagger xato bermasligi uchun null bo'lishi belgilandi
+    image = serializers.ImageField(required=False, allow_null=True)
     size = serializers.CharField(required=False, allow_null=True)
-    date_time = serializers.DateTimeField()
+    
+    # SerializerMethodField har qanday formatni xatosiz qayta ishlash imkonini beradi
+    date_time = serializers.SerializerMethodField()
+    
     status = serializers.CharField()
     price = serializers.DecimalField(max_digits=20, decimal_places=2)
     
     class Meta:
         translatable_fields = ['name', 'status']
+
+    def get_date_time(self, obj):
+        # Obyektdan sanani lug'at yoki atribut ko'rinishida olish
+        val = obj.get('date_time') if isinstance(obj, dict) else getattr(obj, 'date_time', None)
+        
+        if val is None:
+            return None
+            
+        import datetime
+        # Agar u datetime yoki date obyekti bo'lsa, ISO formatidagi stringga o'giramiz
+        if isinstance(val, (datetime.datetime, datetime.date)):
+            return val.isoformat()
+            
+        return str(val)

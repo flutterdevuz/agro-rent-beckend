@@ -11,6 +11,7 @@ class RentItem(models.Model):
     brand = models.CharField(_('brand'), max_length=255)
     hp = models.PositiveIntegerField(_('horse power'))
     condition = models.CharField(_('condition'), max_length=100)
+    description = models.TextField(_('description'), blank=True, null=True)
     price = models.DecimalField(_('price'), max_digits=20, decimal_places=2)
     is_agreement = models.BooleanField(_('agreement'), default=False)
     region = models.CharField(_('region'), max_length=100)
