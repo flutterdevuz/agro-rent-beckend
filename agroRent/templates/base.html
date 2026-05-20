@@ -46,6 +46,10 @@
                         <a href="/api/admin/users/"><i class="fas fa-users"></i> <span
                                 data-i18n>Foydalanuvchilar</span></a>
                     </li>
+                    <li class="{% if '/api/admin/site-texts/' in request.path %}active{% endif %}">
+                        <a href="/api/admin/site-texts/"><i class="fas fa-language"></i> <span
+                                data-i18n>Sayt matnlari</span></a>
+                    </li>
                 </ul>
             </nav>
             <div class="sidebar-footer">

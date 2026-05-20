@@ -47,7 +47,7 @@ class ResetPasswordSerializer(serializers.ModelSerializer):
         fields = ('phone_number', 'description')
 
 class UserSerializer(TranslatableSerializerMixin, serializers.ModelSerializer):
-    isRenter = serializers.BooleanField(source='is_renter', read_only=True)
+    isRenter = serializers.BooleanField(source='is_renter', required=False, default=False)
 
     class Meta:
         model = User
@@ -98,6 +98,7 @@ class UpdateProfileSerializer(serializers.ModelSerializer):
 
 class UnifiedOrderSerializer(TranslatableSerializerMixin, serializers.Serializer):
     id = serializers.UUIDField()
+    item_id = serializers.UUIDField()
     type = serializers.CharField() 
     name = serializers.CharField()
     image = serializers.ImageField(required=False, allow_null=True)

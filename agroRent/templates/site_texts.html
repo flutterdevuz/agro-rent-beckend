@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+
+{% block title %}Sayt Matnlari (Tarjimalar) - Agro Rent Admin{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+        <h2>Sayt Matnlari / Tarjimalar boshqaruvi</h2>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <input type="text" id="searchInput" placeholder="Izlash (Kalit so'z yoki tarjima)..." style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; width: 250px;">
+            <button class="btn-primary" onclick="searchTexts()"><i class="fas fa-search"></i> Qidirish</button>
+        </div>
+    </div>
+    
+    <div class="table-container" style="margin-top: 15px;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Kalit / Asl matn</th>
+                    <th>Uzbek (Lotin)</th>
+                    <th>Uzbek (Kirill)</th>
+                    <th>Ruscha</th>
+                    <th>Inglizcha</th>
+                    <th>Turkcha</th>
+                    <th>Amallar</th>
+                </tr>
+            </thead>
+            <tbody id="data-body">
+                <tr><td colspan="7" style="text-align:center">Yuklanmoqda...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination controls -->
+    <div id="pagination" style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
+        <button id="prevBtn" class="btn-secondary" onclick="prevPage()" disabled style="padding: 6px 12px; font-size: 14px;">Oldingi</button>
+        <span id="pageInfo" style="font-size: 14px; font-weight: 500;">Sahifa 1</span>
+        <button id="nextBtn" class="btn-secondary" onclick="nextPage()" disabled style="padding: 6px 12px; font-size: 14px;">Keyingi</button>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div id="editModal" class="modal">
+    <div class="modal-content" style="max-width: 600px;">
+        <div class="modal-header">
+            <h3>Tarjimani tahrirlash</h3>
+            <span class="close" onclick="closeEditModal()">&times;</span>
+        </div>
+        <form id="editForm">
+            <input type="hidden" id="edit_id" name="id">
+            
+            <div class="form-group">
+                <label style="font-weight: 600; color: #4b5563;">Kalit / Asl matn (O'zgartirib bo'lmaydi)</label>
+                <div id="edit_key_display" style="background: #f3f4f6; padding: 10px; border-radius: 6px; border: 1px solid #e5e7eb; word-break: break-all; margin-top: 5px; font-size: 14px; color: #374151;"></div>
+            </div>
+
+            <div class="form-group">
+                <label>O'zbekcha (Lotin)</label>
+                <textarea id="edit_uz" name="uz" rows="2" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ddd;"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>O'zbekcha (Kirill)</label>
+                <textarea id="edit_uz_cyrl" name="uz_cyrl" rows="2" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ddd;"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Ruscha</label>
+                <textarea id="edit_ru" name="ru" rows="2" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ddd;"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Inglizcha</label>
+                <textarea id="edit_en" name="en" rows="2" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ddd;"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Turkcha</label>
+                <textarea id="edit_tr" name="tr" rows="2" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ddd;"></textarea>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeEditModal()">Bekor qilish</button>
+                <button type="submit" class="btn-primary">Saqlash</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let currentTexts = [];
+let currentPage = 1;
+let hasNext = false;
+let hasPrev = false;
+let searchQuery = "";
+
+async function loadData() {
+    try {
+        let url = `/api/site-texts/?page=${currentPage}`;
+        if (searchQuery) {
+            url += `&search=${encodeURIComponent(searchQuery)}`;
+        }
+        const response = await apiFetch(url);
+        const data = await response.json();
+        
+        const body = document.getElementById('data-body');
+        body.innerHTML = '';
+        
+        const items = data.results || data;
+        currentTexts = items;
+        
+        // Handle pagination state if DRF paginated response
+        if (data.results) {
+            hasNext = !!data.next;
+            hasPrev = !!data.previous;
+            document.getElementById('prevBtn').disabled = !hasPrev;
+            document.getElementById('nextBtn').disabled = !hasNext;
+            document.getElementById('pageInfo').innerText = `Sahifa ${currentPage}`;
+            document.getElementById('pagination').style.display = 'flex';
+        } else {
+            document.getElementById('pagination').style.display = 'none';
+        }
+
+        if (items.length === 0) {
+            body.innerHTML = '<tr><td colspan="7" style="text-align:center">Matnlar topilmadi</td></tr>';
+            return;
+        }
+
+        items.forEach(item => {
+            body.innerHTML += `
+                <tr>
+                    <td style="max-width: 180px; word-break: break-all; font-weight: 500; font-size: 13px;">${item.key || ''}</td>
+                    <td style="max-width: 150px; font-size: 13px;">${item.uz || '-'}</td>
+                    <td style="max-width: 150px; font-size: 13px;">${item.uz_cyrl || '-'}</td>
+                    <td style="max-width: 150px; font-size: 13px;">${item.ru || '-'}</td>
+                    <td style="max-width: 150px; font-size: 13px;">${item.en || '-'}</td>
+                    <td style="max-width: 150px; font-size: 13px;">${item.tr || '-'}</td>
+                    <td>
+                        <button onclick="openEditModal(${item.id})" class="btn-action btn-edit"><i class="fas fa-edit"></i> Tahrirlash</button>
+                    </td>
+                </tr>
+            `;
+        });
+    } catch (error) {
+        console.error('Error loading site texts:', error);
+    }
+}
+
+function searchTexts() {
+    searchQuery = document.getElementById('searchInput').value.trim();
+    currentPage = 1;
+    loadData();
+}
+
+// Add enter key event on search input
+document.getElementById('searchInput').addEventListener('keyup', function(event) {
+    if (event.key === 'Enter') {
+        searchTexts();
+    }
+});
+
+function prevPage() {
+    if (hasPrev) {
+        currentPage--;
+        loadData();
+    }
+}
+
+function nextPage() {
+    if (hasNext) {
+        currentPage++;
+        loadData();
+    }
+}
+
+function openEditModal(id) {
+    const item = currentTexts.find(t => t.id === id);
+    if (!item) return;
+    
+    document.getElementById('edit_id').value = item.id;
+    document.getElementById('edit_key_display').innerText = item.key;
+    document.getElementById('edit_uz').value = item.uz || '';
+    document.getElementById('edit_uz_cyrl').value = item.uz_cyrl || '';
+    document.getElementById('edit_ru').value = item.ru || '';
+    document.getElementById('edit_en').value = item.en || '';
+    document.getElementById('edit_tr').value = item.tr || '';
+    
+    document.getElementById('editModal').style.display = 'block';
+}
+
+function closeEditModal() {
+    document.getElementById('editModal').style.display = 'none';
+}
+
+document.getElementById('editForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('edit_id').value;
+    const formData = new FormData(e.target);
+    
+    try {
+        const response = await apiFetch(`/api/site-texts/${id}/`, {
+            method: 'PATCH',
+            body: formData,
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+        });
+        if (response.ok) {
+            closeEditModal();
+            loadData();
+        } else {
+            alert('Xatolik yuz berdi!');
+        }
+    } catch (error) {
+        console.error('Error updating translation:', error);
+    }
+};
+
+// Initial load
+loadData();
+</script>
+{% endblock %}

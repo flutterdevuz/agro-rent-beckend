@@ -65,6 +65,7 @@ urlpatterns = [
     path('api/admin/categories/', superadmin_required(TemplateView.as_view(template_name='categories.html')), name='admin-categories'),
     path('api/admin/notifications/', superadmin_required(TemplateView.as_view(template_name='notifications.html')), name='admin-notifications'),
     path('api/admin/users/', superadmin_required(TemplateView.as_view(template_name='users.html')), name='admin-users'),
+    path('api/admin/site-texts/', superadmin_required(TemplateView.as_view(template_name='site_texts.html')), name='admin-site-texts'),
     # Restricted Documentation
     path('api/schema/', superadmin_required(SpectacularAPIView.as_view()), name='schema'),
     path('api/docs/', superadmin_required(SpectacularSwaggerView.as_view(url_name='schema')), name='swagger-ui'),

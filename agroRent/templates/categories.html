@@ -71,14 +71,16 @@
 
 {% block scripts %}
 <script>
+let currentCategories = [];
+
 async function loadData() {
     try {
         const response = await apiFetch('/api/market/categories/');
         const data = await response.json();
         const body = document.getElementById('data-body');
         body.innerHTML = '';
-        const items = data.results || data;
-        items.forEach(item => {
+        currentCategories = data.results || data;
+        currentCategories.forEach(item => {
             const date = item.created_at ? new Date(item.created_at).toLocaleString() : '-';
             body.innerHTML += `
                 <tr>
@@ -86,7 +88,7 @@ async function loadData() {
                     <td><strong>${item.name}</strong></td>
                     <td>${date}</td>
                     <td>
-                        <button onclick='openEditModal(${JSON.stringify(item).replace(/'/g, "&#39;")})' class="btn-action btn-edit"><i class="fas fa-edit"></i></button>
+                        <button onclick="openEditModal('${item.id}')" class="btn-action btn-edit"><i class="fas fa-edit"></i></button>
                         <button onclick="deleteCategory('${item.id}')" class="btn-action btn-delete" style="color: #ef4444; background: #fee2e2; border: none; cursor: pointer;"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>
@@ -124,7 +126,9 @@ document.getElementById('addForm').onsubmit = async (e) => {
     } catch (error) { console.error(error); }
 };
 
-function openEditModal(item) {
+function openEditModal(id) {
+    const item = currentCategories.find(c => c.id === id);
+    if (!item) return;
     document.getElementById('edit_id').value = item.id;
     document.getElementById('edit_name').value = item.name;
     document.getElementById('editModal').style.display = 'block';

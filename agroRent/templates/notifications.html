@@ -139,15 +139,17 @@
 
 {% block scripts %}
 <script>
+    let currentNotifications = [];
+
     async function loadData() {
         try {
             const response = await apiFetch('/api/notifications/list/');
             const data = await response.json();
             const body = document.getElementById('data-body');
             body.innerHTML = '';
-            const items = data.results || data;
-            if (Array.isArray(items)) {
-                items.forEach(item => {
+            currentNotifications = data.results || data;
+            if (Array.isArray(currentNotifications)) {
+                currentNotifications.forEach(item => {
                     const date = item.created_at ? new Date(item.created_at).toLocaleString() : '-';
                     const userId = typeof item.user === 'string' ? item.user : (item.user && item.user.id ? item.user.id : 'Noma\'lum');
                     body.innerHTML += `
@@ -159,7 +161,7 @@
                         <td><span class="status-badge ${item.is_read ? 'read' : 'unread'}">${item.is_read ? 'O\'qilgan' : 'O\'qilmagan'}</span></td>
                         <td>${date}</td>
                         <td>
-                            <button onclick='openEditModal(${JSON.stringify(item).replace(/'/g, "&#39;")})' class="btn-action btn-edit"><i class="fas fa-edit"></i></button>
+                            <button onclick="openEditModal('${item.id}')" class="btn-action btn-edit"><i class="fas fa-edit"></i></button>
                             <button onclick="deleteNotification('${item.id}')" class="btn-action btn-delete" style="color: #ef4444; background: #fee2e2; border: none; cursor: pointer;"><i class="fas fa-trash"></i></button>
                         </td>
                     </tr>
@@ -259,7 +261,9 @@
         }
     };
 
-    async function openEditModal(item) {
+    async function openEditModal(id) {
+        const item = currentNotifications.find(n => n.id === id);
+        if (!item) return;
         document.getElementById('edit_id').value = item.id;
         document.getElementById('edit_title').value = item.title;
         document.getElementById('edit_description').value = item.description;

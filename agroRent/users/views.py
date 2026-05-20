@@ -106,6 +106,7 @@ class UserOrdersView(APIView):
             image = ro.rent_item.images.first().image if ro.rent_item.images.exists() else None
             combined.append({
                 'id': ro.id,
+                'item_id': ro.rent_item.id,
                 'type': 'rent',
                 'name': ro.rent_item.name,
                 'image': image,
@@ -118,6 +119,7 @@ class UserOrdersView(APIView):
         for mo in market_orders:
             combined.append({
                 'id': mo.id,
+                'item_id': mo.item.id,
                 'type': 'market',
                 'name': mo.item.name,
                 'image': None, 

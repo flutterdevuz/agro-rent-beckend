@@ -203,14 +203,16 @@
 
 {% block scripts %}
 <script>
+    let currentMarketItems = [];
+
     async function loadData() {
         try {
             const response = await apiFetch('/api/market/items/');
             const data = await response.json();
             const body = document.getElementById('data-body');
             body.innerHTML = '';
-            const items = data.results || data;
-            items.forEach(item => {
+            currentMarketItems = data.results || data;
+            currentMarketItems.forEach(item => {
                 body.innerHTML += `
                 <tr>
                     <td>
@@ -227,7 +229,7 @@
                     <td>${item.seller_details.first_name} ${item.seller_details.last_name}</td>
                     <td>${item.condition}</td>
                     <td>
-                        <button onclick='openEditModal(${JSON.stringify(item).replace(/'/g, "&#39;")})' class="btn-action btn-edit"><i class="fas fa-edit"></i></button>
+                        <button onclick="openEditModal('${item.id}')" class="btn-action btn-edit"><i class="fas fa-edit"></i></button>
                         <button onclick="deleteItem('${item.id}')" class="btn-action btn-delete" style="color: #ef4444; background: #fee2e2; border: none; cursor: pointer;"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>
@@ -301,7 +303,9 @@
         } catch (error) { console.error(error); }
     };
 
-    async function openEditModal(item) {
+    async function openEditModal(id) {
+        const item = currentMarketItems.find(m => m.id === id);
+        if (!item) return;
         document.getElementById('edit_id').value = item.id;
         document.getElementById('edit_name').value = item.name;
         document.getElementById('edit_price').value = item.price;

@@ -87,21 +87,23 @@
 
 {% block scripts %}
 <script>
+let currentBanners = [];
+
 async function loadBanners() {
     try {
         const response = await apiFetch('/api/banners/');
         const data = await response.json();
         const body = document.getElementById('banners-body');
         body.innerHTML = '';
-        const items = data.results || data;
-        items.forEach(item => {
+        currentBanners = data.results || data;
+        currentBanners.forEach(item => {
             body.innerHTML += `
                 <tr>
                     <td><img src="${item.image}" class="banner-img"></td>
                     <td>${item.name}</td>
                     <td>${item.description.substring(0, 50)}...</td>
                     <td>
-                        <button onclick='openEditModal(${JSON.stringify(item).replace(/'/g, "&#39;")})' class="btn-action btn-edit"><i class="fas fa-edit"></i></button>
+                        <button onclick="openEditModal('${item.id}')" class="btn-action btn-edit"><i class="fas fa-edit"></i></button>
                         <button onclick="deleteBanner('${item.id}')" class="btn-action btn-delete" style="color: #ef4444; background: #fee2e2; border: none; cursor: pointer;"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>
@@ -146,7 +148,9 @@ document.getElementById('addForm').onsubmit = async (e) => {
     } catch (error) { console.error(error); }
 };
 
-function openEditModal(item) {
+function openEditModal(id) {
+    const item = currentBanners.find(b => b.id === id);
+    if (!item) return;
     document.getElementById('edit_id').value = item.id;
     document.getElementById('edit_name').value = item.name;
     document.getElementById('edit_description').value = item.description;

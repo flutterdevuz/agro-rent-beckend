@@ -35,14 +35,16 @@
             <span class="close" onclick="closeAddModal()">&times;</span>
         </div>
         <form id="addForm">
+            <input type="hidden" name="country" value="O'zbekiston">
             <div class="form-group"><label>Ism</label><input type="text" name="first_name" required></div>
             <div class="form-group"><label>Familiya</label><input type="text" name="last_name" required></div>
-            <div class="form-group"><label>Telefon</label><input type="text" name="phone_number" required></div>
+            <div class="form-group"><label>Telefon</label><input type="text" name="phone_number" placeholder="998901234567" required></div>
             <div class="form-group"><label>Parol</label><input type="password" name="password" required></div>
             <div class="form-group"><label>Viloyat</label><input type="text" name="region" required></div>
             <div class="form-group"><label>Tuman</label><input type="text" name="district" required></div>
-            <div class="form-group"><label>MFY</label><input type="text" name="mfy" required></div>
-            <div class="form-group"><label>Renter</label><select name="is_renter"><option value="true">Ha</option><option value="false">Yo'q</option></select></div>
+            <div class="form-group"><label>Ko'cha</label><input type="text" name="street" required></div>
+            <div class="form-group"><label>Uy raqami</label><input type="text" name="house_number" required></div>
+            <div class="form-group"><label>Renter</label><select name="isRenter"><option value="true">Ha</option><option value="false">Yo'q</option></select></div>
             <div class="modal-footer">
                 <button type="button" class="btn-secondary" onclick="closeAddModal()">Bekor qilish</button>
                 <button type="submit" class="btn-primary">Saqlash</button>
@@ -66,8 +68,9 @@
             <div class="form-group"><label>Parol (ixtiyoriy)</label><input type="password" name="password"></div>
             <div class="form-group"><label>Viloyat</label><input type="text" id="edit_region" name="region" required></div>
             <div class="form-group"><label>Tuman</label><input type="text" id="edit_district" name="district" required></div>
-            <div class="form-group"><label>MFY</label><input type="text" id="edit_mfy" name="mfy" required></div>
-            <div class="form-group"><label>Renter</label><select id="edit_is_renter" name="is_renter"><option value="true">Ha</option><option value="false">Yo'q</option></select></div>
+            <div class="form-group"><label>Ko'cha</label><input type="text" id="edit_street" name="street" required></div>
+            <div class="form-group"><label>Uy raqami</label><input type="text" id="edit_house_number" name="house_number" required></div>
+            <div class="form-group"><label>Renter</label><select id="edit_is_renter" name="isRenter"><option value="true">Ha</option><option value="false">Yo'q</option></select></div>
             <div class="modal-footer">
                 <button type="button" class="btn-secondary" onclick="closeEditModal()">Bekor qilish</button>
                 <button type="submit" class="btn-primary">Saqlash</button>
@@ -76,19 +79,20 @@
     </div>
 </div>
 
-
 {% endblock %}
 
 {% block scripts %}
 <script>
+let currentUsers = [];
+
 async function loadData() {
     try {
         const response = await apiFetch('/api/users/list/');
         const data = await response.json();
         const body = document.getElementById('data-body');
         body.innerHTML = '';
-        const items = data.results || data;
-        items.forEach(item => {
+        currentUsers = data.results || data;
+        currentUsers.forEach(item => {
             body.innerHTML += `
                 <tr>
                     <td><strong>${item.first_name} ${item.last_name}</strong></td>
@@ -96,7 +100,7 @@ async function loadData() {
                     <td>${item.region}</td>
                     <td><i class="fas fa-star" style="color:#f1c40f"></i> ${item.rating}</td>
                     <td>
-                        <button onclick='openEditModal(${JSON.stringify(item).replace(/'/g, "&#39;")})' class="btn-action btn-edit"><i class="fas fa-edit"></i></button>
+                        <button onclick="openEditModal('${item.id}')" class="btn-action btn-edit"><i class="fas fa-edit"></i></button>
                         <button onclick="deleteUser('${item.id}')" class="btn-action btn-delete" style="color: #ef4444; background: #fee2e2; border: none; cursor: pointer;"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>
@@ -122,14 +126,17 @@ async function deleteUser(id) {
 function openAddModal() { document.getElementById('addModal').style.display = 'block'; }
 function closeAddModal() { document.getElementById('addModal').style.display = 'none'; }
 
-function openEditModal(item) {
+function openEditModal(id) {
+    const item = currentUsers.find(u => u.id === id);
+    if (!item) return;
     document.getElementById('edit_id').value = item.id;
     document.getElementById('edit_first_name').value = item.first_name;
     document.getElementById('edit_last_name').value = item.last_name;
     document.getElementById('edit_phone_number').value = item.phone_number;
     document.getElementById('edit_region').value = item.region;
     document.getElementById('edit_district').value = item.district;
-    document.getElementById('edit_mfy').value = item.mfy;
+    document.getElementById('edit_street').value = item.street || '';
+    document.getElementById('edit_house_number').value = item.house_number || '';
     document.getElementById('edit_is_renter').value = item.isRenter ? "true" : "false";
     document.getElementById('editModal').style.display = 'block';
 }

@@ -23,3 +23,19 @@ class HomeContent(models.Model):
 
     def __str__(self):
         return f"{self.get_content_type_display()}: {self.name}"
+
+class SiteText(models.Model):
+    key = models.TextField(unique=True, verbose_name=_("Key/Original Text"))
+    uz = models.TextField(blank=True, null=True, verbose_name=_("Uzbek (Latin)"))
+    uz_cyrl = models.TextField(blank=True, null=True, verbose_name=_("Uzbek (Cyrillic)"))
+    ru = models.TextField(blank=True, null=True, verbose_name=_("Russian"))
+    en = models.TextField(blank=True, null=True, verbose_name=_("English"))
+    tr = models.TextField(blank=True, null=True, verbose_name=_("Turkish"))
+
+    class Meta:
+        verbose_name = _("Site Text")
+        verbose_name_plural = _("Site Texts")
+
+    def __str__(self):
+        return self.key[:50]
+

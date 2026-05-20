@@ -75,6 +75,7 @@
                         <option value="true">Ha</option>
                         <option value="false">Yo'q</option>
                     </select>
+                </div>
                 <div class="form-group">
                     <label>Rasmlar</label>
                     <input type="file" name="uploaded_images" multiple accept="image/*">
@@ -154,14 +155,16 @@
 
 {% block scripts %}
 <script>
+let currentRentItems = [];
+
 async function loadData() {
     try {
         const response = await apiFetch('/api/rent/items/');
         const data = await response.json();
         const body = document.getElementById('data-body');
         body.innerHTML = '';
-        const items = data.results || data;
-        items.forEach(item => {
+        currentRentItems = data.results || data;
+        currentRentItems.forEach(item => {
             body.innerHTML += `
                 <tr>
                     <td><strong>${item.equipment_name}</strong><br><small>${item.brand}</small></td>
@@ -170,7 +173,7 @@ async function loadData() {
                     <td>${item.region}</td>
                     <td><i class="fas fa-star" style="color:#f1c40f"></i> ${item.rating}</td>
                     <td>
-                        <button onclick='openEditModal(${JSON.stringify(item).replace(/'/g, "&#39;")})' class="btn-action btn-edit"><i class="fas fa-edit"></i></button>
+                        <button onclick="openEditModal('${item.id}')" class="btn-action btn-edit"><i class="fas fa-edit"></i></button>
                         <button onclick="deleteItem('${item.id}')" class="btn-action btn-delete" style="color: #ef4444; background: #fee2e2; border: none; cursor: pointer;"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>
@@ -208,7 +211,9 @@ document.getElementById('addForm').onsubmit = async (e) => {
     } catch (error) { console.error(error); }
 };
 
-function openEditModal(item) {
+function openEditModal(id) {
+    const item = currentRentItems.find(r => r.id === id);
+    if (!item) return;
     document.getElementById('edit_id').value = item.id;
     document.getElementById('edit_name').value = item.name;
     document.getElementById('edit_equipment_name').value = item.equipment_name;
