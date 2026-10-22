@@ -46,8 +46,16 @@ class LoginView(APIView):
             phone_number = serializer.validated_data.get('phone_number')
             password = serializer.validated_data.get('password')
             
-            user = authenticate(username=phone_number, password=password)
-            
+            # Bazada raqamlar ham "+998...", ham "998..." ko'rinishida saqlangan,
+            # shuning uchun ikkala variantni ham sinab ko'ramiz
+            digits = phone_number.lstrip('+')
+            candidates = dict.fromkeys([phone_number, '+' + digits, digits])
+            user = None
+            for candidate in candidates:
+                user = authenticate(request, username=candidate, password=password)
+                if user:
+                    break
+
             if user:
                 login(request, user)
                 refresh = RefreshToken.for_user(user)

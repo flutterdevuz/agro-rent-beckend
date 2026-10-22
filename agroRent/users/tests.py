@@ -175,3 +175,27 @@ class AdminAccessKeyTests(SecurityTestCase):
     def test_admin_requires_correct_key(self):
         self.assertEqual(self.client.get('/admin/?access=agroterra_premium_2026').status_code, 404)
         self.assertEqual(self.client.get('/admin/?access=yangi-maxfiy-kalit').status_code, 200)
+
+
+class LoginTests(SecurityTestCase):
+    def login(self, phone, password='Str0ng-pass!'):
+        return self.client.post('/api/users/login/', {'phone_number': phone, 'password': password})
+
+    def test_login_with_or_without_plus(self):
+        # Foydalanuvchi "+998900000001" bilan saqlangan
+        self.assertEqual(self.login('+998900000001').status_code, 200)
+        self.assertEqual(self.login('998900000001').status_code, 200)
+        self.assertEqual(self.login('+998 90 000-00-01').status_code, 200)
+        self.assertEqual(self.login('998900000001', 'wrong').status_code, 400)
+
+    def test_login_picks_account_matching_password(self):
+        # Bir raqam ikki formatda, ikki xil hisob sifatida saqlangan holat
+        plain = User.objects.create_user(phone_number='998900000004', password='Boshqa-pass1', first_name='A', last_name='B')
+        response = self.login('998900000004')  # self.staff ("+998900000004") paroli
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['user']['id'], self.staff.id)
+        response = self.login('+998900000004', 'Boshqa-pass1')
+        self.assertEqual(response.data['user']['id'], plain.id)
+
+    def test_popular_equipment_is_public(self):
+        self.assertEqual(self.client.get('/api/popular-equipment/').status_code, 200)

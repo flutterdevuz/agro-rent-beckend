@@ -25,7 +25,8 @@ class BannerListView(generics.ListCreateAPIView):
 
 class PopularEquipmentListView(generics.ListAPIView):
     serializer_class = MarketItemSerializer
-    permission_classes = [IsAuthenticated]
+    # Ochiq bosh sahifada ko'rsatiladi
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
         return MarketItem.objects.annotate(
