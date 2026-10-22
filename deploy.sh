@@ -26,6 +26,7 @@ if [ -f "$DATA_DIR/db.sqlite3" ]; then
 fi
 
 # --- 2. Yangi kod ---
+as_app mkdir -p /opt/agrorent/cache
 echo "📦 Kod yangilanmoqda..."
 as_app git -C "$APP_DIR" pull --ff-only origin main
 

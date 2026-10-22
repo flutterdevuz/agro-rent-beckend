@@ -17,7 +17,7 @@ class SecurityTestCase(APITestCase):
 
     def setUp(self):
         # Testlarda Google Translate'ga so'rov ketmasligi uchun
-        patcher = patch('agroRent.utils.mixins.translate_text', side_effect=lambda text, lang='uz': text)
+        patcher = patch('agroRent.utils.mixins.translate_many', side_effect=lambda texts, lang='uz': {t: t for t in texts})
         patcher.start()
         self.addCleanup(patcher.stop)
 

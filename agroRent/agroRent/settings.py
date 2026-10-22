@@ -139,12 +139,22 @@ USE_I18N = True
 USE_TZ = True
 
 # Cache configuration for translations
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'unique-snowflake',
+# CACHE_DIR berilsa, kesh barcha gunicorn workerlari uchun umumiy va qayta ishga tushganda saqlanadi
+if os.environ.get('CACHE_DIR'):
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+            'LOCATION': os.environ['CACHE_DIR'],
+            'OPTIONS': {'MAX_ENTRIES': 50000},
+        }
     }
-}
+else:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+            'LOCATION': 'unique-snowflake',
+        }
+    }
 
 
 # Static files (CSS, JavaScript, Images)
