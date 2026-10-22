@@ -3,6 +3,7 @@ from django.views.generic import TemplateView
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from home.models import HomeContent, SiteText
+from users.permissions import IsStaffOrReadOnly
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from agroRent.utils.translator import translate_text, translate_texts_batch
@@ -14,7 +15,7 @@ from rest_framework import serializers
 
 class BannerListView(generics.ListCreateAPIView):
     serializer_class = HomeContentSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsStaffOrReadOnly]
 
     def get_queryset(self):
         return HomeContent.objects.filter(content_type='banner').order_by('-id')
@@ -34,7 +35,7 @@ class PopularEquipmentListView(generics.ListAPIView):
 class HomeContentDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = HomeContent.objects.all()
     serializer_class = HomeContentSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsStaffOrReadOnly]
 
 # TemplateView-larni Swagger sxemasidan chiqarib tashlaymiz
 @extend_schema(exclude=True)

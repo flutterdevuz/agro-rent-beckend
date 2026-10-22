@@ -131,12 +131,12 @@ async function loadData() {
         items.forEach(item => {
             body.innerHTML += `
                 <tr>
-                    <td style="max-width: 180px; word-break: break-all; font-weight: 500; font-size: 13px;">${item.key || ''}</td>
-                    <td style="max-width: 150px; font-size: 13px;">${item.uz || '-'}</td>
-                    <td style="max-width: 150px; font-size: 13px;">${item.uz_cyrl || '-'}</td>
-                    <td style="max-width: 150px; font-size: 13px;">${item.ru || '-'}</td>
-                    <td style="max-width: 150px; font-size: 13px;">${item.en || '-'}</td>
-                    <td style="max-width: 150px; font-size: 13px;">${item.tr || '-'}</td>
+                    <td style="max-width: 180px; word-break: break-all; font-weight: 500; font-size: 13px;">${escapeHtml(item.key || '')}</td>
+                    <td style="max-width: 150px; font-size: 13px;">${escapeHtml(item.uz || '-')}</td>
+                    <td style="max-width: 150px; font-size: 13px;">${escapeHtml(item.uz_cyrl || '-')}</td>
+                    <td style="max-width: 150px; font-size: 13px;">${escapeHtml(item.ru || '-')}</td>
+                    <td style="max-width: 150px; font-size: 13px;">${escapeHtml(item.en || '-')}</td>
+                    <td style="max-width: 150px; font-size: 13px;">${escapeHtml(item.tr || '-')}</td>
                     <td>
                         <button onclick="openEditModal(${item.id})" class="btn-action btn-edit"><i class="fas fa-edit"></i> Tahrirlash</button>
                     </td>

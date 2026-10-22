@@ -89,13 +89,13 @@
                     container.innerHTML = orders.map(order => `
                         <div class="at-card" style="display: flex; gap: 32px; align-items: center; padding: 24px;">
                             <div style="width: 80px; height: 80px; background: var(--at-bg); border-radius: var(--at-radius-sm); overflow: hidden;">
-                                <img src="${order.image || 'https://via.placeholder.com/100'}" style="width: 100%; height: 100%; object-fit: cover;">
+                                <img src="${escapeHtml(order.image || 'https://via.placeholder.com/100')}" style="width: 100%; height: 100%; object-fit: cover;">
                             </div>
                             <div style="flex: 1;">
                                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-                                    <h4 style="font-size: 18px; color: var(--at-primary);">${order.name}</h4>
+                                    <h4 style="font-size: 18px; color: var(--at-primary);">${escapeHtml(order.name)}</h4>
                                     <span style="font-size: 11px; font-weight: 800; background: var(--at-primary-light); color: var(--at-primary); padding: 4px 12px; border-radius: var(--at-radius-full); text-transform: uppercase;">
-                                        ${order.type}
+                                        ${escapeHtml(order.type)}
                                     </span>
                                 </div>
                                 <div style="display: flex; gap: 24px; font-size: 13px; color: var(--at-text-secondary); font-weight: 600;">
@@ -107,7 +107,7 @@
                                 <div style="font-size: 18px; font-weight: 800; color: var(--at-primary); margin-bottom: 8px;">${parseFloat(order.price).toLocaleString()} UZS</div>
                                 <div style="font-size: 12px; font-weight: 800; color: var(--at-success); text-transform: uppercase; letter-spacing: 0.05em;">
                                     <i class="fas fa-circle" style="font-size: 8px; vertical-align: middle; margin-right: 6px;"></i>
-                                    ${order.status}
+                                    ${escapeHtml(order.status)}
                                 </div>
                             </div>
                         </div>

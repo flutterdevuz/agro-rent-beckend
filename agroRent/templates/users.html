@@ -95,9 +95,9 @@ async function loadData() {
         currentUsers.forEach(item => {
             body.innerHTML += `
                 <tr>
-                    <td><strong>${item.first_name} ${item.last_name}</strong></td>
-                    <td>${item.phone_number}</td>
-                    <td>${item.region}</td>
+                    <td><strong>${escapeHtml(item.first_name)} ${escapeHtml(item.last_name)}</strong></td>
+                    <td>${escapeHtml(item.phone_number)}</td>
+                    <td>${escapeHtml(item.region)}</td>
                     <td><i class="fas fa-star" style="color:#f1c40f"></i> ${item.rating}</td>
                     <td>
                         <button onclick="openEditModal('${item.id}')" class="btn-action btn-edit"><i class="fas fa-edit"></i></button>

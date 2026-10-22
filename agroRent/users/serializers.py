@@ -55,6 +55,7 @@ class UserSerializer(TranslatableSerializerMixin, serializers.ModelSerializer):
             'id', 'phone_number', 'first_name', 'last_name', 'country', 
             'region', 'district', 'street', 'house_number', 'rating', 'isRenter', 'is_staff', 'is_superuser'
         )
+        read_only_fields = ('is_staff', 'is_superuser')
         translatable_fields = ['country', 'district', 'street']
 
 class ProfileSerializer(TranslatableSerializerMixin, serializers.ModelSerializer):

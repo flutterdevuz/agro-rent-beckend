@@ -3,17 +3,17 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from market.models import Category, MarketItem, MarketOrder
 from market.serializers import CategorySerializer, MarketItemSerializer, MarketOrderSerializer
-from users.permissions import IsRenter, IsOwnerAndRenterOrReadOnly
+from users.permissions import IsRenter, IsOwnerAndRenterOrReadOnly, IsStaffOrReadOnly
 
 class CategoryListView(generics.ListCreateAPIView):
     queryset = Category.objects.all().order_by('-created_at')
     serializer_class = CategorySerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsStaffOrReadOnly]
 
 class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsStaffOrReadOnly]
 
 class MarketItemListView(generics.ListCreateAPIView):
     queryset = MarketItem.objects.all().order_by('-created_at')
@@ -30,6 +30,11 @@ class MarketItemListView(generics.ListCreateAPIView):
     search_fields = ['name', 'brand', 'model', 'description']
     ordering_fields = ['price', 'rating', 'created_at', 'likes_count']
     permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            return [IsAuthenticated(), IsRenter()]
+        return super().get_permissions()
 
     def perform_create(self, serializer):
         serializer.save(seller=self.request.user)

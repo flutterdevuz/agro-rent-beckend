@@ -211,7 +211,7 @@
                 if (item.images && item.images.length > 0) {
                     gallery.innerHTML = item.images.map(img => `
                         <div class="swiper-slide">
-                            <img src="${img.image}" style="width: 100%; height: 100%; object-fit: cover;">
+                            <img src="${escapeHtml(img.image)}" style="width: 100%; height: 100%; object-fit: cover;">
                         </div>
                     `).join('');
                 } else {

@@ -8,6 +8,7 @@
     
     <!-- AgroTerra Design System -->
     <link rel="stylesheet" href="{% static 'css/agroterra.css' %}">
+    <script src="{% static 'js/escape.js' %}"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
     
@@ -159,7 +160,7 @@
                 toast.className = `at-toast at-toast-${type}`;
                 toast.innerHTML = `
                     <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
-                    <span>${message}</span>
+                    <span>${escapeHtml(message)}</span>
                 `;
                 container.appendChild(toast);
                 setTimeout(() => toast.classList.add('show'), 100);
@@ -217,9 +218,9 @@
                             <div style="display: flex; align-items: center; gap: 16px;">
                                 <a href="/profile/" style="text-decoration: none; display: flex; align-items: center; gap: 12px; padding: 8px 16px; background: var(--at-bg); border-radius: var(--at-radius-full);">
                                     <div style="width: 32px; height: 32px; background: var(--at-primary); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;">
-                                        ${user.first_name[0]}
+                                        ${escapeHtml((user.first_name || '?')[0])}
                                     </div>
-                                    <span style="font-weight: 600; color: var(--at-primary); font-size: 14px;">${user.first_name}</span>
+                                    <span style="font-weight: 600; color: var(--at-primary); font-size: 14px;">${escapeHtml(user.first_name)}</span>
                                 </a>
                                 <button onclick="window.atAuth.logout()" class="at-btn at-btn-outline" style="padding: 10px 16px;">
                                     <i class="fas fa-sign-out-alt"></i>

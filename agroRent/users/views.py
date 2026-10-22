@@ -1,7 +1,7 @@
 from rest_framework import status, generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from django.contrib.auth import authenticate, login
 from rest_framework_simplejwt.tokens import RefreshToken
 from users.serializers import (
@@ -138,29 +138,28 @@ class UserOrdersView(APIView):
 class UserListView(generics.ListCreateAPIView):
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        if not self.request.user.is_staff:
-            return User.objects.none()
-        return super().get_queryset()
+    permission_classes = [IsAuthenticated, IsAdminUser]
 
     def perform_create(self, serializer):
         user = serializer.save()
         password = self.request.data.get('password')
         if password:
             user.set_password(password)
-            user.save()
+        else:
+            user.set_unusable_password()
+        user.save()
 
 class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdminUser]
 
-    def get_queryset(self):
-        if not self.request.user.is_staff:
-            return User.objects.none()
-        return super().get_queryset()
+    def perform_update(self, serializer):
+        user = serializer.save()
+        password = self.request.data.get('password')
+        if password:
+            user.set_password(password)
+            user.save()
 
 class DashboardStatsView(APIView):
     permission_classes = [IsAuthenticated]

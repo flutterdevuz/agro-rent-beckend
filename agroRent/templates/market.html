@@ -217,17 +217,17 @@
                 <tr>
                     <td>
                         <div style="display: flex; align-items: center; gap: 10px;">
-                            ${item.image ? `<img src="${item.image}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">` : `<div style="width: 40px; height: 40px; background: #eee; display: flex; align-items: center; justify-content: center; border-radius: 4px;"><i class="fas fa-image" style="color: #ccc;"></i></div>`}
+                            ${item.image ? `<img src="${escapeHtml(item.image)}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">` : `<div style="width: 40px; height: 40px; background: #eee; display: flex; align-items: center; justify-content: center; border-radius: 4px;"><i class="fas fa-image" style="color: #ccc;"></i></div>`}
                             <div>
-                                <strong>${item.name}</strong><br>
-                                <small>${item.brand}</small>
+                                <strong>${escapeHtml(item.name)}</strong><br>
+                                <small>${escapeHtml(item.brand)}</small>
                             </div>
                         </div>
                     </td>
-                    <td>${item.category_name}</td>
+                    <td>${escapeHtml(item.category_name)}</td>
                     <td>${item.price} so'm</td>
-                    <td>${item.seller_details.first_name} ${item.seller_details.last_name}</td>
-                    <td>${item.condition}</td>
+                    <td>${escapeHtml(item.seller_details.first_name)} ${escapeHtml(item.seller_details.last_name)}</td>
+                    <td>${escapeHtml(item.condition)}</td>
                     <td>
                         <button onclick="openEditModal('${item.id}')" class="btn-action btn-edit"><i class="fas fa-edit"></i></button>
                         <button onclick="deleteItem('${item.id}')" class="btn-action btn-delete" style="color: #ef4444; background: #fee2e2; border: none; cursor: pointer;"><i class="fas fa-trash"></i></button>
@@ -258,7 +258,7 @@
             select.innerHTML = '<option value="">Kategoriyani tanlang</option>';
             const items = data.results || data;
             items.forEach(cat => {
-                select.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
+                select.innerHTML += `<option value="${cat.id}">${escapeHtml(cat.name)}</option>`;
             });
         } catch (error) { console.error(error); }
     }
@@ -325,7 +325,7 @@
             select.innerHTML = '<option value="">Kategoriyani tanlang</option>';
             const items = data.results || data;
             items.forEach(cat => {
-                select.innerHTML += `<option value="${cat.id}" ${cat.id === item.category ? 'selected' : ''}>${cat.name}</option>`;
+                select.innerHTML += `<option value="${cat.id}" ${cat.id === item.category ? 'selected' : ''}>${escapeHtml(cat.name)}</option>`;
             });
         } catch (error) { console.error(error); }
 

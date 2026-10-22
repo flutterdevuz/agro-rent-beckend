@@ -27,6 +27,11 @@ class RentItemListView(generics.ListCreateAPIView):
             return RentItemCreateSerializer
         return RentItemSerializer
 
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            return [IsAuthenticated(), IsRenter()]
+        return super().get_permissions()
+
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 

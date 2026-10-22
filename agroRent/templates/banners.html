@@ -99,9 +99,9 @@ async function loadBanners() {
         currentBanners.forEach(item => {
             body.innerHTML += `
                 <tr>
-                    <td><img src="${item.image}" class="banner-img"></td>
-                    <td>${item.name}</td>
-                    <td>${item.description.substring(0, 50)}...</td>
+                    <td><img src="${escapeHtml(item.image)}" class="banner-img"></td>
+                    <td>${escapeHtml(item.name)}</td>
+                    <td>${escapeHtml((item.description || '').substring(0, 50))}...</td>
                     <td>
                         <button onclick="openEditModal('${item.id}')" class="btn-action btn-edit"><i class="fas fa-edit"></i></button>
                         <button onclick="deleteBanner('${item.id}')" class="btn-action btn-delete" style="color: #ef4444; background: #fee2e2; border: none; cursor: pointer;"><i class="fas fa-trash"></i></button>

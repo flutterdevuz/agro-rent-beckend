@@ -1,20 +1,35 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, BasePermission, SAFE_METHODS
 from django_filters.rest_framework import DjangoFilterBackend
 from notifications.models import NotificationCategory, Notification, FCMToken
 from notifications.serializers import (
     NotificationCategorySerializer, NotificationSerializer, FCMTokenSerializer
 )
 from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiParameter
+from users.permissions import IsStaffOrReadOnly
+
+
+class IsStaffOrOwnerReadDelete(BasePermission):
+    """
+    Staff hamma narsani qila oladi. Oddiy foydalanuvchi o'z bildirishnomasini
+    faqat ko'ra va o'chira oladi (qaysilari "o'ziniki" ekanini get_queryset belgilaydi).
+    """
+    def has_permission(self, request, view):
+        if not request.user or not request.user.is_authenticated:
+            return False
+        return request.user.is_staff or request.method in SAFE_METHODS or request.method == 'DELETE'
 
 class NotificationCategoryListView(generics.ListCreateAPIView):
     queryset = NotificationCategory.objects.all()
     serializer_class = NotificationCategorySerializer
+    permission_classes = [IsAuthenticated, IsStaffOrReadOnly]
 
 class NotificationListView(generics.ListCreateAPIView):
     serializer_class = NotificationSerializer
+    # Bildirishnoma yaratish (push yuborish) faqat admin uchun
+    permission_classes = [IsAuthenticated, IsStaffOrReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['category', 'is_read']
 
@@ -26,8 +41,15 @@ class NotificationListView(generics.ListCreateAPIView):
         return Notification.objects.filter(user=self.request.user).order_by('-created_at')
 
 class NotificationDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Notification.objects.all()
     serializer_class = NotificationSerializer
+    permission_classes = [IsStaffOrOwnerReadDelete]
+
+    def get_queryset(self):
+        if getattr(self, "swagger_fake_view", False) or self.request.user.is_anonymous:
+            return Notification.objects.none()
+        if self.request.user.is_staff:
+            return Notification.objects.all()
+        return Notification.objects.filter(user=self.request.user)
 
 class MarkNotificationReadView(APIView):
     permission_classes = [IsAuthenticated]

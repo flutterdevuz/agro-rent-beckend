@@ -154,10 +154,10 @@
                     const userId = typeof item.user === 'string' ? item.user : (item.user && item.user.id ? item.user.id : 'Noma\'lum');
                     body.innerHTML += `
                     <tr>
-                        <td><strong>${item.title || '-'}</strong><br><small>${item.description || '-'}</small></td>
+                        <td><strong>${escapeHtml(item.title || '-')}</strong><br><small>${escapeHtml(item.description || '-')}</small></td>
                         <td>Foydalanuvchi ID: <small>${userId.substring(0, 8)}...</small></td>
-                        <td>${item.category_name || '-'}</td>
-                        <td>${item.status || '-'}</td>
+                        <td>${escapeHtml(item.category_name || '-')}</td>
+                        <td>${escapeHtml(item.status || '-')}</td>
                         <td><span class="status-badge ${item.is_read ? 'read' : 'unread'}">${item.is_read ? 'O\'qilgan' : 'O\'qilmagan'}</span></td>
                         <td>${date}</td>
                         <td>
@@ -183,7 +183,7 @@
             const userSelect = document.getElementById('userSelect');
             userSelect.innerHTML = '<option value="">Foydalanuvchini tanlang...</option>';
             users.forEach(u => {
-                userSelect.innerHTML += `<option value="${u.id}">${u.first_name} ${u.last_name} (${u.phone_number})</option>`;
+                userSelect.innerHTML += `<option value="${u.id}">${escapeHtml(u.first_name)} ${escapeHtml(u.last_name)} (${escapeHtml(u.phone_number)})</option>`;
             });
 
             const catRes = await apiFetch('/api/notifications/categories/');
@@ -192,7 +192,7 @@
             const catSelect = document.getElementById('categorySelect');
             catSelect.innerHTML = '<option value="">Kategoriyani tanlang...</option>';
             categories.forEach(c => {
-                catSelect.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+                catSelect.innerHTML += `<option value="${c.id}">${escapeHtml(c.name)}</option>`;
             });
         } catch (error) { console.error('Error loading selects:', error); }
     }
@@ -276,7 +276,7 @@
             const userSelect = document.getElementById('edit_userSelect');
             userSelect.innerHTML = '<option value="">Foydalanuvchini tanlang...</option>';
             users.forEach(u => {
-                userSelect.innerHTML += `<option value="${u.id}" ${u.id === item.user ? 'selected' : ''}>${u.first_name} ${u.last_name} (${u.phone_number})</option>`;
+                userSelect.innerHTML += `<option value="${u.id}" ${u.id === item.user ? 'selected' : ''}>${escapeHtml(u.first_name)} ${escapeHtml(u.last_name)} (${escapeHtml(u.phone_number)})</option>`;
             });
 
             const catRes = await apiFetch('/api/notifications/categories/');
@@ -285,7 +285,7 @@
             const catSelect = document.getElementById('edit_categorySelect');
             catSelect.innerHTML = '<option value="">Kategoriyani tanlang...</option>';
             categories.forEach(c => {
-                catSelect.innerHTML += `<option value="${c.id}" ${c.id === item.category ? 'selected' : ''}>${c.name}</option>`;
+                catSelect.innerHTML += `<option value="${c.id}" ${c.id === item.category ? 'selected' : ''}>${escapeHtml(c.name)}</option>`;
             });
         } catch (error) { console.error('Error loading selects:', error); }
 

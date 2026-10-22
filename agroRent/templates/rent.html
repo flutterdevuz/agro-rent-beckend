@@ -167,10 +167,10 @@ async function loadData() {
         currentRentItems.forEach(item => {
             body.innerHTML += `
                 <tr>
-                    <td><strong>${item.equipment_name}</strong><br><small>${item.brand}</small></td>
-                    <td>${item.owner_details.first_name} ${item.owner_details.last_name}</td>
+                    <td><strong>${escapeHtml(item.equipment_name)}</strong><br><small>${escapeHtml(item.brand)}</small></td>
+                    <td>${escapeHtml(item.owner_details.first_name)} ${escapeHtml(item.owner_details.last_name)}</td>
                     <td>${item.price} so'm</td>
-                    <td>${item.region}</td>
+                    <td>${escapeHtml(item.region)}</td>
                     <td><i class="fas fa-star" style="color:#f1c40f"></i> ${item.rating}</td>
                     <td>
                         <button onclick="openEditModal('${item.id}')" class="btn-action btn-edit"><i class="fas fa-edit"></i></button>

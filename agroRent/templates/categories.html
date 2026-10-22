@@ -85,7 +85,7 @@ async function loadData() {
             body.innerHTML += `
                 <tr>
                     <td><small>${item.id}</small></td>
-                    <td><strong>${item.name}</strong></td>
+                    <td><strong>${escapeHtml(item.name)}</strong></td>
                     <td>${date}</td>
                     <td>
                         <button onclick="openEditModal('${item.id}')" class="btn-action btn-edit"><i class="fas fa-edit"></i></button>
