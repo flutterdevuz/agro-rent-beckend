@@ -11,6 +11,8 @@ VENV=/opt/agrorent/venv
 DATA_DIR=/opt/agrorent/data
 BACKUP_DIR=/opt/agrorent/backups
 as_app() { sudo -u agrorent -H "$@"; }
+# agrorent foydalanuvchisi o'qiy oladigan papkadan ishlaymiz (masalan /root emas)
+cd /opt/agrorent
 
 echo "🌿 AgroRent deploy boshlandi..."
 
