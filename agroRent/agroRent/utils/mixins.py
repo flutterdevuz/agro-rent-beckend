@@ -1,3 +1,4 @@
+from django.conf import settings
 from rest_framework import serializers
 
 from .translator import translate_many
@@ -7,7 +8,7 @@ _QUEUE_ATTR = '_translation_queue'
 
 def _start_queue(request):
     """Navbatni boshlaydi. True qaytarsa, navbat egasi shu chaqiruv."""
-    if request is None or getattr(request, _QUEUE_ATTR, None) is not None:
+    if not settings.AUTO_TRANSLATE or request is None or getattr(request, _QUEUE_ATTR, None) is not None:
         return False
     setattr(request, _QUEUE_ATTR, [])
     return True
@@ -64,7 +65,7 @@ class TranslatableSerializerMixin:
             if owner:
                 delattr(request, _QUEUE_ATTR)
             raise
-        if request is None:
+        if not settings.AUTO_TRANSLATE or request is None:
             return data
 
         meta = getattr(self, 'Meta', None)

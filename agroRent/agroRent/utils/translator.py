@@ -2,6 +2,7 @@ import hashlib
 import logging
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeout
 
+from django.conf import settings
 from django.core.cache import cache
 from deep_translator import GoogleTranslator
 from langdetect import detect, DetectorFactory
@@ -60,6 +61,9 @@ def translate_many(texts, target_lang='uz'):
     - Google xato bersa yoki javob bermasa, 2 daqiqa davomida tarjimasiz ishlaymiz,
       shunda sahifa sekinlashmaydi.
     """
+    if not settings.AUTO_TRANSLATE:
+        return {text: text for text in texts}
+
     lang = _normalize_lang(target_lang)
     results = {}
     unique = []

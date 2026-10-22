@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db.models import Count, Q
 from django.views.generic import TemplateView
 from rest_framework import generics, status
@@ -121,6 +122,10 @@ class TranslateView(APIView):
     )
     def post(self, request):
         texts = request.data.get('texts', [])
+        if not isinstance(texts, list):
+            return Response({})
+        # Ochiq endpoint: hajmni cheklaymiz
+        texts = [t for t in texts if isinstance(t, str) and 0 < len(t) <= 1000][:300]
         target_lang = request.data.get('lang') or request.headers.get('Accept-Language', 'uz').split(',')[0].strip().split('-')[0]
 
         if not texts:
@@ -147,6 +152,14 @@ class TranslateView(APIView):
                 val = getattr(st, db_field, None)
                 if not val:
                     texts_to_translate.append(text)
+
+        if not settings.AUTO_TRANSLATE:
+            # Avtomatik tarjima o'chiq: yangi matnlar admin "Site Texts" bo'limida
+            # to'ldirishi uchun bazaga qo'shiladi, javobda esa asl matn qaytadi
+            for text in texts_to_translate:
+                if text not in existing_texts:
+                    SiteText.objects.get_or_create(key=text, defaults={'uz': text} if db_field != 'uz' else {})
+            texts_to_translate = []
 
         translations = {}
         if texts_to_translate:

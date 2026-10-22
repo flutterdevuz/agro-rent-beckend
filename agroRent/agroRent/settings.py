@@ -138,6 +138,10 @@ USE_I18N = True
 
 USE_TZ = True
 
+# Foydalanuvchi kiritgan ma'lumotlarni Google orqali avtomatik tarjima qilish.
+# O'chiq: ma'lumotlar asl tilida, interfeys matnlari admin paneldagi "Site Texts" dan olinadi.
+AUTO_TRANSLATE = os.environ.get('AUTO_TRANSLATE', 'False') == 'True'
+
 # Cache configuration for translations
 # CACHE_DIR berilsa, kesh barcha gunicorn workerlari uchun umumiy va qayta ishga tushganda saqlanadi
 if os.environ.get('CACHE_DIR'):
