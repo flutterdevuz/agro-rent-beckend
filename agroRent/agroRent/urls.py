@@ -33,12 +33,14 @@ def superadmin_required(view_func):
         # 1. Email va Auth tekshiruvi
         is_allowed_email = request.user.is_authenticated and (request.user.email in SuperAdminOnly.ALLOWED_EMAILS or request.user.is_superuser)
         
-        # 2. Access Key tekshiruvi
-        access_key = request.GET.get('access')
-        if settings.ADMIN_ACCESS_KEY and access_key and hmac.compare_digest(access_key, settings.ADMIN_ACCESS_KEY):
-            request.session['admin_access_verified'] = True
-        
-        is_access_verified = request.session.get('admin_access_verified', False)
+        # 2. Access Key tekshiruvi (ADMIN_ACCESS_KEY bo'sh bo'lsa, kalit talab qilinmaydi)
+        if settings.ADMIN_ACCESS_KEY:
+            access_key = request.GET.get('access')
+            if access_key and hmac.compare_digest(access_key, settings.ADMIN_ACCESS_KEY):
+                request.session['admin_access_verified'] = True
+            is_access_verified = request.session.get('admin_access_verified', False)
+        else:
+            is_access_verified = True
 
         if is_allowed_email and is_access_verified:
             return view_func(request, *args, **kwargs)

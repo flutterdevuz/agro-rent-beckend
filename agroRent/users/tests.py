@@ -167,9 +167,14 @@ class AdminAccessKeyTests(SecurityTestCase):
         self.client.force_login(self.superuser)
 
     @override_settings(ADMIN_ACCESS_KEY='')
-    def test_admin_closed_when_key_not_configured(self):
-        self.assertEqual(self.client.get('/admin/?access=').status_code, 404)
-        self.assertEqual(self.client.get('/admin/?access=agroterra_premium_2026').status_code, 404)
+    def test_without_key_only_superadmin_login_is_needed(self):
+        self.assertEqual(self.client.get('/admin/').status_code, 200)
+
+        self.client.force_login(self.staff)  # staff, lekin superuser emas
+        self.assertEqual(self.client.get('/admin/').status_code, 404)
+
+        self.client.logout()
+        self.assertEqual(self.client.get('/admin/').status_code, 404)
 
     @override_settings(ADMIN_ACCESS_KEY='yangi-maxfiy-kalit')
     def test_admin_requires_correct_key(self):

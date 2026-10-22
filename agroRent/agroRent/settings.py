@@ -216,5 +216,6 @@ SIMPLE_JWT = {
 }
 
 # Admin Access Security
-# O'rnatilmagan bo'lsa, admin sahifalariga access kalit orqali kirib bo'lmaydi
+# Berilsa, admin sahifalari login'dan tashqari ?access=<kalit> ni ham talab qiladi.
+# Bo'sh bo'lsa, superadmin login'ining o'zi yetarli.
 ADMIN_ACCESS_KEY = os.environ.get('ADMIN_ACCESS_KEY', '')
