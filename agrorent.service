@@ -1,0 +1,21 @@
+[Unit]
+Description=AgroRent (agrorent.uz) Gunicorn
+After=network.target
+
+[Service]
+User=agrorent
+Group=www-data
+WorkingDirectory=/opt/agrorent/app/agroRent
+EnvironmentFile=/opt/agrorent/app/.env
+RuntimeDirectory=agrorent
+ExecStart=/opt/agrorent/venv/bin/gunicorn -c /opt/agrorent/app/gunicorn.conf.py agroRent.wsgi:application
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+TimeoutStopSec=10
+PrivateTmp=true
+NoNewPrivileges=true
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

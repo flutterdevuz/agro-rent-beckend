@@ -1,23 +1,19 @@
-# Gunicorn Configuration for AgroTerra Production
-# File: gunicorn.conf.py
+# Gunicorn Configuration for AgroRent (agrorent.uz)
+# systemd: agrorent.service
 
-import multiprocessing
+# nginx bilan unix socket orqali ulanadi (port band qilmaydi)
+bind = "unix:/run/agrorent/gunicorn.sock"
+umask = 0o007  # socket'ga www-data (nginx) guruhi kira olishi uchun
 
-# Server socket
-bind = "0.0.0.0:5050"
-backlog = 2048
-
-# Worker processes
-workers = multiprocessing.cpu_count() * 2 + 1
+# Server boshqa loyihalar bilan umumiy, shuning uchun workerlar soni cheklangan
+workers = 3
 worker_class = "sync"
-worker_connections = 1000
-timeout = 30
+timeout = 60
 keepalive = 2
 
-# Logging
+# Loglar journald'ga yoziladi: journalctl -u agrorent
 loglevel = "info"
-accesslog = "/root/agroterra/logs/access.log"
-errorlog = "/root/agroterra/logs/error.log"
+accesslog = "-"
+errorlog = "-"
 
-# Process naming
-proc_name = "agroterra"
+proc_name = "agrorent"

@@ -1,5 +1,6 @@
 from unittest.mock import patch
 
+from django.test import override_settings
 from rest_framework.test import APITestCase
 
 from market.models import Category, MarketItem
@@ -153,3 +154,24 @@ class RenterOnlyListingTests(SecurityTestCase):
 
         self.client.force_authenticate(self.staff)
         self.assertEqual(self.client.patch(url, {'name': 'Admin'}).status_code, 200)
+
+
+@override_settings(STORAGES={
+    'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+    'staticfiles': {'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage'},
+})
+class AdminAccessKeyTests(SecurityTestCase):
+    def setUp(self):
+        super().setUp()
+        self.superuser = make_user('+998900000005', is_staff=True, is_superuser=True)
+        self.client.force_login(self.superuser)
+
+    @override_settings(ADMIN_ACCESS_KEY='')
+    def test_admin_closed_when_key_not_configured(self):
+        self.assertEqual(self.client.get('/admin/?access=').status_code, 404)
+        self.assertEqual(self.client.get('/admin/?access=agroterra_premium_2026').status_code, 404)
+
+    @override_settings(ADMIN_ACCESS_KEY='yangi-maxfiy-kalit')
+    def test_admin_requires_correct_key(self):
+        self.assertEqual(self.client.get('/admin/?access=agroterra_premium_2026').status_code, 404)
+        self.assertEqual(self.client.get('/admin/?access=yangi-maxfiy-kalit').status_code, 200)

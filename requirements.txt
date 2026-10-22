@@ -24,6 +24,7 @@ google-resumable-media
 googleapis-common-protos
 grpcio
 grpcio-status
+gunicorn
 h11
 h2
 hpack
@@ -43,6 +44,7 @@ pyasn1
 pyasn1_modules
 pycparser
 PyJWT
+python-dotenv
 PyYAML
 referencing
 requests

@@ -24,6 +24,8 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, Spec
 from users.permissions import SuperAdminOnly
 from home.views import PublicHomeView, PublicMarketView, PublicRentView, PublicAboutView, PublicProfileView, PublicRentDetailView, handle_404
 
+import hmac
+
 from django.http import Http404
 
 def superadmin_required(view_func):
@@ -33,7 +35,7 @@ def superadmin_required(view_func):
         
         # 2. Access Key tekshiruvi
         access_key = request.GET.get('access')
-        if access_key == settings.ADMIN_ACCESS_KEY:
+        if settings.ADMIN_ACCESS_KEY and access_key and hmac.compare_digest(access_key, settings.ADMIN_ACCESS_KEY):
             request.session['admin_access_verified'] = True
         
         is_access_verified = request.session.get('admin_access_verified', False)

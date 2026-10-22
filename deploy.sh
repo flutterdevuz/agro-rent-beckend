@@ -1,50 +1,51 @@
 #!/bin/bash
 # =============================================
-# AgroTerra Production Deploy Script
-# Root user, port 5050
+# AgroRent (agrorent.uz) deploy skripti
+# Serverda root sifatida ishga tushiring:  bash /opt/agrorent/app/deploy.sh
 # =============================================
 
-set -e
+set -euo pipefail
 
-echo "🌿 AgroTerra Deployment Starting..."
+APP_DIR=/opt/agrorent/app
+VENV=/opt/agrorent/venv
+DATA_DIR=/opt/agrorent/data
+BACKUP_DIR=/opt/agrorent/backups
+as_app() { sudo -u agrorent -H "$@"; }
 
-# --- 1. Pull latest code ---
-echo "📦 Pulling latest code..."
-cd /root/agroterra
-git pull origin main
+echo "🌿 AgroRent deploy boshlandi..."
 
-# --- 2. Activate virtual environment ---
-echo "🐍 Activating virtual environment..."
-source /root/agroterra/venv/bin/activate
+# --- 1. Bazaning zaxira nusxasi ---
+if [ -f "$DATA_DIR/db.sqlite3" ]; then
+    echo "💾 Baza zaxiralanmoqda..."
+    as_app mkdir -p "$BACKUP_DIR"
+    as_app "$VENV/bin/python" -c "import sqlite3, sys; sqlite3.connect(sys.argv[1]).backup(sqlite3.connect(sys.argv[2]))"         "$DATA_DIR/db.sqlite3" "$BACKUP_DIR/db-$(date +%Y%m%d-%H%M%S).sqlite3"
+    # Oxirgi 30 ta zaxira saqlanadi
+    ls -1t "$BACKUP_DIR"/db-*.sqlite3 | tail -n +31 | xargs -r rm --
+fi
 
-# --- 3. Install/update dependencies ---
-echo "📥 Installing dependencies..."
-pip install -r requirements.txt
-pip install gunicorn psycopg2-binary
+# --- 2. Yangi kod ---
+echo "📦 Kod yangilanmoqda..."
+as_app git -C "$APP_DIR" pull --ff-only origin main
 
-# --- 4. Run migrations ---
-echo "🗄️  Running migrations..."
-cd /root/agroterra/agroRent
-python manage.py migrate --no-input
+# --- 3. Kutubxonalar ---
+echo "📥 Kutubxonalar o'rnatilmoqda..."
+as_app /opt/agrorent/bin/uv pip install --python "$VENV/bin/python" -q -r "$APP_DIR/requirements.txt"
 
-# --- 5. Collect static files ---
-echo "📁 Collecting static files..."
-python manage.py collectstatic --no-input
+# --- 4. Migratsiya va static fayllar ---
+cd "$APP_DIR/agroRent"
+echo "🗄️  Migratsiyalar..."
+as_app "$VENV/bin/python" manage.py migrate --no-input
+echo "📁 Static fayllar..."
+as_app "$VENV/bin/python" manage.py collectstatic --no-input -v 0
 
-# --- 6. Create log directory ---
-mkdir -p /root/agroterra/logs
-
-# --- 7. Restart Gunicorn via systemd ---
-echo "🔄 Restarting Gunicorn..."
+# --- 5. Qayta ishga tushirish ---
+echo "🔄 Xizmat qayta ishga tushirilmoqda..."
+cp "$APP_DIR/agrorent.service" /etc/systemd/system/agrorent.service
 systemctl daemon-reload
-systemctl restart agroterra
-
-# --- 8. Reload Nginx ---
-echo "🌐 Reloading Nginx..."
-nginx -t && systemctl reload nginx
+systemctl restart agrorent
+sleep 2
+systemctl is-active --quiet agrorent || { journalctl -u agrorent -n 30 --no-pager; exit 1; }
 
 echo ""
-echo "✅ AgroTerra is LIVE on port 5050!"
-echo "🔗 Site:   https://yourdomain.com"
-echo "🔐 Admin:  https://yourdomain.com/admin/?access=agroterra_premium_2026"
-echo "📖 Docs:   https://yourdomain.com/api/docs/?access=agroterra_premium_2026"
+echo "✅ AgroRent ishga tushdi: https://agrorent.uz"
+echo "🔐 Admin: https://agrorent.uz/admin/?access=<ADMIN_ACCESS_KEY>"

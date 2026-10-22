@@ -5,11 +5,23 @@ Django settings for agroRent project.
 import os
 from pathlib import Path
 
+from django.core.exceptions import ImproperlyConfigured
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY: Read from environment variables in production
-SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-=-y=&66yv79f8=y#*oimz-fwfsti#^fvs-o#utzgj2i-+$v14+')
+# Lokal ishlab chiqishda repo ildizidagi .env faylini o'qiymiz.
+# Serverda o'zgaruvchilarni systemd (EnvironmentFile) beradi va ular ustidan yozilmaydi.
+try:
+    from dotenv import load_dotenv
+    load_dotenv(BASE_DIR.parent / '.env')
+except ImportError:
+    pass
+
+# SECURITY: maxfiy kalitlar faqat muhit o'zgaruvchilaridan olinadi (namuna: .env.example)
+SECRET_KEY = os.environ.get('SECRET_KEY')
+if not SECRET_KEY:
+    raise ImproperlyConfigured("SECRET_KEY muhit o'zgaruvchisi o'rnatilmagan (.env faylini tekshiring)")
 
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
@@ -22,6 +34,11 @@ if not DEBUG:
     X_FRAME_OPTIONS = 'DENY'
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
+    # nginx orqasida ishlaganda HTTPS so'rovlarni to'g'ri aniqlash uchun
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Masalan: https://agrorent.uz,https://www.agrorent.uz
+CSRF_TRUSTED_ORIGINS = [o for o in os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',') if o]
 
 
 # Application definition
@@ -85,7 +102,8 @@ WSGI_APPLICATION = 'agroRent.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        # Bazani repo tashqarisida saqlash uchun SQLITE_PATH ni bering
+        'NAME': os.environ.get('SQLITE_PATH', BASE_DIR / 'db.sqlite3'),
     }
 }
 
@@ -147,7 +165,7 @@ STORAGES = {
 }
 
 MEDIA_URL = '/api/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = os.environ.get('MEDIA_ROOT', BASE_DIR / 'media')
 
 # Custom User Model
 AUTH_USER_MODEL = 'users.User'
@@ -184,4 +202,5 @@ SIMPLE_JWT = {
 }
 
 # Admin Access Security
-ADMIN_ACCESS_KEY = 'agroterra_premium_2026'
+# O'rnatilmagan bo'lsa, admin sahifalariga access kalit orqali kirib bo'lmaydi
+ADMIN_ACCESS_KEY = os.environ.get('ADMIN_ACCESS_KEY', '')
