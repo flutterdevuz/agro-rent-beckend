@@ -51,6 +51,14 @@
                         <a href="/api/admin/site-texts/"><i class="fas fa-language"></i> <span
                                 data-i18n>Sayt matnlari</span></a>
                     </li>
+                    <li class="{% if '/api/admin/website/' in request.path %}active{% endif %}">
+                        <a href="/api/admin/website/"><i class="fas fa-globe"></i> <span
+                                data-i18n>Veb-sayt</span></a>
+                    </li>
+                    <li class="{% if '/api/admin/website-orders/' in request.path %}active{% endif %}">
+                        <a href="/api/admin/website-orders/"><i class="fas fa-headset"></i> <span
+                                data-i18n>Sayt arizalari</span></a>
+                    </li>
                 </ul>
             </nav>
             <div class="sidebar-footer">

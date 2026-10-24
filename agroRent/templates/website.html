@@ -1,0 +1,1134 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Veb-sayt Boshqaruvi - Agro Rent Admin{% endblock %}
+
+{% block content %}
+<style>
+    .website-tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+        border-bottom: 2px solid #eef2f6;
+        padding-bottom: 12px;
+    }
+    .website-tab-btn {
+        padding: 10px 18px;
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
+        background: #ffffff;
+        color: #475569;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+    }
+    .website-tab-btn:hover {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+    }
+    .website-tab-btn.active {
+        background: #165B33;
+        color: #ffffff;
+        border-color: #165B33;
+        box-shadow: 0 4px 12px rgba(22, 91, 51, 0.25);
+    }
+    .tab-pane {
+        display: none;
+    }
+    .tab-pane.active {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(6px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .form-grid-2 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 20px;
+    }
+    .form-grid-3 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 20px;
+    }
+    .section-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #1e293b;
+        margin: 20px 0 12px;
+        padding-bottom: 6px;
+        border-bottom: 1px dashed #cbd5e1;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .section-title i {
+        color: #165B33;
+    }
+    .alert-box {
+        padding: 12px 16px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        font-size: 14px;
+        font-weight: 500;
+        display: none;
+    }
+    .alert-success {
+        background: #dcfce7;
+        color: #166534;
+        border: 1px solid #bbf7d0;
+    }
+    .img-thumb {
+        width: 50px;
+        height: 50px;
+        border-radius: 8px;
+        object-fit: cover;
+        border: 1px solid #e2e8f0;
+    }
+    .badge-pill {
+        padding: 4px 10px;
+        border-radius: 9999px;
+        font-size: 11px;
+        font-weight: 700;
+        display: inline-block;
+    }
+    .badge-partner {
+        background: #e0f2fe;
+        color: #0369a1;
+    }
+    .badge-team {
+        background: #fef3c7;
+        color: #b45309;
+    }
+    .action-btn-edit {
+        background: #f8fafc;
+        border: 1px solid #cbd5e1;
+        color: #0284c7;
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.2s;
+    }
+    .action-btn-edit:hover {
+        background: #e0f2fe;
+        border-color: #7dd3fc;
+    }
+    .action-btn-del {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        color: #dc2626;
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.2s;
+    }
+    .action-btn-del:hover {
+        background: #fee2e2;
+        border-color: #fca5a5;
+    }
+</style>
+
+<div class="content-card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div>
+            <h2 style="font-size: 22px; font-weight: 800; color: #0f172a; margin-bottom: 4px;">
+                <i class="fas fa-globe text-success"></i> Veb-sayt va Landing Page Boshqaruvi
+            </h2>
+            <p style="color: #64748b; font-size: 13px;">
+                Bosh sahifadagi barcha matnlar, ilova havolalari (Google Play / App Store), xizmatlar, statistika va jamoani to'liq o'zgartiring.
+            </p>
+        </div>
+        <a href="/" target="_blank" class="btn-secondary" style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none;">
+            <i class="fas fa-external-link-alt"></i> Saytni ko'rish
+        </a>
+    </div>
+
+    <!-- Alert Message -->
+    <div id="save-alert" class="alert-box alert-success">
+        <i class="fas fa-check-circle"></i> O'zgarishlar muvaffaqiyatli saqlandi!
+    </div>
+
+    <!-- Tabs Navigation -->
+    <div class="website-tabs">
+        <button class="website-tab-btn active" onclick="switchTab('tab-general')">
+            <i class="fas fa-sliders-h"></i> 1. Asosiy & Ilova Havolalari
+        </button>
+        <button class="website-tab-btn" onclick="switchTab('tab-stats')">
+            <i class="fas fa-chart-pie"></i> 2. Statistika
+        </button>
+        <button class="website-tab-btn" onclick="switchTab('tab-services')">
+            <i class="fas fa-tractor"></i> 3. Bizning Xizmatlar (<span id="services-count">0</span>)
+        </button>
+        <button class="website-tab-btn" onclick="switchTab('tab-partners')">
+            <i class="fas fa-users"></i> 4. Hamkorlar va Jamoa (<span id="partners-count">0</span>)
+        </button>
+        <button class="website-tab-btn" onclick="switchTab('tab-content')">
+            <i class="fas fa-stream"></i> 5. 4 Qadam & Afzalliklar
+        </button>
+    </div>
+
+    <!-- ==================== TAB 1: ASOSIY VA ILOVA HAVOLALARI ==================== -->
+    <div id="tab-general" class="tab-pane active">
+        <form id="settings-form" onsubmit="saveSettings(event)">
+            
+            <div class="section-title">
+                <i class="fas fa-mobile-alt"></i> Mobil Ilova Havolalari (Google Play & App Store)
+            </div>
+            <div class="form-grid-2">
+                <div class="form-group">
+                    <label><i class="fab fa-google-play" style="color: #059669;"></i> Google Play Havolasi</label>
+                    <input type="url" name="google_play_url" id="field-google_play_url" placeholder="https://play.google.com/store/apps/details?id=uz.agrorent">
+                    <small style="color: #64748b; font-size: 11px;">Foydalanuvchi "Google Play" tugmasini bosganda ushbu havola ochiladi.</small>
+                </div>
+                <div class="form-group">
+                    <label><i class="fab fa-apple" style="color: #000000;"></i> App Store Havolasi</label>
+                    <input type="url" name="app_store_url" id="field-app_store_url" placeholder="https://apps.apple.com/app/agrorent/id123456789">
+                    <small style="color: #64748b; font-size: 11px;">Foydalanuvchi "App Store" tugmasini bosganda ushbu havola ochiladi.</small>
+                </div>
+            </div>
+
+            <div class="section-title">
+                <i class="fas fa-desktop"></i> Hero (Asosiy bosh sahifa banneri)
+            </div>
+            <div class="form-group">
+                <label>Hero Yuqori Nishoni (Badge)</label>
+                <input type="text" name="hero_badge" id="field-hero_badge" required>
+            </div>
+            <div class="form-group">
+                <label>Bosh Sarlavha (Title)</label>
+                <input type="text" name="hero_title" id="field-hero_title" required>
+            </div>
+            <div class="form-group">
+                <label>Qisqacha Tavsif (Description)</label>
+                <textarea name="hero_description" id="field-hero_description" rows="3" required></textarea>
+            </div>
+            <div class="form-grid-2">
+                <div class="form-group">
+                    <label>Asosiy CTA Tugma Matni</label>
+                    <input type="text" name="hero_primary_cta_text" id="field-hero_primary_cta_text">
+                </div>
+                <div class="form-group">
+                    <label>Asosiy CTA Tugma Havolasi</label>
+                    <input type="text" name="hero_primary_cta_link" id="field-hero_primary_cta_link">
+                </div>
+            </div>
+
+            <div class="section-title">
+                <i class="fas fa-bullhorn"></i> Pastki Ilovani Yuklab Olish Banneri (CTA)
+            </div>
+            <div class="form-group">
+                <label>CTA Sarlavhasi</label>
+                <input type="text" name="cta_title" id="field-cta_title">
+            </div>
+            <div class="form-group">
+                <label>CTA Kichik Tavsifi</label>
+                <input type="text" name="cta_subtitle" id="field-cta_subtitle">
+            </div>
+
+            <div class="section-title">
+                <i class="fas fa-address-book"></i> Aloqa Ma'lumotlari & Ijtimoiy Tarmoqlar
+            </div>
+            <div class="form-grid-3">
+                <div class="form-group">
+                    <label><i class="fas fa-phone"></i> Telefon raqam</label>
+                    <input type="text" name="phone_number" id="field-phone_number">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-envelope"></i> Email manzil</label>
+                    <input type="email" name="email" id="field-email">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-map-marker-alt"></i> Hudud / Manzil</label>
+                    <input type="text" name="address" id="field-address">
+                </div>
+            </div>
+
+            <div class="form-grid-2">
+                <div class="form-group">
+                    <label><i class="fab fa-telegram" style="color: #0284c7;"></i> Telegram havolasi</label>
+                    <input type="url" name="telegram_url" id="field-telegram_url">
+                </div>
+                <div class="form-group">
+                    <label><i class="fab fa-instagram" style="color: #db2777;"></i> Instagram havolasi</label>
+                    <input type="url" name="instagram_url" id="field-instagram_url">
+                </div>
+                <div class="form-group">
+                    <label><i class="fab fa-facebook" style="color: #2563eb;"></i> Facebook havolasi</label>
+                    <input type="url" name="facebook_url" id="field-facebook_url">
+                </div>
+                <div class="form-group">
+                    <label><i class="fab fa-youtube" style="color: #dc2626;"></i> YouTube havolasi</label>
+                    <input type="url" name="youtube_url" id="field-youtube_url">
+                </div>
+            </div>
+
+            <div style="margin-top: 25px; padding-top: 15px; border-top: 1px solid #e2e8f0; text-align: right;">
+                <button type="submit" class="btn-primary" style="padding: 12px 30px; font-size: 15px;">
+                    <i class="fas fa-save"></i> Barcha Sozlamalarni Saqlash
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- ==================== TAB 2: STATISTIKA ==================== -->
+    <div id="tab-stats" class="tab-pane">
+        <form id="stats-form" onsubmit="saveSettings(event)">
+            
+            <div class="section-title">
+                <i class="fas fa-tachometer-alt"></i> Tezkor Ko'rsatkichlar (Hero ostidagi banner)
+            </div>
+            <div class="form-grid-2">
+                <div class="form-group">
+                    <label>Foydalanuvchilar soni</label>
+                    <input type="text" name="stats_users" id="field-stats_users" placeholder="600+">
+                </div>
+                <div class="form-group">
+                    <label>Xizmat turlari</label>
+                    <input type="text" name="stats_services" id="field-stats_services" placeholder="8 ta">
+                </div>
+                <div class="form-group">
+                    <label>Pilot hudud</label>
+                    <input type="text" name="stats_region" id="field-stats_region" placeholder="Andijon">
+                </div>
+                <div class="form-group">
+                    <label>Buyurtma qabul qilish rejimi</label>
+                    <input type="text" name="stats_orders_support" id="field-stats_orders_support" placeholder="24/7">
+                </div>
+            </div>
+
+            <div class="section-title">
+                <i class="fas fa-trophy"></i> Katta Natijalar (Ishonchli hamkorlik bo'limi)
+            </div>
+            <div class="form-grid-2">
+                <div class="form-group">
+                    <label>Muvaffaqiyatli buyurtmalar</label>
+                    <input type="text" name="stat_total_orders" id="field-stat_total_orders" placeholder="10 000+">
+                </div>
+                <div class="form-group">
+                    <label>Fermerlar soni</label>
+                    <input type="text" name="stat_total_farmers" id="field-stat_total_farmers" placeholder="1 200+">
+                </div>
+                <div class="form-group">
+                    <label>Hamkor kompaniyalar</label>
+                    <input type="text" name="stat_total_companies" id="field-stat_total_companies" placeholder="150+">
+                </div>
+                <div class="form-group">
+                    <label>Foydalanuvchilar bahosi (Reyting)</label>
+                    <input type="text" name="stat_rating" id="field-stat_rating" placeholder="4.9">
+                </div>
+            </div>
+
+            <div style="margin-top: 25px; padding-top: 15px; border-top: 1px solid #e2e8f0; text-align: right;">
+                <button type="submit" class="btn-primary" style="padding: 12px 30px; font-size: 15px;">
+                    <i class="fas fa-save"></i> Statistikalarni Saqlash
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- ==================== TAB 3: BIZNING XIZMATLAR ==================== -->
+    <div id="tab-services" class="tab-pane">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <p style="color: #64748b; font-size: 13px; margin: 0;">
+                Bosh sahifadagi barcha xizmatlar ro'yxati. Narxi, tavsifi va rasmlarini tahrirlashingiz yoki yangi xizmat qo'shishingiz mumkin.
+            </p>
+            <button class="btn-primary" onclick="openNewServiceModal()">
+                <i class="fas fa-plus"></i> Yangi xizmat qo'shish
+            </button>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rasm</th>
+                        <th>Xizmat Nomi</th>
+                        <th>Taxminiy Narxi</th>
+                        <th>Tartibi</th>
+                        <th>Holati</th>
+                        <th>Amallar</th>
+                    </tr>
+                </thead>
+                <tbody id="services-tbody">
+                    <tr><td colspan="6" style="text-align: center;">Yuklanmoqda...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ==================== TAB 4: HAMKORLAR VA JAMOA ==================== -->
+    <div id="tab-partners" class="tab-pane">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <p style="color: #64748b; font-size: 13px; margin: 0;">
+                Bosh sahifadagi "Bizning hamkorlar" va "Jamoa" a'zolarini to'liq qo'shish, rasmlarini yuklash yoki tahrirlash.
+            </p>
+            <button class="btn-primary" onclick="openNewPartnerModal()">
+                <i class="fas fa-user-plus"></i> Yangi Hamkor / Jamoa qo'shish
+            </button>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Surati</th>
+                        <th>Ism / Tashkilot</th>
+                        <th>Yo'nalish / Lavozim</th>
+                        <th>Turi</th>
+                        <th>Tartibi</th>
+                        <th>Holati</th>
+                        <th>Amallar</th>
+                    </tr>
+                </thead>
+                <tbody id="partners-tbody">
+                    <tr><td colspan="7" style="text-align: center;">Yuklanmoqda...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ==================== TAB 5: 4 QADAM VA AFZALLIKLAR ==================== -->
+    <div id="tab-content" class="tab-pane">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <div class="section-title" style="margin: 0; border: none;">
+                <i class="fas fa-shoe-prints"></i> "Qanday ishlaydi?" Bosqichlari
+            </div>
+            <button class="btn-secondary" onclick="openNewStepModal()">
+                <i class="fas fa-plus"></i> Yangi Qadam qo'shish
+            </button>
+        </div>
+        <div id="steps-container" style="display: grid; gap: 15px; margin-bottom: 35px;">
+            <!-- Rendered by JS -->
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <div class="section-title" style="margin: 0; border: none;">
+                <i class="fas fa-shield-alt"></i> "Nima uchun AgroRent?" Afzalliklari
+            </div>
+            <button class="btn-secondary" onclick="openNewBenefitModal()">
+                <i class="fas fa-plus"></i> Yangi Afzallik qo'shish
+            </button>
+        </div>
+        <div id="benefits-container" style="display: grid; gap: 15px;">
+            <!-- Rendered by JS -->
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ==================== SERVICE MODAL ==================== -->
+<div id="serviceModal" class="modal">
+    <div class="modal-content" style="max-width: 580px;">
+        <div class="modal-header">
+            <h3 id="serviceModalTitle">Xizmatni tahrirlash</h3>
+            <span class="close" onclick="closeServiceModal()">&times;</span>
+        </div>
+        <form id="serviceForm" onsubmit="saveService(event)">
+            <input type="hidden" name="id" id="service-id">
+            
+            <div class="form-group">
+                <label>Xizmat identifikatori (slug)</label>
+                <input type="text" name="slug" id="service-slug" required placeholder="masalan: tractor">
+            </div>
+            <div class="form-group">
+                <label>Xizmat nomi</label>
+                <input type="text" name="title" id="service-title" required placeholder="masalan: Traktor ijarasi">
+            </div>
+            <div class="form-group">
+                <label>Taxminiy narx</label>
+                <input type="text" name="price_estimate" id="service-price" placeholder="masalan: 150 000 - 300 000 so'm / soat">
+            </div>
+            <div class="form-group">
+                <label>Tavsif</label>
+                <textarea name="description" id="service-description" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+                <label>Afzalliklari (Har bir qatorda bittadan)</label>
+                <textarea name="features" id="service-features" rows="3" placeholder="Tajribali mexanizator bilan&#10;Yoqilg'i xizmati ichida&#10;GPS orqali aniq hisob"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Yangi rasm yuklash (Ixtiyoriy)</label>
+                <input type="file" name="image" id="service-image" accept="image/*">
+                <small style="color: #64748b; font-size: 11px;">Agar yangi rasm tanlamasangiz, avvalgi rasmi o'zgarmasdan saqlanadi.</small>
+            </div>
+            <div class="form-group">
+                <label>Tartib raqami</label>
+                <input type="number" name="order" id="service-order" value="1">
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeServiceModal()">Bekor qilish</button>
+                <button type="submit" class="btn-primary" id="service-save-btn">Saqlash</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ==================== PARTNER / TEAM MODAL ==================== -->
+<div id="partnerModal" class="modal">
+    <div class="modal-content" style="max-width: 550px;">
+        <div class="modal-header">
+            <h3 id="partnerModalTitle">Hamkor / Jamoa a'zosini qo'shish</h3>
+            <span class="close" onclick="closePartnerModal()">&times;</span>
+        </div>
+        <form id="partnerForm" onsubmit="savePartner(event)">
+            <input type="hidden" name="id" id="partner-id">
+            
+            <div class="form-group">
+                <label>Ismi yoki Tashkilot nomi</label>
+                <input type="text" name="name" id="partner-name" required placeholder='masalan: "AgroServis" MChJ'>
+            </div>
+            <div class="form-group">
+                <label>Yo'nalishi yoki Lavozimi</label>
+                <input type="text" name="role" id="partner-role" required placeholder="masalan: Qishloq xo'jaligi xizmatlari">
+            </div>
+            <div class="form-group">
+                <label>A'zo turi</label>
+                <select name="member_type" id="partner-type">
+                    <option value="partner">Hamkor tashkilot / fermer</option>
+                    <option value="team">Jamoa a'zosi / mutaxassis</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Surat yuklash (Ixtiyoriy)</label>
+                <input type="file" name="photo" id="partner-photo" accept="image/*">
+                <small style="color: #64748b; font-size: 11px;">Agar yangi rasm tanlamasangiz, avvalgi surati saqlanadi.</small>
+            </div>
+            <div class="form-group">
+                <label>Tartib raqami</label>
+                <input type="number" name="order" id="partner-order" value="1">
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closePartnerModal()">Bekor qilish</button>
+                <button type="submit" class="btn-primary" id="partner-save-btn">Saqlash</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ==================== STEP MODAL ==================== -->
+<div id="stepModal" class="modal">
+    <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-header">
+            <h3 id="stepModalTitle">Bosqichni tahrirlash</h3>
+            <span class="close" onclick="closeStepModal()">&times;</span>
+        </div>
+        <form id="stepForm" onsubmit="saveStep(event)">
+            <input type="hidden" name="id" id="step-id">
+            <div class="form-group">
+                <label>Bosqich raqami (masalan: 01, 02)</label>
+                <input type="text" name="step_number" id="step-number" required placeholder="01">
+            </div>
+            <div class="form-group">
+                <label>Bosqich nomi</label>
+                <input type="text" name="title" id="step-title" required placeholder="Xizmatni tanlang">
+            </div>
+            <div class="form-group">
+                <label>Tavsif</label>
+                <textarea name="description" id="step-description" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+                <label>Tartibi</label>
+                <input type="number" name="order" id="step-order" value="1">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeStepModal()">Bekor qilish</button>
+                <button type="submit" class="btn-primary" id="step-save-btn">Saqlash</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ==================== BENEFIT MODAL ==================== -->
+<div id="benefitModal" class="modal">
+    <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-header">
+            <h3 id="benefitModalTitle">Afzallikni tahrirlash</h3>
+            <span class="close" onclick="closeBenefitModal()">&times;</span>
+        </div>
+        <form id="benefitForm" onsubmit="saveBenefit(event)">
+            <input type="hidden" name="id" id="benefit-id">
+            <div class="form-group">
+                <label>Afzallik nomi</label>
+                <input type="text" name="title" id="benefit-title" required placeholder="Tez va qulay kirish">
+            </div>
+            <div class="form-group">
+                <label>Tavsif</label>
+                <textarea name="description" id="benefit-description" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+                <label>Belgi (Icon)</label>
+                <select name="icon" id="benefit-icon">
+                    <option value="zap">⚡ Chaqmoq (Tezlik)</option>
+                    <option value="shield-check">🛡️ Qalqon (Ishonch)</option>
+                    <option value="receipt">🏷️ Chek (Shaffof narx)</option>
+                    <option value="sprout">🌱 Nihol (Agro ekotizim)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Tartibi</label>
+                <input type="number" name="order" id="benefit-order" value="1">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeBenefitModal()">Bekor qilish</button>
+                <button type="submit" class="btn-primary" id="benefit-save-btn">Saqlash</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Global data stores in memory
+    let servicesList = [];
+    let partnersList = [];
+    let stepsList = [];
+    let benefitsList = [];
+
+    function switchTab(tabId) {
+        document.querySelectorAll('.website-tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+        
+        event.currentTarget.classList.add('active');
+        document.getElementById(tabId).classList.add('active');
+    }
+
+    function showSuccess(msg = "Muvaffaqiyatli saqlandi!") {
+        const el = document.getElementById('save-alert');
+        el.innerHTML = `<i class="fas fa-check-circle"></i> ${msg}`;
+        el.className = 'alert-box alert-success';
+        el.style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(() => { el.style.display = 'none'; }, 4000);
+    }
+
+    // Helper: read CSRF cookie
+    function getCsrfCookie() {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, 10) === 'csrftoken=') {
+                    cookieValue = decodeURIComponent(cookie.substring(10));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // Bulletproof fetch wrapper
+    async function secureApiFetch(url, options = {}) {
+        const token = localStorage.getItem('at_token');
+        const csrf = getCsrfCookie();
+
+        const headers = { ...options.headers };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+        if (csrf) headers['X-CSRFToken'] = csrf;
+
+        if (options.body && !(options.body instanceof FormData)) {
+            headers['Content-Type'] = 'application/json';
+        }
+
+        const response = await fetch(url, {
+            ...options,
+            headers,
+            credentials: 'include'
+        });
+
+        if (response.status === 401) {
+            alert("Sessiyangiz tugagan. Qaytadan tizimga kiring.");
+            window.location.href = '/login/?next=' + window.location.pathname;
+            return null;
+        }
+
+        return response;
+    }
+
+    async function loadWebsiteData() {
+        try {
+            const res = await secureApiFetch('/api/website/content/');
+            if (!res || !res.ok) return;
+            const data = await res.json();
+
+            // 1. Settings
+            const s = data.settings || {};
+            for (const key in s) {
+                const el = document.getElementById(`field-${key}`);
+                if (el) el.value = s[key] || '';
+            }
+
+            // 2. Services
+            servicesList = data.services || [];
+            document.getElementById('services-count').innerText = servicesList.length;
+            const sBody = document.getElementById('services-tbody');
+            if (servicesList.length === 0) {
+                sBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Xizmatlar topilmadi.</td></tr>';
+            } else {
+                sBody.innerHTML = servicesList.map(item => `
+                    <tr>
+                        <td><img src="${item.image_display_url}" class="img-thumb" alt="${item.title}"></td>
+                        <td><strong>${escapeHtml(item.title)}</strong><br><small style="color:#64748b">${item.slug}</small></td>
+                        <td>${escapeHtml(item.price_estimate || 'Belgilanmagan')}</td>
+                        <td>${item.order}</td>
+                        <td>${item.is_active ? '<span style="color:#16a34a;font-weight:600">Faol</span>' : '<span style="color:#dc2626">Nofaol</span>'}</td>
+                        <td style="white-space: nowrap;">
+                            <button type="button" class="action-btn-edit" onclick="editServiceById(${item.id})"><i class="fas fa-edit"></i> Tahrirlash</button>
+                            <button type="button" class="action-btn-del" onclick="deleteServiceById(${item.id})"><i class="fas fa-trash"></i> O'chirish</button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            // 3. Partners
+            partnersList = data.partners || [];
+            document.getElementById('partners-count').innerText = partnersList.length;
+            const pBody = document.getElementById('partners-tbody');
+            if (partnersList.length === 0) {
+                pBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Hamkorlar topilmadi.</td></tr>';
+            } else {
+                pBody.innerHTML = partnersList.map(item => `
+                    <tr>
+                        <td><img src="${item.photo_display_url}" class="img-thumb" style="border-radius: 50%;" alt="${item.name}"></td>
+                        <td><strong>${escapeHtml(item.name)}</strong></td>
+                        <td>${escapeHtml(item.role)}</td>
+                        <td><span class="badge-pill ${item.member_type === 'team' ? 'badge-team' : 'badge-partner'}">${item.member_type_display}</span></td>
+                        <td>${item.order}</td>
+                        <td>${item.is_active ? '<span style="color:#16a34a;font-weight:600">Faol</span>' : '<span style="color:#dc2626">Nofaol</span>'}</td>
+                        <td style="white-space: nowrap;">
+                            <button type="button" class="action-btn-edit" onclick="editPartnerById(${item.id})"><i class="fas fa-edit"></i> Tahrirlash</button>
+                            <button type="button" class="action-btn-del" onclick="deletePartnerById(${item.id})"><i class="fas fa-trash"></i> O'chirish</button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            // 4. Steps
+            stepsList = data.steps || [];
+            const stepsContainer = document.getElementById('steps-container');
+            stepsContainer.innerHTML = stepsList.map(st => `
+                <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:15px; display:flex; gap:15px; align-items:center;">
+                    <div style="width:40px; height:40px; border-radius:50%; background:#165B33; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; shrink:0;">
+                        ${st.step_number}
+                    </div>
+                    <div style="flex:1;">
+                        <div style="font-weight:700; color:#1e293b; font-size: 15px;">${escapeHtml(st.title)}</div>
+                        <div style="color:#64748b; font-size:13px; margin-top: 2px;">${escapeHtml(st.description)}</div>
+                    </div>
+                    <div style="display:flex; gap:6px;">
+                        <button type="button" class="action-btn-edit" onclick="editStepById(${st.id})"><i class="fas fa-edit"></i> Tahrirlash</button>
+                        <button type="button" class="action-btn-del" onclick="deleteStepById(${st.id})"><i class="fas fa-trash"></i> O'chirish</button>
+                    </div>
+                </div>
+            `).join('');
+
+            // 5. Benefits
+            benefitsList = data.benefits || [];
+            const benefitsContainer = document.getElementById('benefits-container');
+            benefitsContainer.innerHTML = benefitsList.map(b => `
+                <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:15px; display:flex; gap:15px; align-items:center;">
+                    <div style="width:40px; height:40px; border-radius:10px; background:#fef3c7; color:#d97706; display:flex; align-items:center; justify-content:center; font-size:18px; shrink:0;">
+                        <i class="fas fa-${b.icon === 'zap' ? 'bolt' : b.icon === 'shield-check' ? 'shield-alt' : b.icon === 'receipt' ? 'file-invoice-dollar' : 'leaf'}"></i>
+                    </div>
+                    <div style="flex:1;">
+                        <div style="font-weight:700; color:#1e293b; font-size: 15px;">${escapeHtml(b.title)}</div>
+                        <div style="color:#64748b; font-size:13px; margin-top: 2px;">${escapeHtml(b.description)}</div>
+                    </div>
+                    <div style="display:flex; gap:6px;">
+                        <button type="button" class="action-btn-edit" onclick="editBenefitById(${b.id})"><i class="fas fa-edit"></i> Tahrirlash</button>
+                        <button type="button" class="action-btn-del" onclick="deleteBenefitById(${b.id})"><i class="fas fa-trash"></i> O'chirish</button>
+                    </div>
+                </div>
+            `).join('');
+
+        } catch (e) {
+            console.error('Error loading data:', e);
+        }
+    }
+
+    async function saveSettings(e) {
+        e.preventDefault();
+        const form = e.target;
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        try {
+            const res = await secureApiFetch('/api/website/admin/settings/', {
+                method: 'PUT',
+                body: JSON.stringify(data)
+            });
+            if (res && res.ok) {
+                showSuccess("Barcha sozlamalar va havolalar saqlandi!");
+            } else {
+                alert("Xatolik yuz berdi. Iltimos qaytadan urining.");
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    // ==================== SERVICE HANDLERS ====================
+    function openNewServiceModal() {
+        document.getElementById('serviceForm').reset();
+        document.getElementById('service-id').value = '';
+        document.getElementById('serviceModalTitle').innerText = "Yangi Xizmat qo'shish";
+        document.getElementById('serviceModal').style.display = 'block';
+    }
+
+    function editServiceById(id) {
+        const item = servicesList.find(s => s.id === id);
+        if (!item) return;
+
+        document.getElementById('service-id').value = item.id;
+        document.getElementById('service-slug').value = item.slug || '';
+        document.getElementById('service-title').value = item.title || '';
+        document.getElementById('service-price').value = item.price_estimate || '';
+        document.getElementById('service-description').value = item.description || '';
+        document.getElementById('service-features').value = item.features || '';
+        document.getElementById('service-order').value = item.order || 1;
+        document.getElementById('service-image').value = ''; // Reset file input
+
+        document.getElementById('serviceModalTitle').innerText = "Xizmatni tahrirlash: " + item.title;
+        document.getElementById('serviceModal').style.display = 'block';
+    }
+
+    function closeServiceModal() {
+        document.getElementById('serviceModal').style.display = 'none';
+    }
+
+    async function saveService(e) {
+        e.preventDefault();
+        const id = document.getElementById('service-id').value;
+        const fileInput = document.getElementById('service-image');
+        const btn = document.getElementById('service-save-btn');
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saqlanmoqda...';
+
+        const formData = new FormData();
+        formData.append('slug', document.getElementById('service-slug').value);
+        formData.append('title', document.getElementById('service-title').value);
+        formData.append('price_estimate', document.getElementById('service-price').value);
+        formData.append('description', document.getElementById('service-description').value);
+        formData.append('features', document.getElementById('service-features').value);
+        formData.append('order', document.getElementById('service-order').value || 1);
+
+        // ONLY append image if a file was chosen
+        if (fileInput.files && fileInput.files.length > 0) {
+            formData.append('image', fileInput.files[0]);
+        }
+
+        const url = id ? `/api/website/admin/services/${id}/` : '/api/website/admin/services/';
+        const method = id ? 'PATCH' : 'POST';
+
+        try {
+            const res = await secureApiFetch(url, {
+                method: method,
+                body: formData
+            });
+            if (res && res.ok) {
+                closeServiceModal();
+                showSuccess(id ? "Xizmat muvaffaqiyatli yangilandi!" : "Yangi xizmat qo'shildi!");
+                loadWebsiteData();
+            } else {
+                const errData = await res.json().catch(() => ({}));
+                alert("Xatolik yuz berdi: " + JSON.stringify(errData));
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Aloqa xatosi: " + err.message);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = 'Saqlash';
+        }
+    }
+
+    async function deleteServiceById(id) {
+        if (!confirm("Haqiqatan ham bu xizmatni o'chirmoqchimisiz?")) return;
+        try {
+            const res = await secureApiFetch(`/api/website/admin/services/${id}/`, { method: 'DELETE' });
+            if (res && (res.status === 204 || res.ok)) {
+                showSuccess("Xizmat o'chirildi.");
+                loadWebsiteData();
+            } else {
+                alert("O'chirishda xatolik yuz berdi.");
+            }
+        } catch (e) {
+            console.error(e);
+            alert("Xatolik: " + e.message);
+        }
+    }
+
+    // ==================== PARTNER / TEAM HANDLERS ====================
+    function openNewPartnerModal() {
+        document.getElementById('partnerForm').reset();
+        document.getElementById('partner-id').value = '';
+        document.getElementById('partnerModalTitle').innerText = "Yangi Hamkor / Jamoa a'zosini qo'shish";
+        document.getElementById('partnerModal').style.display = 'block';
+    }
+
+    function editPartnerById(id) {
+        const item = partnersList.find(p => p.id === id);
+        if (!item) return;
+
+        document.getElementById('partner-id').value = item.id;
+        document.getElementById('partner-name').value = item.name || '';
+        document.getElementById('partner-role').value = item.role || '';
+        document.getElementById('partner-type').value = item.member_type || 'partner';
+        document.getElementById('partner-order').value = item.order || 1;
+        document.getElementById('partner-photo').value = '';
+
+        document.getElementById('partnerModalTitle').innerText = "Hamkor / Jamoa a'zosini tahrirlash";
+        document.getElementById('partnerModal').style.display = 'block';
+    }
+
+    function closePartnerModal() {
+        document.getElementById('partnerModal').style.display = 'none';
+    }
+
+    async function savePartner(e) {
+        e.preventDefault();
+        const id = document.getElementById('partner-id').value;
+        const photoInput = document.getElementById('partner-photo');
+        const btn = document.getElementById('partner-save-btn');
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saqlanmoqda...';
+
+        const formData = new FormData();
+        formData.append('name', document.getElementById('partner-name').value);
+        formData.append('role', document.getElementById('partner-role').value);
+        formData.append('member_type', document.getElementById('partner-type').value);
+        formData.append('order', document.getElementById('partner-order').value || 1);
+
+        if (photoInput.files && photoInput.files.length > 0) {
+            formData.append('photo', photoInput.files[0]);
+        }
+
+        const url = id ? `/api/website/admin/partners/${id}/` : '/api/website/admin/partners/';
+        const method = id ? 'PATCH' : 'POST';
+
+        try {
+            const res = await secureApiFetch(url, {
+                method: method,
+                body: formData
+            });
+            if (res && res.ok) {
+                closePartnerModal();
+                showSuccess(id ? "Ma'lumot yangilandi!" : "Yangi a'zo qo'shildi!");
+                loadWebsiteData();
+            } else {
+                const errData = await res.json().catch(() => ({}));
+                alert("Xatolik: " + JSON.stringify(errData));
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Aloqa xatosi: " + err.message);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = 'Saqlash';
+        }
+    }
+
+    async function deletePartnerById(id) {
+        if (!confirm("Haqiqatan ham o'chirmoqchimisiz?")) return;
+        try {
+            const res = await secureApiFetch(`/api/website/admin/partners/${id}/`, { method: 'DELETE' });
+            if (res && (res.status === 204 || res.ok)) {
+                showSuccess("Hamkor / Jamoa a'zosi o'chirildi.");
+                loadWebsiteData();
+            } else {
+                alert("O'chirishda xatolik yuz berdi.");
+            }
+        } catch (e) {
+            console.error(e);
+            alert("Xatolik: " + e.message);
+        }
+    }
+
+    // ==================== STEP HANDLERS ====================
+    function openNewStepModal() {
+        document.getElementById('stepForm').reset();
+        document.getElementById('step-id').value = '';
+        document.getElementById('stepModalTitle').innerText = "Yangi Bosqich qo'shish";
+        document.getElementById('stepModal').style.display = 'block';
+    }
+
+    function editStepById(id) {
+        const st = stepsList.find(s => s.id === id);
+        if (!st) return;
+
+        document.getElementById('step-id').value = st.id;
+        document.getElementById('step-number').value = st.step_number || '';
+        document.getElementById('step-title').value = st.title || '';
+        document.getElementById('step-description').value = st.description || '';
+        document.getElementById('step-order').value = st.order || 1;
+
+        document.getElementById('stepModalTitle').innerText = "Bosqichni tahrirlash: " + st.step_number;
+        document.getElementById('stepModal').style.display = 'block';
+    }
+
+    function closeStepModal() {
+        document.getElementById('stepModal').style.display = 'none';
+    }
+
+    async function saveStep(e) {
+        e.preventDefault();
+        const id = document.getElementById('step-id').value;
+        const btn = document.getElementById('step-save-btn');
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saqlanmoqda...';
+
+        const payload = {
+            step_number: document.getElementById('step-number').value,
+            title: document.getElementById('step-title').value,
+            description: document.getElementById('step-description').value,
+            order: parseInt(document.getElementById('step-order').value) || 1
+        };
+
+        const url = id ? `/api/website/admin/steps/${id}/` : '/api/website/admin/steps/';
+        const method = id ? 'PATCH' : 'POST';
+
+        try {
+            const res = await secureApiFetch(url, {
+                method: method,
+                body: JSON.stringify(payload)
+            });
+            if (res && res.ok) {
+                closeStepModal();
+                showSuccess(id ? "Bosqich yangilandi!" : "Yangi bosqich qo'shildi!");
+                loadWebsiteData();
+            } else {
+                alert("Saqlashda xatolik yuz berdi.");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Aloqa xatosi: " + err.message);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = 'Saqlash';
+        }
+    }
+
+    async function deleteStepById(id) {
+        if (!confirm("Ushbu bosqichni o'chirmoqchimisiz?")) return;
+        try {
+            const res = await secureApiFetch(`/api/website/admin/steps/${id}/`, { method: 'DELETE' });
+            if (res && (res.status === 204 || res.ok)) {
+                showSuccess("Bosqich o'chirildi.");
+                loadWebsiteData();
+            } else {
+                alert("O'chirishda xatolik yuz berdi.");
+            }
+        } catch (e) {
+            console.error(e);
+            alert("Xatolik: " + e.message);
+        }
+    }
+
+    // ==================== BENEFIT HANDLERS ====================
+    function openNewBenefitModal() {
+        document.getElementById('benefitForm').reset();
+        document.getElementById('benefit-id').value = '';
+        document.getElementById('benefitModalTitle').innerText = "Yangi Afzallik qo'shish";
+        document.getElementById('benefitModal').style.display = 'block';
+    }
+
+    function editBenefitById(id) {
+        const b = benefitsList.find(x => x.id === id);
+        if (!b) return;
+
+        document.getElementById('benefit-id').value = b.id;
+        document.getElementById('benefit-title').value = b.title || '';
+        document.getElementById('benefit-description').value = b.description || '';
+        document.getElementById('benefit-icon').value = b.icon || 'zap';
+        document.getElementById('benefit-order').value = b.order || 1;
+
+        document.getElementById('benefitModalTitle').innerText = "Afzallikni tahrirlash";
+        document.getElementById('benefitModal').style.display = 'block';
+    }
+
+    function closeBenefitModal() {
+        document.getElementById('benefitModal').style.display = 'none';
+    }
+
+    async function saveBenefit(e) {
+        e.preventDefault();
+        const id = document.getElementById('benefit-id').value;
+        const btn = document.getElementById('benefit-save-btn');
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saqlanmoqda...';
+
+        const payload = {
+            title: document.getElementById('benefit-title').value,
+            description: document.getElementById('benefit-description').value,
+            icon: document.getElementById('benefit-icon').value,
+            order: parseInt(document.getElementById('benefit-order').value) || 1
+        };
+
+        const url = id ? `/api/website/admin/benefits/${id}/` : '/api/website/admin/benefits/';
+        const method = id ? 'PATCH' : 'POST';
+
+        try {
+            const res = await secureApiFetch(url, {
+                method: method,
+                body: JSON.stringify(payload)
+            });
+            if (res && res.ok) {
+                closeBenefitModal();
+                showSuccess(id ? "Afzallik yangilandi!" : "Yangi afzallik qo'shildi!");
+                loadWebsiteData();
+            } else {
+                alert("Saqlashda xatolik yuz berdi.");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Aloqa xatosi: " + err.message);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = 'Saqlash';
+        }
+    }
+
+    async function deleteBenefitById(id) {
+        if (!confirm("Ushbu afzallikni o'chirmoqchimisiz?")) return;
+        try {
+            const res = await secureApiFetch(`/api/website/admin/benefits/${id}/`, { method: 'DELETE' });
+            if (res && (res.status === 204 || res.ok)) {
+                showSuccess("Afzallik o'chirildi.");
+                loadWebsiteData();
+            } else {
+                alert("O'chirishda xatolik yuz berdi.");
+            }
+        } catch (e) {
+            console.error(e);
+            alert("Xatolik: " + e.message);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadWebsiteData);
+</script>
+{% endblock %}

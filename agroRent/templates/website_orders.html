@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Sayt Arizalari - Agro Rent Admin{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div>
+            <h2 style="font-size: 22px; font-weight: 800; color: #0f172a; margin-bottom: 4px;">
+                <i class="fas fa-headset text-success"></i> Sayt Orqali Kelgan Arizalar (Leadlar)
+            </h2>
+            <p style="color: #64748b; font-size: 13px;">
+                Landing page veb-sayt orqali foydalanuvchilar qoldirgan barcha murojaat va buyurtmalar.
+            </p>
+        </div>
+        <div>
+            <button class="btn-secondary" onclick="loadOrders()"><i class="fas fa-sync-alt"></i> Yangilash</button>
+        </div>
+    </div>
+
+    <!-- Alert -->
+    <div id="order-alert" style="display:none; padding:12px 16px; border-radius:8px; margin-bottom:15px; font-size:14px; font-weight:500; background:#dcfce7; color:#166534; border:1px solid #bbf7d0;"></div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Sana</th>
+                    <th>Foydalanuvchi</th>
+                    <th>Telefon</th>
+                    <th>So'ralgan Xizmat</th>
+                    <th>Holati</th>
+                    <th>Amallar</th>
+                </tr>
+            </thead>
+            <tbody id="orders-tbody">
+                <tr><td colspan="6" style="text-align: center;">Yuklanmoqda...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function getCsrfCookie() {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, 10) === 'csrftoken=') {
+                    cookieValue = decodeURIComponent(cookie.substring(10));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    async function secureApiFetch(url, options = {}) {
+        const token = localStorage.getItem('at_token');
+        const csrf = getCsrfCookie();
+
+        const headers = { ...options.headers };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+        if (csrf) headers['X-CSRFToken'] = csrf;
+
+        if (options.body && !(options.body instanceof FormData)) {
+            headers['Content-Type'] = 'application/json';
+        }
+
+        const response = await fetch(url, {
+            ...options,
+            headers,
+            credentials: 'include'
+        });
+
+        if (response.status === 401) {
+            alert("Sessiyangiz tugagan. Qaytadan tizimga kiring.");
+            window.location.href = '/login/?next=' + window.location.pathname;
+            return null;
+        }
+
+        return response;
+    }
+
+    async function loadOrders() {
+        const tbody = document.getElementById('orders-tbody');
+        try {
+            const res = await secureApiFetch('/api/website/admin/orders/');
+            if (!res || !res.ok) return;
+            const orders = await res.json();
+            const list = orders.results || orders;
+
+            if (list.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #64748b; padding: 30px;">Hozircha arizalar mavjud emas.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = list.map(item => {
+                const date = new Date(item.created_at).toLocaleString('uz-UZ');
+                return `
+                    <tr>
+                        <td><small style="color: #64748b;">${date}</small></td>
+                        <td><strong>${escapeHtml(item.name)}</strong></td>
+                        <td><a href="tel:${item.phone}" style="color: #0284c7; font-weight: 700;">${escapeHtml(item.phone)}</a></td>
+                        <td><span style="background: #fef3c7; color: #b45309; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600;">${escapeHtml(item.service)}</span></td>
+                        <td>
+                            ${item.is_contacted ? 
+                                '<span style="color: #16a34a; font-weight: 700;"><i class="fas fa-check-circle"></i> Bog\'lanildi</span>' : 
+                                '<span style="color: #ea580c; font-weight: 700;"><i class="fas fa-clock"></i> Yangi ariza</span>'}
+                        </td>
+                        <td>
+                            <button class="btn-secondary" style="padding: 5px 10px; font-size: 12px;" onclick="toggleContacted(${item.id}, ${!item.is_contacted})">
+                                ${item.is_contacted ? 'Kutilmoqda' : 'Bog\'lanildi'}
+                            </button>
+                            <button class="btn-secondary" style="padding: 5px 10px; color: #dc2626; font-size: 12px;" onclick="deleteOrder(${item.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        } catch (e) {
+            console.error(e);
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: red;">Yuklashda xatolik yuz berdi.</td></tr>';
+        }
+    }
+
+    async function toggleContacted(id, status) {
+        try {
+            const res = await secureApiFetch(`/api/website/admin/orders/${id}/`, {
+                method: 'PATCH',
+                body: JSON.stringify({ is_contacted: status })
+            });
+            if (res && res.ok) {
+                loadOrders();
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    async function deleteOrder(id) {
+        if (!confirm("Ushbu arizani o'chirmoqchimisiz?")) return;
+        try {
+            const res = await secureApiFetch(`/api/website/admin/orders/${id}/`, { method: 'DELETE' });
+            if (res && (res.status === 204 || res.ok)) {
+                loadOrders();
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadOrders);
+</script>
+{% endblock %}

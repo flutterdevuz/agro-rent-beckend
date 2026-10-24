@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign In | AgroTerra</title>
+    <title>Kirish | AgroRent Admin</title>
+    <link rel="icon" type="image/png" href="{% static 'images/app-icon-transparent.png' %}">
     <link rel="stylesheet" href="{% static 'css/agroterra.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -13,92 +14,120 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            background: var(--at-bg);
+            background: #FAF7EE;
+            font-family: system-ui, -apple-system, sans-serif;
         }
 
         .auth-container {
             width: 100%;
-            max-width: 480px;
-            animation: authFadeUp 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+            max-width: 440px;
+            padding: 20px;
+            animation: authFadeUp 0.6s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
         @keyframes authFadeUp {
-            from { opacity: 0; transform: translateY(40px); }
+            from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        .at-card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 36px 32px;
+            box-shadow: 0 15px 35px -5px rgba(22, 91, 51, 0.12), 0 5px 15px rgba(0, 0, 0, 0.04);
+            border: 1px solid #f1f5f9;
         }
 
         .form-control {
             width: 100%;
-            padding: 16px 20px;
-            border-radius: var(--at-radius-sm);
-            border: 1px solid var(--at-border);
-            background: #fff;
-            font-family: inherit;
+            padding: 14px 18px;
+            border-radius: 12px;
+            border: 1.5px solid #e2e8f0;
+            background: #f8fafc;
             font-size: 15px;
-            transition: var(--at-trans);
-            margin-bottom: 24px;
+            margin-bottom: 20px;
+            transition: all 0.2s ease;
         }
 
         .form-control:focus {
             outline: none;
-            border-color: var(--at-primary);
-            box-shadow: 0 0 0 4px rgba(1, 45, 29, 0.05);
+            border-color: #165B33;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(22, 91, 51, 0.1);
         }
 
         label {
             display: block;
             font-size: 13px;
             font-weight: 700;
-            color: var(--at-text-secondary);
+            color: #334155;
             margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
         }
 
         .error-text {
-            color: var(--at-danger);
+            color: #dc2626;
             font-size: 13px;
-            margin-top: -16px;
-            margin-bottom: 24px;
+            background: #fef2f2;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid #fecaca;
+            margin-bottom: 20px;
             display: none;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #165B33 0%, #0E3D22 100%);
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 15px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(22, 91, 51, 0.3);
+            transition: all 0.2s ease;
+        }
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(22, 91, 51, 0.4);
         }
     </style>
 </head>
 <body>
     <div class="auth-container">
-        <div style="text-align: center; margin-bottom: 56px;">
-            <a href="/" style="display: inline-flex; align-items: center; gap: 16px; text-decoration: none; margin-bottom: 32px;">
-                <div style="width: 56px; height: 56px; background: var(--at-primary); border-radius: var(--at-radius-sm); display: flex; align-items: center; justify-content: center; color: #fff;">
-                    <i class="fas fa-leaf" style="font-size: 24px;"></i>
+        <div style="text-align: center; margin-bottom: 32px;">
+            <a href="/" style="display: inline-flex; align-items: center; gap: 12px; text-decoration: none; margin-bottom: 16px;">
+                <div style="width: 52px; height: 52px; background: #fff; border-radius: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid #f1f5f9; padding: 4px;">
+                    <img src="{% static 'images/app-icon-transparent.png' %}" alt="AgroRent" style="width: 100%; height: 100%; object-fit: contain;">
                 </div>
+                <span style="font-size: 26px; font-weight: 900; color: #165B33; letter-spacing: -0.5px;">Agro<span style="color: #E67E22;">Rent</span></span>
             </a>
-            <h1 style="font-size: 32px; margin-bottom: 12px;" data-i18n>Welcome Back</h1>
-            <p style="color: var(--at-text-secondary);" data-i18n>Sign in to access your AgroTerra fleet dashboard.</p>
+            <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 6px;">Admin Panelga Kirish</h1>
+            <p style="color: #64748b; font-size: 14px;">Veb-sayt va xizmatlarni boshqarish tizimi</p>
         </div>
 
         <div class="at-card">
             <form id="at-login-form">
                 <div>
-                    <label data-i18n>Phone Number</label>
-                    <input type="text" id="phone_number" class="form-control" placeholder="998901234567" required>
+                    <label>Telefon raqam</label>
+                    <input type="text" id="phone_number" class="form-control" placeholder="+998901234567" value="+998901234567" required>
                 </div>
                 <div>
-                    <label data-i18n>Password</label>
-                    <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+                    <label>Parol</label>
+                    <input type="password" id="password" class="form-control" placeholder="Parolingizni kiriting" value="admin" required>
                 </div>
                 
-                <div id="at-login-error" class="error-text" data-i18n>Invalid credentials. Please try again.</div>
+                <div id="at-login-error" class="error-text">Telefon raqam yoki parol noto'g'ri. Qaytadan urinib ko'ring.</div>
 
-                <button type="submit" class="at-btn at-btn-primary" style="width: 100%; justify-content: center; margin-bottom: 24px;" id="at-login-btn" data-i18n>
-                    Access Platform
+                <button type="submit" class="submit-btn" id="at-login-btn">
+                    Tizimga Kirish <i class="fas fa-arrow-right" style="margin-left: 6px;"></i>
                 </button>
 
-                <div style="text-align: center; font-size: 14px;">
-                    <a href="/forgot-password/" style="color: var(--at-text-secondary); text-decoration: none; display: block; margin-bottom: 16px;" data-i18n>Lost access to your account?</a>
-                    <div style="color: var(--at-text-secondary);">
-                        <span data-i18n>New to AgroTerra?</span>
-                        <a href="/register/" style="color: var(--at-primary); font-weight: 700; text-decoration: none;" data-i18n>Create Profile</a>
-                    </div>
+                <div style="text-align: center; font-size: 13px; margin-top: 20px;">
+                    <a href="/" style="color: #64748b; text-decoration: none; font-weight: 600;">
+                        <i class="fas fa-arrow-left"></i> Asosiy veb-saytga qaytish
+                    </a>
                 </div>
             </form>
         </div>
@@ -113,25 +142,26 @@
             const error = document.getElementById('at-login-error');
             
             btn.disabled = true;
-            btn.innerText = 'Verifying...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Tekshirilmoqda...';
             error.style.display = 'none';
 
             const credentials = {
-                phone_number: document.getElementById('phone_number').value,
+                phone_number: document.getElementById('phone_number').value.trim(),
                 password: document.getElementById('password').value
             };
 
             try {
                 const res = await window.atAuth.login(credentials);
-                if (res.user.is_staff) {
-                    window.location.href = '/admin/';
+                const nextUrl = new URLSearchParams(window.location.search).get('next');
+                if (res.user.is_staff || res.user.is_superuser) {
+                    window.location.href = nextUrl || '/api/admin/website/';
                 } else {
                     window.location.href = '/profile/';
                 }
             } catch (err) {
                 error.style.display = 'block';
                 btn.disabled = false;
-                btn.innerText = 'Access Platform';
+                btn.innerHTML = 'Tizimga Kirish <i class="fas fa-arrow-right" style="margin-left: 6px;"></i>';
             }
         });
     </script>

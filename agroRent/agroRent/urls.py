@@ -30,10 +30,13 @@ from django.http import Http404
 
 def superadmin_required(view_func):
     def wrapper(request, *args, **kwargs):
-        # 1. Email va Auth tekshiruvi
-        is_allowed_email = request.user.is_authenticated and (request.user.email in SuperAdminOnly.ALLOWED_EMAILS or request.user.is_superuser)
+        if not request.user.is_authenticated:
+            return redirect(f'/login/?next={request.path}')
+
+        # 1. Email va Auth tekshiruvi (staff, superuser yoki ruxsat etilgan email)
+        is_allowed = request.user.is_superuser or request.user.is_staff or (request.user.email in SuperAdminOnly.ALLOWED_EMAILS)
         
-        # 2. Access Key tekshiruvi (ADMIN_ACCESS_KEY bo'sh bo'lsa, kalit talab qilinmaydi)
+        # 2. Access Key tekshiruvi
         if settings.ADMIN_ACCESS_KEY:
             access_key = request.GET.get('access')
             if access_key and hmac.compare_digest(access_key, settings.ADMIN_ACCESS_KEY):
@@ -42,10 +45,9 @@ def superadmin_required(view_func):
         else:
             is_access_verified = True
 
-        if is_allowed_email and is_access_verified:
+        if is_allowed and is_access_verified:
             return view_func(request, *args, **kwargs)
         
-        # Ruxsatsiz kirishga urinish bo'lsa, 404 xatoligini qaytaramiz (xavfsizlik uchun)
         raise Http404()
     return wrapper
 
@@ -70,6 +72,8 @@ urlpatterns = [
     path('api/admin/notifications/', superadmin_required(TemplateView.as_view(template_name='notifications.html')), name='admin-notifications'),
     path('api/admin/users/', superadmin_required(TemplateView.as_view(template_name='users.html')), name='admin-users'),
     path('api/admin/site-texts/', superadmin_required(TemplateView.as_view(template_name='site_texts.html')), name='admin-site-texts'),
+    path('api/admin/website/', superadmin_required(TemplateView.as_view(template_name='website.html')), name='admin-website'),
+    path('api/admin/website-orders/', superadmin_required(TemplateView.as_view(template_name='website_orders.html')), name='admin-website-orders-page'),
     # Restricted Documentation
     path('api/schema/', superadmin_required(SpectacularAPIView.as_view()), name='schema'),
     path('api/docs/', superadmin_required(SpectacularSwaggerView.as_view(url_name='schema')), name='swagger-ui'),

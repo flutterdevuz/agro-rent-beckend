@@ -3,12 +3,23 @@ from django.db.models import Count, Q
 from django.views.generic import TemplateView
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from home.models import HomeContent, SiteText
+from home.models import (
+    HomeContent, SiteText, WebsiteSettings, WebsiteService,
+    WebsitePartner, WebsiteStep, WebsiteBenefit, WebsiteOrder
+)
+from home.seed_website import seed_website_data
+from home.serializers import (
+    HomeContentSerializer, SiteTextSerializer,
+    WebsiteSettingsSerializer, WebsiteServiceSerializer,
+    WebsitePartnerSerializer, WebsiteStepSerializer,
+    WebsiteBenefitSerializer, WebsiteOrderSerializer
+)
+
 from users.permissions import IsStaffOrReadOnly
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from agroRent.utils.translator import translate_text, translate_texts_batch
-from home.serializers import HomeContentSerializer, SiteTextSerializer
+
 from market.models import MarketItem
 from market.serializers import MarketItemSerializer
 from drf_spectacular.utils import extend_schema, OpenApiResponse, inline_serializer
@@ -43,6 +54,19 @@ class HomeContentDetailView(generics.RetrieveUpdateDestroyAPIView):
 @extend_schema(exclude=True)
 class PublicHomeView(TemplateView):
     template_name = 'public/home.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        try:
+            seed_website_data()
+            context['site_settings'] = WebsiteSettings.get_settings()
+            context['services'] = WebsiteService.objects.filter(is_active=True)
+            context['partners'] = WebsitePartner.objects.filter(is_active=True)
+            context['steps'] = WebsiteStep.objects.all()
+            context['benefits'] = WebsiteBenefit.objects.all()
+        except Exception as e:
+            context['site_settings'] = None
+        return context
 
 @extend_schema(exclude=True)
 class PublicMarketView(TemplateView):
@@ -199,3 +223,111 @@ class TranslateView(APIView):
 
         return Response(response_data)
 
+
+
+# =========================================================================
+# WEBSITE & LANDING PAGE APIS
+# =========================================================================
+
+class WebsiteContentAPIView(APIView):
+    """
+    Landing page uchun barcha ma'lumotlarni qaytaruvchi ochiq API
+    """
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        try:
+            seed_website_data()
+            settings_obj = WebsiteSettings.get_settings()
+            services = WebsiteService.objects.filter(is_active=True)
+            partners = WebsitePartner.objects.filter(is_active=True)
+            steps = WebsiteStep.objects.all()
+            benefits = WebsiteBenefit.objects.all()
+
+            return Response({
+                'settings': WebsiteSettingsSerializer(settings_obj).data,
+                'services': WebsiteServiceSerializer(services, many=True).data,
+                'partners': WebsitePartnerSerializer(partners, many=True).data,
+                'steps': WebsiteStepSerializer(steps, many=True).data,
+                'benefits': WebsiteBenefitSerializer(benefits, many=True).data,
+            })
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class WebsiteOrderCreateView(generics.CreateAPIView):
+    """
+    Landing page orqali ariza va buyurtmalarni qabul qilish API
+    """
+    serializer_class = WebsiteOrderSerializer
+    permission_classes = [AllowAny]
+
+
+# Admin Website Management APIs
+class AdminWebsiteSettingsView(generics.RetrieveUpdateAPIView):
+    serializer_class = WebsiteSettingsSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        seed_website_data()
+        return WebsiteSettings.get_settings()
+
+
+class AdminWebsiteServiceListCreateView(generics.ListCreateAPIView):
+    serializer_class = WebsiteServiceSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = WebsiteService.objects.all().order_by('order', 'id')
+
+
+class AdminWebsiteServiceDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = WebsiteServiceSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = WebsiteService.objects.all()
+
+
+class AdminWebsitePartnerListCreateView(generics.ListCreateAPIView):
+    serializer_class = WebsitePartnerSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = WebsitePartner.objects.all().order_by('order', 'id')
+
+
+class AdminWebsitePartnerDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = WebsitePartnerSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = WebsitePartner.objects.all()
+
+
+class AdminWebsiteOrderListView(generics.ListAPIView):
+    serializer_class = WebsiteOrderSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = WebsiteOrder.objects.all().order_by('-created_at')
+
+
+class AdminWebsiteOrderDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = WebsiteOrderSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = WebsiteOrder.objects.all()
+
+
+class AdminWebsiteStepListCreateView(generics.ListCreateAPIView):
+    serializer_class = WebsiteStepSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = WebsiteStep.objects.all().order_by('order', 'id')
+
+
+class AdminWebsiteStepDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = WebsiteStepSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = WebsiteStep.objects.all()
+
+
+class AdminWebsiteBenefitListCreateView(generics.ListCreateAPIView):
+    serializer_class = WebsiteBenefitSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = WebsiteBenefit.objects.all().order_by('order', 'id')
+
+
+class AdminWebsiteBenefitDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = WebsiteBenefitSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = WebsiteBenefit.objects.all()

@@ -1,172 +1,930 @@
-{% extends 'public/base.html' %}
 {% load static %}
+<!DOCTYPE html>
+<html lang="uz" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgroRent — Qishloq xo'jaligi texnikalari va agroxizmatlar platformasi</title>
+  <meta name="description" content="Traktor, kombayn, seyalka, purkagich, suv nasoslari va boshqa texnikalarni ijaraga oling, shuningdek agroxizmatlarga buyurtma bering. Dehqonlar uchun tez, qulay va ishonchli platforma.">
+  
+  <!-- Favicon using app icon from 2-rasm -->
+  <link rel="icon" type="image/png" href="{% static 'images/app-icon-transparent.png' %}">
+  <link rel="apple-touch-icon" href="{% static 'images/app-icon-transparent.png' %}">
 
-{% block title %}AgroTerra | Future of Agriculture{% endblock %}
-
-{% block content %}
-<!-- Hero Section -->
-<section style="padding: 120px 0 80px; position: relative; overflow: hidden;">
-    <div class="container" style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 80px; align-items: center;">
-        <div>
-            <div style="display: inline-flex; align-items: center; gap: 12px; padding: 8px 16px; background: var(--at-primary-light); color: var(--at-primary); border-radius: var(--at-radius-full); font-size: 13px; font-weight: 700; margin-bottom: 32px; text-transform: uppercase; letter-spacing: 0.1em;">
-                <i class="fas fa-sparkles"></i>
-                <span data-i18n>Next-Gen Agri-Tech</span>
-            </div>
-            <h1 class="at-heading-lg" style="margin-bottom: 32px;" data-i18n>Precision Farming for Modern Uzbekistan</h1>
-            <p style="font-size: 20px; color: var(--at-text-secondary); margin-bottom: 48px; max-width: 560px;" data-i18n>Automate your agricultural operations with high-end machinery, real-time analytics, and seamless logistics.</p>
-            <div style="display: flex; gap: 24px;">
-                <a href="/market/" class="at-btn at-btn-primary" data-i18n>Explore Machinery</a>
-                <a href="/about/" class="at-btn at-btn-outline" data-i18n>Our Vision</a>
-            </div>
-        </div>
-        <div style="position: relative;">
-            <div style="position: absolute; top: -100px; right: -100px; width: 600px; height: 600px; background: radial-gradient(circle, rgba(1, 45, 29, 0.05) 0%, transparent 70%); border-radius: 50%; z-index: -1;"></div>
-            <img src="https://images.unsplash.com/photo-1592982537447-7440770cbfc9?auto=format&fit=crop&q=80&w=1000" style="width: 100%; border-radius: var(--at-radius-lg); box-shadow: var(--at-shadow-lg); transform: rotate(2deg);">
-        </div>
-    </div>
-</section>
-
-<!-- Stats Section -->
-<section style="padding: 64px 0;">
-    <div class="container">
-        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;">
-            <div class="at-card" style="padding: 40px; text-align: center;">
-                <div style="color: var(--at-primary); font-size: 48px; font-weight: 800; margin-bottom: 8px;" id="stat-machinery">0</div>
-                <p style="color: var(--at-text-secondary); font-weight: 600; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em;" data-i18n>Machinery Units</p>
-            </div>
-            <div class="at-card" style="padding: 40px; text-align: center;">
-                <div style="color: var(--at-secondary); font-size: 48px; font-weight: 800; margin-bottom: 8px;" id="stat-users">0</div>
-                <p style="color: var(--at-text-secondary); font-weight: 600; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em;" data-i18n>Active Farmers</p>
-            </div>
-            <div class="at-card" style="padding: 40px; text-align: center;">
-                <div style="color: var(--at-primary); font-size: 48px; font-weight: 800; margin-bottom: 8px;" id="stat-orders">0</div>
-                <p style="color: var(--at-text-secondary); font-weight: 600; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em;" data-i18n>Operations Done</p>
-            </div>
-            <div class="at-card" style="padding: 40px; text-align: center;">
-                <div style="color: var(--at-primary); font-size: 48px; font-weight: 800; margin-bottom: 8px;">24/7</div>
-                <p style="color: var(--at-text-secondary); font-weight: 600; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em;" data-i18n>Real-time Support</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Popular Machinery -->
-<section style="padding: 120px 0;">
-    <div class="container">
-        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 64px;">
-            <div>
-                <h2 class="at-heading-md" style="margin-bottom: 16px;" data-i18n>Elite Machinery Fleet</h2>
-                <p style="color: var(--at-text-secondary);" data-i18n>The most advanced agricultural equipment available in our marketplace.</p>
-            </div>
-            <a href="/market/" class="at-nav-link" style="display: flex; align-items: center; gap: 12px; font-weight: 700;">
-                <span data-i18n>View Entire Fleet</span>
-                <i class="fas fa-arrow-right"></i>
-            </a>
-        </div>
-
-        <div id="popular-machinery-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 40px;">
-            <!-- Skeleton States -->
-            <div class="at-card at-skeleton" style="height: 480px;"></div>
-            <div class="at-card at-skeleton" style="height: 480px;"></div>
-            <div class="at-card at-skeleton" style="height: 480px;"></div>
-        </div>
-    </div>
-</section>
-
-<!-- Innovation Section -->
-<section style="background: var(--at-primary); padding: 120px 0; color: #fff; overflow: hidden; position: relative;">
-    <div class="container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 120px; align-items: center;">
-        <div>
-            <h2 class="at-heading-md" style="color: var(--at-primary-light); margin-bottom: 32px;" data-i18n>Smart Logistics Engine</h2>
-            <p style="font-size: 18px; opacity: 0.8; margin-bottom: 48px;" data-i18n>Our proprietary engine calculates the most efficient route and fuel consumption for your fleet, ensuring maximum ROI for every harvest.</p>
-            <div style="display: flex; flex-direction: column; gap: 24px;">
-                <div style="display: flex; gap: 24px; align-items: center;">
-                    <div style="width: 56px; height: 56px; background: rgba(255,255,255,0.1); border-radius: var(--at-radius-sm); display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-satellite" style="font-size: 24px;"></i>
-                    </div>
-                    <div>
-                        <h4 style="color: #fff;" data-i18n>GPS Telemetry</h4>
-                        <p style="opacity: 0.6; font-size: 14px;" data-i18n>Real-time location and status monitoring of all units.</p>
-                    </div>
-                </div>
-                <div style="display: flex; gap: 24px; align-items: center;">
-                    <div style="width: 56px; height: 56px; background: rgba(255,255,255,0.1); border-radius: var(--at-radius-sm); display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-chart-pie" style="font-size: 24px;"></i>
-                    </div>
-                    <div>
-                        <h4 style="color: #fff;" data-i18n>Automated Reporting</h4>
-                        <p style="opacity: 0.6; font-size: 14px;" data-i18n>Instant yield and efficiency reports delivered to your dashboard.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div style="position: relative;">
-             <img src="https://images.unsplash.com/photo-1593113630400-ea4288922497?auto=format&fit=crop&q=80&w=1000" style="width: 100%; border-radius: var(--at-radius-lg); opacity: 0.8;">
-        </div>
-    </div>
-</section>
-{% endblock %}
-
-{% block scripts %}
-<script>
-    const Home = {
-        async init() {
-            await Promise.all([
-                this.loadStats(),
-                this.loadPopularMachinery()
-            ]);
-        },
-
-        async loadStats() {
-            try {
-                const stats = await window.atApi.get('/users/public-stats/');
-                document.getElementById('stat-machinery').innerText = stats.equipment_count + '+';
-                document.getElementById('stat-users').innerText = stats.users_count + '+';
-                document.getElementById('stat-orders').innerText = stats.orders_count + '+';
-            } catch (e) {}
-        },
-
-        async loadPopularMachinery() {
-            const container = document.getElementById('popular-machinery-grid');
-            try {
-                const data = await window.atApi.get('/popular-equipment/');
-                const items = data.results || data || [];
-                
-                if (items.length > 0) {
-                    container.innerHTML = items.map(item => `
-                        <div class="at-card" style="padding: 0; overflow: hidden;">
-                            <div style="height: 280px; overflow: hidden; position: relative;">
-                                <img src="${escapeHtml(item.image || 'https://via.placeholder.com/800x600')}" style="width: 100%; height: 100%; object-fit: cover; transition: var(--at-trans);">
-                                <div style="position: absolute; top: 24px; left: 24px; background: rgba(255,255,255,0.9); backdrop-filter: blur(8px); padding: 6px 14px; border-radius: var(--at-radius-sm); font-size: 12px; font-weight: 800; color: var(--at-primary);">
-                                    <i class="fas fa-star" style="color: var(--at-warning);"></i> ${escapeHtml(item.rating || '4.9')}
-                                </div>
-                            </div>
-                            <div style="padding: 32px;">
-                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
-                                    <h3 style="font-size: 22px;">${escapeHtml(item.name)}</h3>
-                                    <span style="font-weight: 800; color: var(--at-primary); font-size: 20px;">${parseFloat(item.price).toLocaleString()} <span style="font-size: 12px; opacity: 0.5;">UZS</span></span>
-                                </div>
-                                <p style="color: var(--at-text-secondary); font-size: 14px; margin-bottom: 24px; height: 44px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
-                                    ${escapeHtml(item.description) || 'Modern high-precision agricultural machinery for enterprise operations.'}
-                                </p>
-                                <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <div style="display: flex; gap: 12px; color: var(--at-text-secondary); font-size: 13px; font-weight: 600;">
-                                        <span><i class="fas fa-location-dot"></i> ${escapeHtml(item.location)}</span>
-                                    </div>
-                                    <a href="/market/" class="at-btn at-btn-primary" style="padding: 10px 20px; font-size: 13px;" data-i18n>Details</a>
-                                </div>
-                            </div>
-                        </div>
-                    `).join('');
-                } else {
-                    container.innerHTML = '<p style="text-align: center; grid-column: 1/-1;" data-i18n>No machinery found.</p>';
-                }
-            } catch (e) {
-                container.innerHTML = '<p style="text-align: center; grid-column: 1/-1;">Error loading fleet.</p>';
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            agro: {
+              green: '#165B33',
+              darkgreen: '#0E3D22',
+              lightgreen: '#22C55E',
+              amber: '#E67E22',
+              gold: '#F59E0B',
+              yellow: '#FBBF24',
+              cream: '#FCFBF7',
+              creambg: '#FAF7EE'
             }
+          }
         }
-    };
+      }
+    }
+  </script>
 
-    document.addEventListener('DOMContentLoaded', () => Home.init());
-</script>
-{% endblock %}
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Custom Landing CSS -->
+  <link rel="stylesheet" href="{% static 'css/landing.css' %}">
+</head>
+<body class="bg-agro-gradient text-gray-800 antialiased min-h-screen selection:bg-amber-100 selection:text-amber-900 relative">
+
+  <!-- Decorative floating leaves -->
+  <img src="{% static 'images/decor-leaf-1.png' %}" alt="" class="hidden lg:block absolute top-48 left-0 w-16 opacity-85 pointer-events-none select-none z-10">
+  <img src="{% static 'images/decor-leaf-2.png' %}" alt="" class="hidden lg:block absolute top-[2800px] left-0 w-20 opacity-80 pointer-events-none select-none z-10">
+  <img src="{% static 'images/decor-leaf-3.png' %}" alt="" class="hidden lg:block absolute top-[3600px] left-0 w-16 opacity-75 pointer-events-none select-none z-10">
+  <img src="{% static 'images/decor-leaf-4.png' %}" alt="" class="hidden lg:block absolute top-[4100px] right-0 w-20 opacity-80 pointer-events-none select-none z-10">
+
+  <!-- ==================== HEADER ==================== -->
+  <header class="header-glass sticky top-0 z-50 transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      
+      <!-- Logo with App Icon from 2-rasm -->
+      <a href="/" class="flex items-center gap-3 group">
+        <div class="w-11 h-11 rounded-2xl bg-white shadow-md flex items-center justify-center p-1 border border-emerald-50 group-hover:scale-105 transition-transform">
+          <img src="{% static 'images/app-icon-transparent.png' %}" alt="AgroRent Icon" class="w-full h-full object-contain">
+        </div>
+        <div class="flex flex-col">
+          <span class="text-2xl font-extrabold tracking-tight text-[#165B33] leading-none">
+            Agro<span class="text-[#E67E22]">Rent</span>
+          </span>
+          <span class="text-[9px] tracking-wider uppercase font-semibold text-gray-400 mt-0.5">Agro Xizmatlar</span>
+        </div>
+      </a>
+
+      <!-- Desktop Navigation Menu -->
+      <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-700">
+        <a href="#xizmatlar" class="hover:text-agro-green transition-colors py-1">Xizmatlar</a>
+        <a href="#qanday-ishlaydi" class="hover:text-agro-green transition-colors py-1">Qanday ishlaydi</a>
+        <a href="#afzalliklar" class="hover:text-agro-green transition-colors py-1">Afzalliklar</a>
+        <a href="#hamkorlar" class="hover:text-agro-green transition-colors py-1">Hamkorlar</a>
+        <a href="#boglanish" class="hover:text-agro-green transition-colors py-1">Bog'lanish</a>
+      </nav>
+
+      <!-- Right Actions: Language Switcher, Admin Link & CTA -->
+      <div class="hidden sm:flex items-center gap-4">
+        <!-- Language Switcher -->
+        <div class="relative">
+          <button id="lang-selector" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-gray-700 bg-white border border-gray-200 rounded-lg hover:border-gray-300 transition-colors shadow-sm">
+            <span id="current-lang-label">UZ</span>
+            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-500"></i>
+          </button>
+          <div id="lang-menu" class="hidden absolute right-0 mt-2 w-32 bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 z-50">
+            <button data-lang="uz" class="w-full text-left px-3.5 py-1.5 text-xs font-medium text-gray-700 hover:bg-amber-50 hover:text-amber-600 flex items-center justify-between">
+              <span>O'zbekcha</span>
+              <span class="text-[10px] text-gray-400">UZ</span>
+            </button>
+            <button data-lang="ru" class="w-full text-left px-3.5 py-1.5 text-xs font-medium text-gray-700 hover:bg-amber-50 hover:text-amber-600 flex items-center justify-between">
+              <span>Русский</span>
+              <span class="text-[10px] text-gray-400">RU</span>
+            </button>
+            <button data-lang="en" class="w-full text-left px-3.5 py-1.5 text-xs font-medium text-gray-700 hover:bg-amber-50 hover:text-amber-600 flex items-center justify-between">
+              <span>English</span>
+              <span class="text-[10px] text-gray-400">EN</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Boshlash Button -->
+        <a href="#boglanish" class="btn-primary-agro px-6 py-2.5 rounded-full text-sm inline-flex items-center justify-center">
+          Boshlash
+        </a>
+      </div>
+
+      <!-- Mobile Hamburger Button -->
+      <button id="mobile-menu-btn" class="md:hidden p-2 text-gray-700 hover:text-agro-green focus:outline-none">
+        <i data-lucide="menu" class="w-6 h-6"></i>
+      </button>
+
+    </div>
+  </header>
+
+  <!-- Mobile Drawer Menu -->
+  <div id="mobile-menu" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm">
+    <div class="fixed top-0 right-0 w-3/4 max-w-xs h-full bg-white shadow-2xl p-6 flex flex-col justify-between">
+      <div>
+        <div class="flex items-center justify-between pb-6 border-b border-gray-100">
+          <div class="flex items-center gap-2">
+            <img src="{% static 'images/app-icon-transparent.png' %}" alt="AgroRent" class="w-9 h-9 object-contain">
+            <span class="text-xl font-bold text-[#165B33]">Agro<span class="text-[#E67E22]">Rent</span></span>
+          </div>
+          <button id="close-mobile-menu" class="p-1 text-gray-400 hover:text-gray-600">
+            <i data-lucide="x" class="w-6 h-6"></i>
+          </button>
+        </div>
+
+        <nav class="mt-6 flex flex-col gap-4 text-base font-semibold text-gray-700">
+          <a href="#xizmatlar" class="hover:text-agro-green py-1.5">Xizmatlar</a>
+          <a href="#qanday-ishlaydi" class="hover:text-agro-green py-1.5">Qanday ishlaydi</a>
+          <a href="#afzalliklar" class="hover:text-agro-green py-1.5">Afzalliklar</a>
+          <a href="#hamkorlar" class="hover:text-agro-green py-1.5">Hamkorlar</a>
+          <a href="#boglanish" class="hover:text-agro-green py-1.5">Bog'lanish</a>
+        </nav>
+      </div>
+
+      <div class="pt-6 border-t border-gray-100 flex flex-col gap-3">
+        <a href="#boglanish" class="btn-primary-agro w-full text-center py-3 rounded-full text-sm font-semibold">
+          Boshlash
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <!-- ==================== HERO SECTION ==================== -->
+    <section id="hero" class="relative pt-8 pb-16 lg:pt-14 lg:pb-24 overflow-hidden">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          
+          <!-- Hero Left Column: Copy & Actions -->
+          <div class="lg:col-span-6 z-20 space-y-6">
+            
+            <!-- Category Badge -->
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-50 border border-amber-200/80 text-amber-800 text-xs font-bold tracking-wide uppercase shadow-sm">
+              <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+              <span id="hero-badge-text">{{ site_settings.hero_badge|default:"QIShLOQ XO'JALIGI UChUN ZAMONAVIY YECHIM" }}</span>
+            </div>
+
+            <!-- Main Heading -->
+            <h1 class="text-4xl sm:text-5xl lg:text-[52px] font-black tracking-tight text-gray-900 leading-[1.15]">
+              <span id="hero-title-text">{{ site_settings.hero_title|default:"Qishloq xo'jaligi texnikalari va agroxizmatlarni bir platformada toping." }}</span>
+            </h1>
+
+            <!-- Subtitle -->
+            <p id="hero-desc-text" class="text-base sm:text-lg text-gray-600 leading-relaxed font-normal">
+              {{ site_settings.hero_description|default:"Traktor, kombayn, seyalka, purkagich, suv nasoslari va boshqa texnikalarni ijaraga oling, shuningdek agroxizmatlarga buyurtma bering. Dehqonlar uchun tez, qulay va ishonchli platforma." }}
+            </p>
+
+            <!-- CTA Buttons -->
+            <div class="flex flex-wrap items-center gap-4 pt-2">
+              <a href="{{ site_settings.hero_primary_cta_link|default:'#boglanish' }}" class="btn-primary-agro px-7 py-3.5 rounded-full text-base font-bold inline-flex items-center gap-2 group">
+                <span id="hero-primary-cta-btn">{{ site_settings.hero_primary_cta_text|default:"Xizmatni boshlash" }}</span>
+                <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+              </a>
+
+              <a href="{{ site_settings.hero_secondary_cta_link|default:'#qanday-ishlaydi' }}" class="btn-secondary-agro px-6 py-3.5 rounded-full text-base font-semibold inline-flex items-center gap-2 shadow-sm">
+                <i data-lucide="play-circle" class="w-5 h-5 text-amber-500"></i>
+                <span id="hero-secondary-cta-btn">{{ site_settings.hero_secondary_cta_text|default:"Qanday ishlaydi?" }}</span>
+              </a>
+            </div>
+
+            <!-- Trust Badges Row -->
+            <div class="pt-6 border-t border-gray-200/60 flex flex-wrap items-center gap-6 sm:gap-8 text-xs font-semibold text-gray-600">
+              <div class="flex items-center gap-2">
+                <div class="w-6 h-6 rounded-full bg-amber-100/80 text-amber-600 flex items-center justify-center">
+                  <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+                </div>
+                <span>Ishonchli hamkorlar</span>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <div class="w-6 h-6 rounded-full bg-amber-100/80 text-amber-600 flex items-center justify-center">
+                  <i data-lucide="lock" class="w-3.5 h-3.5"></i>
+                </div>
+                <span>Xavfsiz to'lovlar</span>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <div class="w-6 h-6 rounded-full bg-amber-100/80 text-amber-600 flex items-center justify-center">
+                  <i data-lucide="headphones" class="w-3.5 h-3.5"></i>
+                </div>
+                <span>24/7 qo'llab-quvvatlash</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Hero Right Column: Graphic Composition -->
+          <div class="lg:col-span-6 relative flex justify-center items-center">
+            
+            <div class="absolute -inset-4 bg-gradient-to-tr from-emerald-100/40 via-amber-100/30 to-green-100/30 rounded-full blur-3xl -z-10"></div>
+
+            <div class="relative w-full max-w-lg lg:max-w-none">
+              
+              <div class="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white bg-white/60">
+                <img src="{% static 'images/hero-right-visual-hd.png' %}" alt="AgroRent Machinery & Field" class="w-full h-auto object-cover transform hover:scale-[1.02] transition-transform duration-700">
+                
+                <!-- Floating Real-Time Drone Badge -->
+                <div class="absolute top-4 left-4 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-full shadow-lg border border-emerald-100 flex items-center gap-2 animate-float">
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+                  <span class="text-xs font-bold text-gray-800">Dron purkash faol</span>
+                </div>
+
+                <!-- Floating App Feature Pill -->
+                <div class="absolute bottom-4 right-4 bg-white/95 backdrop-blur-md px-4 py-2 rounded-2xl shadow-xl border border-amber-100 flex items-center gap-3 animate-float-delayed">
+                  <div class="w-8 h-8 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600">
+                    <img src="{% static 'images/app-icon-transparent.png' %}" alt="AgroRent" class="w-6 h-6 object-contain">
+                  </div>
+                  <div>
+                    <div class="text-[11px] font-bold text-gray-900">AgroRent Mobil Ilova</div>
+                    <div class="text-[10px] text-emerald-600 font-semibold">Tezkor bron qilish</div>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== QUICK STATS BANNER ==================== -->
+    <section id="quick-stats" class="relative -mt-6 sm:-mt-10 mb-16 z-30">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="bg-white rounded-3xl shadow-xl border border-gray-100/80 p-6 sm:p-8 grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 items-center divide-y lg:divide-y-0 lg:divide-x divide-gray-100">
+          
+          <div class="flex items-center gap-4 pt-4 first:pt-0 lg:pt-0 justify-center sm:justify-start">
+            <div class="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 shadow-sm border border-amber-100">
+              <i data-lucide="users" class="w-7 h-7"></i>
+            </div>
+            <div>
+              <div class="text-2xl sm:text-3xl font-extrabold text-amber-500 tracking-tight" id="stat-users">{{ site_settings.stats_users|default:"600+" }}</div>
+              <div class="text-xs font-bold text-gray-500 uppercase tracking-wider">FOYDALANUVChI</div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-4 pt-4 lg:pt-0 lg:pl-8 justify-center sm:justify-start">
+            <div class="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 shadow-sm border border-amber-100">
+              <i data-lucide="settings" class="w-7 h-7"></i>
+            </div>
+            <div>
+              <div class="text-2xl sm:text-3xl font-extrabold text-amber-500 tracking-tight" id="stat-services">{{ site_settings.stats_services|default:"8 ta" }}</div>
+              <div class="text-xs font-bold text-gray-500 uppercase tracking-wider">XIZMAT TURI</div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-4 pt-4 lg:pt-0 lg:pl-8 justify-center sm:justify-start">
+            <div class="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 shadow-sm border border-amber-100">
+              <i data-lucide="map-pin" class="w-7 h-7"></i>
+            </div>
+            <div>
+              <div class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight" id="stat-region">{{ site_settings.stats_region|default:"Andijon" }}</div>
+              <div class="text-xs font-bold text-gray-500 uppercase tracking-wider">PILOT HUDUD</div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-4 pt-4 lg:pt-0 lg:pl-8 justify-center sm:justify-start">
+            <div class="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 shadow-sm border border-amber-100">
+              <i data-lucide="clock" class="w-7 h-7"></i>
+            </div>
+            <div>
+              <div class="text-2xl sm:text-3xl font-extrabold text-amber-500 tracking-tight" id="stat-orders">{{ site_settings.stats_orders_support|default:"24/7" }}</div>
+              <div class="text-xs font-bold text-gray-500 uppercase tracking-wider">BUYURTMA QABUL QILISh</div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== SERVICES SECTION ==================== -->
+    <section id="xizmatlar" class="py-16 lg:py-24 relative">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+          
+          <div class="lg:col-span-4 space-y-4">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold tracking-wider uppercase">
+              BIZNING XIZMATLAR
+            </div>
+
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight leading-tight">
+              Sizga kerak bo'lgan barcha agroxizmatlar
+            </h2>
+
+            <p class="text-gray-600 text-base leading-relaxed">
+              Qishloq xo'jaligi ishlaringiz uchun zarur texnika va xizmatlarni oson toping va bir necha daqiqada buyurtma bering.
+            </p>
+
+            <div class="pt-4 hidden lg:block">
+              <a href="#boglanish" class="btn-primary-agro px-6 py-3 rounded-full text-sm inline-flex items-center gap-2">
+                <span>Maxsus xizmat buyurtma qilish</span>
+                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+              </a>
+            </div>
+          </div>
+
+          <!-- 8 Services Grid (Loaded from Database / Dynamic) -->
+          <div class="lg:col-span-8">
+            <div id="services-grid-container" class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-5">
+              {% for s in services %}
+              <div onclick="openServiceModalDynamic('{{ s.slug }}')" class="service-card rounded-2xl p-3 flex flex-col justify-between cursor-pointer group">
+                <div class="w-full h-24 sm:h-28 rounded-xl overflow-hidden bg-gray-50 flex items-center justify-center mb-3">
+                  <img src="{{ s.get_image_url }}" alt="{{ s.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                </div>
+                <div class="flex items-center justify-between gap-1">
+                  <span class="text-xs sm:text-sm font-bold text-gray-900 leading-tight">{{ s.title }}</span>
+                  <div class="service-arrow-btn w-6 h-6 rounded-full flex items-center justify-center shrink-0">
+                    <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+                  </div>
+                </div>
+              </div>
+              {% empty %}
+              <!-- Fallback to defaults if empty -->
+              <div onclick="openServiceModal('tractor')" class="service-card rounded-2xl p-3 flex flex-col justify-between cursor-pointer group">
+                <div class="w-full h-24 sm:h-28 rounded-xl overflow-hidden bg-gray-50 flex items-center justify-center mb-3">
+                  <img src="{% static 'images/service-tractor-hd.png' %}" alt="Traktor ijarasi" class="w-full h-full object-cover">
+                </div>
+                <div class="flex items-center justify-between gap-1">
+                  <span class="text-xs sm:text-sm font-bold text-gray-900 leading-tight">Traktor ijarasi</span>
+                  <div class="service-arrow-btn w-6 h-6 rounded-full flex items-center justify-center shrink-0"><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== HOW IT WORKS SECTION ==================== -->
+    <section id="qanday-ishlaydi" class="py-16 lg:py-24 bg-gradient-to-b from-transparent via-amber-50/20 to-transparent relative">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="text-left mb-10">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold tracking-wider uppercase mb-3">
+            QANDAY ISHLAYDI?
+          </div>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
+            Atigi 4 qadamda xizmatga ega bo'ling.
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          
+          <!-- Left: 4 Steps -->
+          <div class="lg:col-span-6 space-y-4">
+            {% for st in steps %}
+            <div class="step-item {% if forloop.first %}active{% endif %} bg-white rounded-2xl p-5 cursor-pointer border border-gray-100 flex items-start gap-4 shadow-sm">
+              <div class="w-10 h-10 rounded-full {% if forloop.first %}bg-amber-500 text-white{% else %}bg-gray-100 text-gray-600{% endif %} font-extrabold flex items-center justify-center shrink-0 text-sm shadow-md">
+                {{ st.step_number }}
+              </div>
+              <div>
+                <h3 class="text-base font-bold text-gray-900">{{ st.title }}</h3>
+                <p class="text-sm text-gray-600 mt-0.5">{{ st.description }}</p>
+              </div>
+            </div>
+            {% empty %}
+            <div class="step-item active bg-white rounded-2xl p-5 cursor-pointer border border-gray-100 flex items-start gap-4 shadow-sm">
+              <div class="w-10 h-10 rounded-full bg-amber-500 text-white font-extrabold flex items-center justify-center shrink-0 text-sm shadow-md">01</div>
+              <div><h3 class="text-base font-bold text-gray-900">Xizmatni tanlang</h3><p class="text-sm text-gray-600 mt-0.5">Kerakli texnika yoki agroxizmatni tanlang.</p></div>
+            </div>
+            {% endfor %}
+          </div>
+
+          <!-- Right: Visual Illustration -->
+          <div class="lg:col-span-6 relative flex justify-center items-center">
+            <div class="relative w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl border-4 border-white bg-white">
+              <img src="{% static 'images/how-it-works-illustration.png' %}" alt="Qanday ishlaydi - AgroRent" class="w-full h-auto object-cover">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none"></div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== WHY US / BENEFITS SECTION ==================== -->
+    <section id="afzalliklar" class="py-16 lg:py-24 relative">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          
+          <div class="lg:col-span-5 space-y-4">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold tracking-wider uppercase">
+              NIMA UChUN AGRORENT?
+            </div>
+
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight leading-tight">
+              Dehqonlar uchun ishonchli tanlov
+            </h2>
+
+            <p class="text-gray-600 text-base leading-relaxed">
+              AgroRent sizning vaqtingizni tejaydi, xarajatlaringizni kamaytiradi va ishlaringizni samarali qiladi.
+            </p>
+
+            <div class="pt-2">
+              <div class="flex items-center gap-3 text-sm font-semibold text-emerald-800 bg-emerald-50/80 px-4 py-3 rounded-2xl border border-emerald-100">
+                <i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-600 shrink-0"></i>
+                <span>O'zbekistondagi eng yirik agrosanoat ekotizimi</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dynamic Benefits Cards from Admin Database -->
+          <div class="lg:col-span-7">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-4">
+              {% for b in benefits %}
+              <div class="benefit-card">
+                <div class="benefit-pin {% cycle 'bg-amber-500' 'bg-[#165B33]' 'bg-[#E67E22]' 'bg-emerald-600' %} text-white">
+                  <i data-lucide="{% if b.icon == 'zap' %}zap{% elif b.icon == 'shield-check' %}shield-check{% elif b.icon == 'receipt' %}receipt{% else %}sprout{% endif %}" class="w-4 h-4"></i>
+                </div>
+                <h3 class="text-base font-bold text-gray-900 mb-2">{{ b.title }}</h3>
+                <p class="text-sm text-gray-600 leading-relaxed">{{ b.description }}</p>
+              </div>
+              {% empty %}
+              <div class="benefit-card">
+                <div class="benefit-pin bg-amber-500 text-white"><i data-lucide="zap" class="w-4 h-4"></i></div>
+                <h3 class="text-base font-bold text-gray-900 mb-2">Tez va qulay kirish</h3>
+                <p class="text-sm text-gray-600 leading-relaxed">Bir necha daqiqada xizmat toping va buyurtma bering.</p>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== ORDER / CONTACT & APP SHOWCASE ==================== -->
+    <section id="boglanish" class="py-16 lg:py-24 relative">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          
+          <!-- Left: Mobile App Dashboard Mockup -->
+          <div class="lg:col-span-5 relative flex justify-center">
+            <div class="relative w-full max-w-sm">
+              <div class="rounded-3xl overflow-hidden shadow-2xl border-4 border-white bg-white/90">
+                <img src="{% static 'images/phone-dashboard-mockup-hd.png' %}" alt="AgroRent Dashboard" class="w-full h-auto object-cover">
+              </div>
+
+              <div class="absolute -bottom-5 -right-3 bg-white p-3 rounded-2xl shadow-xl border border-gray-100 flex items-center gap-3">
+                <img src="{% static 'images/app-icon-transparent.png' %}" alt="AgroRent App Icon" class="w-10 h-10 object-contain">
+                <div>
+                  <div class="text-xs font-bold text-gray-900">AgroRent App</div>
+                  <div class="text-[10px] text-amber-500 font-bold flex items-center gap-1">
+                    <i data-lucide="star" class="w-3 h-3 fill-amber-500 text-amber-500"></i>
+                    <span>{{ site_settings.stat_rating|default:"4.9" }} (1200+ reyting)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Order Form Connected to Backend Lead API -->
+          <div class="lg:col-span-7">
+            <div class="bg-white rounded-3xl p-6 sm:p-10 shadow-xl border border-gray-100 relative">
+              
+              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold tracking-wider uppercase mb-3">
+                BUYURTMA QOLDIRING
+              </div>
+
+              <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
+                Kerakli xizmat haqida bizga yozing
+              </h2>
+
+              <p class="text-sm sm:text-base text-gray-600 mt-1 mb-8">
+                Mutaxassislarimiz siz bilan tez orada bog'lanadi.
+              </p>
+
+              <!-- Working Lead Form -->
+              <form id="contact-form" onsubmit="submitLeadForm(event)" class="space-y-4">
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Ismingiz</label>
+                    <input type="text" name="name" id="order-name" required placeholder="Masalan: Aliyev Bekzod" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm bg-gray-50/50">
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Telefon raqam</label>
+                    <input type="tel" name="phone" id="order-phone" required placeholder="+998 __ ___ __ __" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm bg-gray-50/50">
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Qaysi xizmat sizga kerak?</label>
+                  <select id="service-select" name="service" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm bg-gray-50/50 text-gray-800">
+                    {% for s in services %}
+                    <option value="{{ s.title }}">{{ s.title }}</option>
+                    {% empty %}
+                    <option value="Traktor ijarasi">Traktor ijarasi</option>
+                    <option value="Kombayn xizmati">Kombayn xizmati</option>
+                    <option value="Yer haydash">Yer haydash</option>
+                    <option value="Ekish xizmati">Ekish xizmati</option>
+                    <option value="Dron orqali purkash">Dron orqali purkash</option>
+                    <option value="Yuk tashish">Yuk tashish</option>
+                    <option value="Urug' va ko'chatlar">Urug' va ko'chatlar</option>
+                    <option value="O'g'it va vositalar">O'g'it va vositalar</option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+                <div class="pt-2">
+                  <button type="submit" id="order-submit-btn" class="btn-primary-agro w-full py-4 rounded-xl text-base font-bold flex items-center justify-center gap-2">
+                    <span>Yuborish</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                  </button>
+                </div>
+
+              </form>
+
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8 pt-8 border-t border-gray-100">
+                <div class="flex items-start gap-2.5">
+                  <div class="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center shrink-0"><i data-lucide="zap" class="w-4 h-4"></i></div>
+                  <div><div class="text-xs font-bold text-gray-900">Tez javob</div><div class="text-[11px] text-gray-500">15 daqiqa ichida</div></div>
+                </div>
+                <div class="flex items-start gap-2.5">
+                  <div class="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center shrink-0"><i data-lucide="user-check" class="w-4 h-4"></i></div>
+                  <div><div class="text-xs font-bold text-gray-900">Bepul maslahat</div><div class="text-[11px] text-gray-500">Mutaxassislarimizdan</div></div>
+                </div>
+                <div class="flex items-start gap-2.5">
+                  <div class="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center shrink-0"><i data-lucide="crosshair" class="w-4 h-4"></i></div>
+                  <div><div class="text-xs font-bold text-gray-900">Sizga mos taklif</div><div class="text-[11px] text-gray-500">Hududingiz bo'yicha</div></div>
+                </div>
+                <div class="flex items-start gap-2.5">
+                  <div class="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center shrink-0"><i data-lucide="shield" class="w-4 h-4"></i></div>
+                  <div><div class="text-xs font-bold text-gray-900">Xavfsiz ma'lumotlar</div><div class="text-[11px] text-gray-500">Ma'lumotlar himoyalangan</div></div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== PARTNERS & TEAM SECTION ==================== -->
+    <section id="hamkorlar" class="py-16 lg:py-24 relative">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="text-left mb-10">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold tracking-wider uppercase mb-3">
+            BIZNING HAMKORLAR VA JAMOA
+          </div>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
+            Ishonchli hamkorlar bilan birga rivojlanamiz
+          </h2>
+          <p class="text-gray-600 text-base mt-2">
+            AgroRent bilan yuzlab fermerlar, agronomlar va kompaniyalar samarali hamkorlik qilmoqda.
+          </p>
+        </div>
+
+        <!-- 6 Partner / Team Cards -->
+        <div id="partners-grid-container" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+          {% for p in partners %}
+          <div class="partner-card bg-white rounded-2xl p-3 text-center flex flex-col items-center">
+            <div class="w-20 h-20 rounded-full overflow-hidden mb-3 border-2 border-emerald-100">
+              <img src="{{ p.get_photo_url }}" alt="{{ p.name }}" class="w-full h-full object-cover">
+            </div>
+            <h3 class="text-xs font-bold text-gray-900 leading-snug">{{ p.name }}</h3>
+            <p class="text-[11px] text-gray-500 mt-0.5">{{ p.role }}</p>
+          </div>
+          {% empty %}
+          <div class="partner-card bg-white rounded-2xl p-3 text-center flex flex-col items-center">
+            <div class="w-20 h-20 rounded-full overflow-hidden mb-3 border-2 border-emerald-100">
+              <img src="{% static 'images/partner-1-hd.png' %}" alt="AgroServis MChJ" class="w-full h-full object-cover">
+            </div>
+            <h3 class="text-xs font-bold text-gray-900 leading-snug">"AgroServis" MChJ</h3>
+            <p class="text-[11px] text-gray-500 mt-0.5">Qishloq xo'jaligi xizmatlari</p>
+          </div>
+          {% endfor %}
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== STATS & ACHIEVEMENTS BANNER ==================== -->
+    <section id="stats-section" class="py-12 relative">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="bg-white rounded-3xl p-8 sm:p-12 shadow-xl border border-gray-100">
+          
+          <div class="text-center max-w-3xl mx-auto mb-10">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold tracking-wider uppercase mb-3">
+              BIZGA ISHONCh BILDIRIShYAPTI
+            </div>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
+              Katta natijalar, ishonchli hamkorlik
+            </h2>
+            <p class="text-gray-600 text-base mt-2">
+              AgroRent — dehqonlar, fermerlar va agrokompaniyalar uchun yangi imkoniyatlar eshigini ochmoqda.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center divide-y sm:divide-y-0 sm:divide-x divide-gray-100">
+            <div class="pt-4 sm:pt-0">
+              <div class="w-12 h-12 mx-auto rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mb-3">
+                <i data-lucide="package-check" class="w-6 h-6"></i>
+              </div>
+              <div class="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight">{{ site_settings.stat_total_orders|default:"10 000+" }}</div>
+              <div class="text-xs font-bold text-gray-500 uppercase tracking-wider mt-1">Muvaffaqiyatli buyurtma</div>
+            </div>
+
+            <div class="pt-4 sm:pt-0 sm:pl-6">
+              <div class="w-12 h-12 mx-auto rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mb-3">
+                <i data-lucide="users" class="w-6 h-6"></i>
+              </div>
+              <div class="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight">{{ site_settings.stat_total_farmers|default:"1 200+" }}</div>
+              <div class="text-xs font-bold text-gray-500 uppercase tracking-wider mt-1">Fermerlar</div>
+            </div>
+
+            <div class="pt-4 sm:pt-0 sm:pl-6">
+              <div class="w-12 h-12 mx-auto rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mb-3">
+                <i data-lucide="building-2" class="w-6 h-6"></i>
+              </div>
+              <div class="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight">{{ site_settings.stat_total_companies|default:"150+" }}</div>
+              <div class="text-xs font-bold text-gray-500 uppercase tracking-wider mt-1">Hamkor kompaniyalar</div>
+            </div>
+
+            <div class="pt-4 sm:pt-0 sm:pl-6">
+              <div class="w-12 h-12 mx-auto rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mb-3">
+                <i data-lucide="star" class="w-6 h-6 fill-amber-500 text-amber-500"></i>
+              </div>
+              <div class="text-3xl sm:text-4xl font-black text-amber-500 tracking-tight">{{ site_settings.stat_rating|default:"4.9" }}</div>
+              <div class="text-xs font-bold text-gray-500 uppercase tracking-wider mt-1">Foydalanuvchilar bahosi</div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== APP DOWNLOAD CTA BANNER ==================== -->
+    <section class="py-12 relative">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="rounded-3xl p-8 sm:p-12 relative overflow-hidden shadow-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-orange-500 text-white flex flex-col lg:flex-row items-center justify-between gap-8">
+          
+          <div class="absolute -right-10 -bottom-10 opacity-15 pointer-events-none">
+            <img src="{% static 'images/app-icon-transparent.png' %}" alt="" class="w-96 h-96 object-contain">
+          </div>
+
+          <div class="space-y-2 text-center lg:text-left z-10">
+            <h2 class="text-2xl sm:text-3xl font-black tracking-tight" id="cta-title-text">
+              {{ site_settings.cta_title|default:"Bugun AgroRent bilan yangi imkoniyatlarga qadam qo'ying!" }}
+            </h2>
+            <p class="text-amber-100 text-sm sm:text-base font-medium" id="cta-subtitle-text">
+              {{ site_settings.cta_subtitle|default:"Zamonaviy qishloq xo'jaligi uchun ishonchli raqamli hamkor." }}
+            </p>
+          </div>
+
+          <!-- Dynamic App Store & Google Play Buttons -->
+          <div class="flex flex-wrap items-center justify-center gap-3.5 z-10 shrink-0">
+            
+            <!-- App Store Link (from Admin) -->
+            <a id="link-appstore" href="{{ site_settings.app_store_url|default:'#' }}" target="_blank" class="bg-gray-900/90 hover:bg-black text-white px-4 py-2.5 rounded-xl flex items-center gap-2.5 shadow-md transition-all hover:scale-105">
+              <i data-lucide="apple" class="w-6 h-6"></i>
+              <div class="text-left">
+                <div class="text-[9px] uppercase tracking-wider text-gray-300">Download on the</div>
+                <div class="text-xs font-bold tracking-tight">App Store</div>
+              </div>
+            </a>
+
+            <!-- Google Play Link (from Admin) -->
+            <a id="link-googleplay" href="{{ site_settings.google_play_url|default:'#' }}" target="_blank" class="bg-gray-900/90 hover:bg-black text-white px-4 py-2.5 rounded-xl flex items-center gap-2.5 shadow-md transition-all hover:scale-105">
+              <i data-lucide="play" class="w-6 h-6 fill-white"></i>
+              <div class="text-left">
+                <div class="text-[9px] uppercase tracking-wider text-gray-300">GET IT ON</div>
+                <div class="text-xs font-bold tracking-tight">Google Play</div>
+              </div>
+            </a>
+
+            <!-- Hoziroq boshlash Button -->
+            <a href="#boglanish" class="bg-white text-amber-700 hover:bg-amber-50 px-6 py-3 rounded-full text-sm font-bold shadow-lg transition-all hover:scale-105 inline-flex items-center gap-2">
+              <span>Hoziroq boshlash</span>
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </a>
+
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="bg-white border-t border-gray-200/80 pt-12 pb-8 text-gray-600 text-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="flex flex-col md:flex-row items-center justify-between gap-8 pb-10 border-b border-gray-100">
+        
+        <div class="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
+          <a href="/" class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-white shadow-sm flex items-center justify-center p-1 border border-gray-100">
+              <img src="{% static 'images/app-icon-transparent.png' %}" alt="AgroRent Logo" class="w-full h-full object-contain">
+            </div>
+            <span class="text-xl font-black text-[#165B33]">Agro<span class="text-[#E67E22]">Rent</span></span>
+          </a>
+          <span class="hidden sm:inline-block text-gray-300">|</span>
+          <span class="text-gray-500 font-medium">Qishloq xo'jaligi uchun zamonaviy platforma.</span>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-center gap-6 font-semibold text-gray-700">
+          <a href="#xizmatlar" class="hover:text-agro-green transition-colors">Xizmatlar</a>
+          <a href="#qanday-ishlaydi" class="hover:text-agro-green transition-colors">Qanday ishlaydi</a>
+          <a href="#afzalliklar" class="hover:text-agro-green transition-colors">Afzalliklar</a>
+          <a href="#hamkorlar" class="hover:text-agro-green transition-colors">Hamkorlar</a>
+          <a href="#boglanish" class="hover:text-agro-green transition-colors">Bog'lanish</a>
+          <a href="/admin/" class="text-amber-600 hover:underline"><i data-lucide="lock" class="w-3.5 h-3.5 inline"></i> Admin</a>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-center gap-5">
+          <div class="flex items-center gap-3">
+            <a href="tel:{{ site_settings.phone_number|default:'+998901234567' }}" class="hover:text-amber-600 font-semibold flex items-center gap-1.5">
+              <i data-lucide="phone" class="w-3.5 h-3.5 text-amber-500"></i>
+              <span>{{ site_settings.phone_number|default:"+998 90 123 45 67" }}</span>
+            </a>
+            <span class="text-gray-300">•</span>
+            <a href="mailto:{{ site_settings.email|default:'info@agrorent.uz' }}" class="hover:text-amber-600 font-semibold flex items-center gap-1.5">
+              <i data-lucide="mail" class="w-3.5 h-3.5 text-amber-500"></i>
+              <span>{{ site_settings.email|default:"info@agrorent.uz" }}</span>
+            </a>
+          </div>
+
+          <div class="flex items-center gap-2 text-gray-400">
+            <a href="{{ site_settings.telegram_url|default:'#' }}" target="_blank" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-amber-100 hover:text-amber-600 flex items-center justify-center transition-colors">
+              <i data-lucide="send" class="w-4 h-4"></i>
+            </a>
+            <a href="{{ site_settings.instagram_url|default:'#' }}" target="_blank" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-amber-100 hover:text-amber-600 flex items-center justify-center transition-colors">
+              <i data-lucide="instagram" class="w-4 h-4"></i>
+            </a>
+            <a href="{{ site_settings.facebook_url|default:'#' }}" target="_blank" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-amber-100 hover:text-amber-600 flex items-center justify-center transition-colors">
+              <i data-lucide="facebook" class="w-4 h-4"></i>
+            </a>
+            <a href="{{ site_settings.youtube_url|default:'#' }}" target="_blank" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-amber-100 hover:text-amber-600 flex items-center justify-center transition-colors">
+              <i data-lucide="youtube" class="w-4 h-4"></i>
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-gray-500 text-[11px]">
+        <div>
+          © 2026 AgroRent. Barcha huquqlar himoyalangan.
+        </div>
+        <div class="flex items-center gap-6">
+          <a href="#" class="hover:underline">Maxfiylik siyosati</a>
+          <a href="#" class="hover:underline">Foydalanish shartlari</a>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- ==================== SERVICE DETAILS / ORDER MODAL ==================== -->
+  <div id="service-modal" class="hidden fixed inset-0 z-50 modal-overlay flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative border border-gray-100 animate-float">
+      
+      <button id="close-service-modal" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-gray-100 text-gray-500 hover:text-gray-900 flex items-center justify-center transition-colors">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+
+      <div class="space-y-4">
+        <div class="w-full h-44 rounded-2xl overflow-hidden bg-gray-50 border border-gray-100">
+          <img id="modal-service-img" src="{% static 'images/service-tractor-hd.png' %}" alt="Xizmat" class="w-full h-full object-cover">
+        </div>
+
+        <div>
+          <div class="inline-block px-2.5 py-1 rounded-md bg-amber-50 text-amber-700 text-xs font-bold mb-1">
+            AgroRent Xizmati
+          </div>
+          <h3 id="modal-service-title" class="text-2xl font-black text-gray-900">Traktor ijarasi</h3>
+          <p id="modal-service-desc" class="text-sm text-gray-600 mt-1 leading-relaxed"></p>
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-amber-50/70 border border-amber-200/60 flex items-center justify-between">
+          <span class="text-xs font-bold text-gray-700">Taxminiy narx:</span>
+          <span id="modal-service-rate" class="text-sm font-extrabold text-amber-700">150 000 - 300 000 so'm / soat</span>
+        </div>
+
+        <div>
+          <h4 class="text-xs font-bold text-gray-800 uppercase tracking-wider mb-2">Xizmat afzalliklari:</h4>
+          <ul id="modal-service-features" class="space-y-1.5"></ul>
+        </div>
+
+        <div class="pt-3">
+          <button id="modal-select-service-btn" class="btn-primary-agro w-full py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2">
+            <span>Ushbu xizmatni buyurtma qilish</span>
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== TOAST NOTIFICATION ==================== -->
+  <div id="toast-notification" class="hidden fixed bottom-6 right-6 z-50 toast-success bg-gray-900 text-white px-5 py-4 rounded-2xl shadow-2xl flex items-center gap-3 border border-gray-700 max-w-md">
+    <div class="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0">
+      <i data-lucide="check" class="w-5 h-5"></i>
+    </div>
+    <div class="text-xs">
+      <div class="font-bold text-sm text-white">Muvaffaqiyatli!</div>
+      <div id="toast-message" class="text-gray-300 mt-0.5">Buyurtmangiz qabul qilindi. 15 daqiqada bog'lanamiz.</div>
+    </div>
+  </div>
+
+  <!-- Landing JavaScript -->
+  <script src="{% static 'js/landing.js' %}"></script>
+
+  <!-- Direct Lead Submission to Backend API -->
+  <script>
+    async function submitLeadForm(e) {
+      e.preventDefault();
+      const name = document.getElementById('order-name').value;
+      const phone = document.getElementById('order-phone').value;
+      const service = document.getElementById('service-select').value;
+      const btn = document.getElementById('order-submit-btn');
+
+      if (!phone || phone.length < 13) {
+        alert("Iltimos, to'liq telefon raqamingizni kiriting!");
+        return;
+      }
+
+      const origHtml = btn.innerHTML;
+      btn.innerHTML = '<span>Yuborilmoqda...</span>';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('/api/website/orders/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, phone, service })
+        });
+
+        if (res.ok) {
+          document.getElementById('contact-form').reset();
+          const toast = document.getElementById('toast-notification');
+          const msg = document.getElementById('toast-message');
+          msg.innerText = `Rahmat, ${name}! Arizangiz qabul qilindi. Mutaxassislarimiz 15 daqiqada bog'lanishadi.`;
+          toast.classList.remove('hidden');
+          setTimeout(() => { toast.classList.add('hidden'); }, 4500);
+        } else {
+          alert("Arizani yuborishda xatolik yuz berdi. Qayta urinib ko'ring.");
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Server bilan aloqa uzildi.");
+      } finally {
+        btn.innerHTML = origHtml;
+        btn.disabled = false;
+      }
+    }
+
+    // Dynamic service modal opener
+    window.openServiceModalDynamic = async function(slug) {
+      try {
+        const res = await fetch('/api/website/content/');
+        if (res.ok) {
+          const data = await res.json();
+          const item = (data.services || []).find(s => s.slug === slug);
+          if (item) {
+            document.getElementById('modal-service-title').innerText = item.title;
+            document.getElementById('modal-service-desc').innerText = item.description;
+            document.getElementById('modal-service-rate').innerText = item.price_estimate || 'Kelishilgan narxda';
+            document.getElementById('modal-service-img').src = item.image_display_url || `/api/static/images/service-${slug}-hd.png`;
+            
+            const features = (item.features || '').split('\n').filter(f => f.trim().length > 0);
+            document.getElementById('modal-service-features').innerHTML = features.map(f => `
+              <li class="flex items-center gap-2 text-sm text-gray-700">
+                <span class="w-5 h-5 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">✓</span>
+                <span>${f}</span>
+              </li>
+            `).join('');
+
+            document.getElementById('service-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            return;
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      }
+      // Fallback
+      if (window.openServiceModal) window.openServiceModal(slug);
+    };
+  </script>
+</body>
+</html>
